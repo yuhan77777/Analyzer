@@ -1,4 +1,9 @@
-<title>Analyzer V1.2｜工地福利社</title>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analyzer V1.4｜工地福利社</title>
 <style>
 :root{--bg:#f7f7f5;--card:#fff;--ink:#222;--muted:#6b6b6b;--line:#e7e7e2;--accent:#2f6b4f;--warn:#a95f00}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--ink)}
@@ -19,7 +24,7 @@ button.alt{background:#eceeea;color:#333}.actions{display:flex;gap:8px;flex-wrap
 <body>
 <div class="wrap">
   <div class="top">
-    <div><h1>Analyzer V1.2</h1><div class="note">Loyverse 日結｜便當｜實收｜毛利｜預付／月結</div></div>
+    <div><h1>Analyzer V1.4</h1><div class="note">Loyverse 日結｜便當｜實收｜毛利｜預付／月結</div></div>
     <span class="badge">本機版・資料不離開瀏覽器</span>
   </div>
 
@@ -106,7 +111,7 @@ button.alt{background:#eceeea;color:#333}.actions{display:flex;gap:8px;flex-wrap
     </section>
 
     <section class="card hidden" id="lunchCard">
-      <div class="top"><h3>便當店版</h3><button class="alt" id="copyLunch">複製清單</button></div>
+      <div class="top"><div><h3 style="margin:0">便當店版</h3><div class="note">與上方「產生便當店清單」共用同一套收據資料與退款判斷。</div></div><button class="alt" id="copyLunch">複製清單</button></div>
       <pre id="lunchText"></pre>
     </section>
 
@@ -116,56 +121,112 @@ button.alt{background:#eceeea;color:#333}.actions{display:flex;gap:8px;flex-wrap
     </section>
   </div>
 </div>
+
 <script>
 const $=id=>document.getElementById(id);
 let currentSummary=null;
 
-function money(n){return '$'+Math.round((n+Number.EPSILON)*100)/100 .toLocaleString?.()||('$'+n)}
-function fmt(n){return '$'+Number(n||0).toLocaleString('zh-TW',{maximumFractionDigits:2})}
-function num(v){const n=parseFloat(String(v??'').replace(/,/g,''));return isNaN(n)?0:n}
-function normalize(s){return String(s??'').replace(/\uFEFF/g,'').trim()}
+function fmt(n){
+  return '$'+Number(n||0).toLocaleString('zh-TW',{maximumFractionDigits:2});
+}
+
+function num(v){
+  const n=parseFloat(String(v??'').replace(/,/g,''));
+  return isNaN(n)?0:n;
+}
+
+function normalize(s){
+  return String(s??'').replace(/\uFEFF/g,'').trim();
+}
 
 function parseCSV(text){
-  const rows=[]; let row=[],cell='',q=false;
+  const rows=[];
+  let row=[],cell='',q=false;
+
   for(let i=0;i<text.length;i++){
     const c=text[i],n=text[i+1];
+
     if(c=='"'){
-      if(q && n=='"'){cell+='"';i++} else q=!q;
-    } else if(c==',' && !q){row.push(cell);cell=''}
-    else if((c=='\n'||c=='\r')&&!q){
+      if(q && n=='"'){
+        cell+='"';
+        i++;
+      } else {
+        q=!q;
+      }
+    } else if(c==',' && !q){
+      row.push(cell);
+      cell='';
+    } else if((c=='\n'||c=='\r')&&!q){
       if(c=='\r'&&n=='\n')i++;
-      row.push(cell);cell='';
+      row.push(cell);
+      cell='';
+
       if(row.some(x=>x!==''))rows.push(row);
       row=[];
-    } else cell+=c;
+    } else {
+      cell+=c;
+    }
   }
-  if(cell.length||row.length){row.push(cell);rows.push(row)}
+
+  if(cell.length||row.length){
+    row.push(cell);
+    rows.push(row);
+  }
+
   if(!rows.length)return [];
+
   const h=rows[0].map(normalize);
-  return rows.slice(1).map(r=>Object.fromEntries(h.map((k,i)=>[k,normalize(r[i]??'')])));
+
+  return rows.slice(1).map(
+    r=>Object.fromEntries(
+      h.map((k,i)=>[k,normalize(r[i]??'')])
+    )
+  );
 }
+
 async function readFile(input){
   if(!input.files[0])return null;
   return parseCSV(await input.files[0].text());
 }
-function isLunchItem(r){return r['類別']==='便當'}
-function isSingle(item){return /單點/.test(item)}
+
+function isLunchItem(r){
+  return r['類別']==='便當';
+}
+
 function paymentClass(p){
   p=normalize(p);
+
   if(/月結/.test(p))return 'monthly';
   if(/預付|預收/.test(p))return 'prepaid';
+
   return 'cash';
 }
-function dateOnly(s){return String(s).slice(0,10)}
-function dateTime(s){return new Date(String(s).replace(' ','T'))}
+
+function dateTime(s){
+  return new Date(String(s).replace(' ','T'));
+}
 
 function parseDescription(desc){
-  if(!desc) return [];
-  return String(desc).split(/\s*,\s*/).map(part=>{
-    const m=part.match(/^\s*([0-9.]+)\s*[xX×]\s*(.+?)\s*$/);
-    if(m) return {qty:num(m[1]), item:normalize(m[2])};
-    return {qty:1, item:normalize(part)};
-  }).filter(x=>x.item);
+  if(!desc)return [];
+
+  return String(desc)
+    .split(/\s*,\s*/)
+    .map(part=>{
+      const m=part.match(/^\s*([0-9.]+)\s*[xX×]\s*(.+?)\s*$/);
+
+      if(m){
+        return {
+          qty:num(m[1]),
+          item:normalize(m[2])
+        };
+      }
+
+      return {
+        qty:1,
+        item:normalize(part)
+      };
+    })
+    .filter(x=>x.item);
 }
 
 function isLunchName(name){
@@ -173,7 +234,10 @@ function isLunchName(name){
 }
 
 function buildLunchFromReceipts(receipts){
-  const rows=[...receipts].sort((a,b)=>dateTime(a['日期'])-dateTime(b['日期']));
+  const rows=[...receipts].sort(
+    (a,b)=>dateTime(a['日期'])-dateTime(b['日期'])
+  );
+
   const activeSales=[];
 
   rows.forEach(r=>{
@@ -183,15 +247,26 @@ function buildLunchFromReceipts(receipts){
     const pay=normalize(r['付款方式']);
 
     if(type==='銷售'){
-      activeSales.push({...r,_cancelled:false});
-    } else if(type==='退款'){
+      activeSales.push({
+        ...r,
+        _cancelled:false
+      });
+    }
+
+    else if(type==='退款'){
       for(let i=activeSales.length-1;i>=0;i--){
         const s=activeSales[i];
-        if(s._cancelled) continue;
 
-        const sameAmt=Math.abs(num(s['淨銷售額']))===amount;
-        const sameDesc=normalize(s['描述'])===desc;
-        const samePay=normalize(s['付款方式'])===pay;
+        if(s._cancelled)continue;
+
+        const sameAmt=
+          Math.abs(num(s['淨銷售額']))===amount;
+
+        const sameDesc=
+          normalize(s['描述'])===desc;
+
+        const samePay=
+          normalize(s['付款方式'])===pay;
 
         if(sameAmt && sameDesc && samePay){
           s._cancelled=true;
@@ -204,16 +279,27 @@ function buildLunchFromReceipts(receipts){
   const orders=[];
   let total=0;
 
-  activeSales.filter(x=>!x._cancelled).forEach(s=>{
-    const lunch=parseDescription(s['描述']).filter(x=>isLunchName(x.item));
-    if(!lunch.length) return;
+  activeSales
+    .filter(x=>!x._cancelled)
+    .forEach(s=>{
 
-    orders.push({date:s['日期'],items:lunch});
+      const lunch=
+        parseDescription(s['描述'])
+          .filter(x=>isLunchName(x.item));
 
-    lunch.forEach(x=>{
-      if(!/單點/.test(x.item)) total+=x.qty;
+      if(!lunch.length)return;
+
+      orders.push({
+        date:s['日期'],
+        items:lunch
+      });
+
+      lunch.forEach(x=>{
+        if(!/單點/.test(x.item)){
+          total+=x.qty;
+        }
+      });
     });
-  });
 
   return {
     orders,
@@ -224,17 +310,26 @@ function buildLunchFromReceipts(receipts){
 
 function lunchTextFromReceiptData(receipts){
   const data=buildLunchFromReceipts(receipts);
-  const lines=[`🍱 ${data.date||'今日'} 便當訂單`,''];
+
+  const lines=[
+    `🍱 ${data.date||'今日'} 便當訂單`,
+    ''
+  ];
 
   data.orders.forEach((o,i)=>{
     lines.push(
       `${i+1}. `+
-      o.items.map(x=>`${x.item} ×${x.qty}`).join('、'),
+      o.items
+        .map(x=>`${x.item} ×${x.qty}`)
+        .join('、'),
       ''
     );
   });
 
-  lines.push(`🍱 總計：${data.total} 份`);
+  lines.push(
+    `🍱 總計：${data.total} 份`
+  );
+
   return lines.join('\n');
 }
 
@@ -247,8 +342,10 @@ async function quickLunch(){
   }
 
   const text=lunchTextFromReceiptData(receipts);
+
   $('quickLunchText').textContent=text;
   $('quickLunchCard').classList.remove('hidden');
+
   $('quickLunchCard').scrollIntoView({
     behavior:'smooth',
     block:'start'
@@ -256,6 +353,7 @@ async function quickLunch(){
 }
 
 async function run(){
+
   const receipts=await readFile($('receiptFile'));
   const items=await readFile($('itemFile'));
 
@@ -264,9 +362,14 @@ async function run(){
     return;
   }
 
-  const salesReceipts=receipts.filter(r=>r['收據類型']==='銷售');
-  const salesItems=items.filter(r=>r['收據類型']==='銷售');
-  const date=salesReceipts[0]?.['日期']?.slice(0,10)||'今日';
+  const salesReceipts=
+    receipts.filter(r=>r['收據類型']==='銷售');
+
+  const salesItems=
+    items.filter(r=>r['收據類型']==='銷售');
+
+  const date=
+    salesReceipts[0]?.['日期']?.slice(0,10)||'今日';
 
   const extraSale=num($('extraSale').value);
   const extraCost=num($('extraCost').value);
@@ -274,6 +377,7 @@ async function run(){
 
   const recovered=num($('recovered').value);
   const unpaidInput=num($('unpaid').value);
+
   const parking=num($('parking').value);
 
   const cupCost=num($('cupCost').value);
@@ -283,26 +387,33 @@ async function run(){
   const stickerCost=num($('stickerCost').value);
   const stickerOn=$('stickerToggle').checked;
 
-  const posBase=salesReceipts.reduce(
-    (a,r)=>a+num(r['淨銷售額']),
-    0
-  );
+  const posBase=
+    salesReceipts.reduce(
+      (a,r)=>a+num(r['淨銷售額']),
+      0
+    );
 
-  const pos=posBase+extraSale;
+  const pos=
+    posBase+extraSale;
 
   let monthly=0;
   let prepaid=0;
   let cash=0;
 
   salesReceipts.forEach(r=>{
+
     const v=num(r['淨銷售額']);
     const c=paymentClass(r['付款方式']);
 
     if(c==='monthly'){
       monthly+=v;
-    } else if(c==='prepaid'){
+    }
+
+    else if(c==='prepaid'){
       prepaid+=v;
-    } else {
+    }
+
+    else{
       cash+=v;
     }
   });
@@ -310,34 +421,47 @@ async function run(){
   let extraUnpaid=0;
 
   if(extraSale){
+
     if(extraPay==='月結'){
       monthly+=extraSale;
-    } else if(extraPay==='預付'){
+    }
+
+    else if(extraPay==='預付'){
       prepaid+=extraSale;
-    } else if(extraPay==='未收款'){
+    }
+
+    else if(extraPay==='未收款'){
       extraUnpaid+=extraSale;
-    } else {
+    }
+
+    else{
       cash+=extraSale;
     }
   }
 
-  const unpaid=unpaidInput+extraUnpaid;
+  const unpaid=
+    unpaidInput+extraUnpaid;
 
-  const lunchRows=salesItems.filter(isLunchItem);
+  const lunchRows=
+    salesItems.filter(isLunchItem);
 
-  const lunchPay=lunchRows.reduce(
-    (a,r)=>a+num(r['銷售成本']),
-    0
-  );
+  const lunchPay=
+    lunchRows.reduce(
+      (a,r)=>a+num(r['銷售成本']),
+      0
+    );
 
-  const lunchSales=lunchRows.reduce(
-    (a,r)=>a+num(r['淨銷售額']),
-    0
-  );
+  const lunchSales=
+    lunchRows.reduce(
+      (a,r)=>a+num(r['淨銷售額']),
+      0
+    );
 
-  const lunchCount=lunchRows
-    .filter(r=>!isSingle(r['商品']))
-    .reduce((a,r)=>a+num(r['數量']),0);
+  const canonicalLunch=
+    buildLunchFromReceipts(receipts);
+
+  const lunchCount=
+    canonicalLunch.total;
 
   let baseCost=
     salesItems.reduce(
@@ -348,7 +472,9 @@ async function run(){
   const byReceipt={};
 
   salesItems.forEach(r=>{
-    (byReceipt[r['收據號碼']]??=[]).push(r);
+    (
+      byReceipt[r['收據號碼']]??=[]
+    ).push(r);
   });
 
   let cupCorrection=0;
@@ -358,30 +484,47 @@ async function run(){
 
   Object.values(byReceipt).forEach(rows=>{
 
-    const cups=rows
-      .filter(r=>/免洗杯/.test(r['商品']))
-      .reduce((a,r)=>a+num(r['數量']),0);
+    const cups=
+      rows
+        .filter(r=>/免洗杯/.test(r['商品']))
+        .reduce(
+          (a,r)=>a+num(r['數量']),
+          0
+        );
 
-    const large=rows
-      .filter(r=>r['商品']==='保利達(大)')
-      .reduce((a,r)=>a+num(r['數量']),0);
+    const large=
+      rows
+        .filter(r=>r['商品']==='保利達(大)')
+        .reduce(
+          (a,r)=>a+num(r['數量']),
+          0
+        );
 
-    const small=rows
-      .filter(r=>r['商品']==='保利達(小)')
-      .reduce((a,r)=>a+num(r['數量']),0);
+    const small=
+      rows
+        .filter(r=>r['商品']==='保利達(小)')
+        .reduce(
+          (a,r)=>a+num(r['數量']),
+          0
+        );
 
     const effectiveCups=
       cups>0
         ? cups
         : (large*2+small);
 
-    cupCorrection+=effectiveCups*cupCost;
+    cupCorrection+=
+      effectiveCups*cupCost;
 
     const hasAlcohol=
-      rows.some(r=>r['類別']==='酒類');
+      rows.some(
+        r=>r['類別']==='酒類'
+      );
 
     const hasBag=
-      rows.some(r=>/黑色塑膠袋/.test(r['商品']));
+      rows.some(
+        r=>/黑色塑膠袋/.test(r['商品'])
+      );
 
     if(hasAlcohol&&!hasBag){
       bagCorrection+=bagCost;
@@ -390,8 +533,8 @@ async function run(){
     rows
       .filter(
         r=>
-        r['商品']==='檳榔' &&
-        num(r['銷售成本'])===0
+          r['商品']==='檳榔' &&
+          num(r['銷售成本'])===0
       )
       .forEach(r=>{
         betelCorrection+=
@@ -399,18 +542,22 @@ async function run(){
       });
 
     if(stickerOn){
+
       rows
         .filter(
           r=>/金牌|Bar|BAR|海尼根/.test(r['商品'])
         )
         .forEach(r=>{
-          let q=num(r['數量']);
+
+          let q=
+            num(r['數量']);
 
           if(/3罐/.test(r['商品'])){
             q*=3;
           }
 
-          stickerCorrection+=q*stickerCost;
+          stickerCorrection+=
+            q*stickerCost;
         });
     }
   });
@@ -444,56 +591,9 @@ async function run(){
   const net=
     grossProfit-parking;
 
-  const receiptTime=
-    Object.fromEntries(
-      salesReceipts.map(
-        r=>[
-          r['收據號碼'],
-          r['日期']
-        ]
-      )
-    );
-
-  const grouped={};
-
-  lunchRows.forEach(r=>{
-    (
-      grouped[r['收據號碼']]??=[]
-    ).push({
-      item:r['商品'],
-      qty:num(r['數量'])
-    });
-  });
-
-  const lunchOrders=
-    Object.entries(grouped)
-      .sort(
-        (a,b)=>
-          dateTime(receiptTime[a[0]])-
-          dateTime(receiptTime[b[0]])
-      );
-
-  let lines=[
-    `🍱 ${date} 便當訂單`,
-    ''
-  ];
-
-  lunchOrders.forEach(([no,rs],i)=>{
-    lines.push(
-      `${i+1}. `+
-      rs.map(
-        x=>`${x.item} ×${x.qty}`
-      ).join('、'),
-      ''
-    );
-  });
-
-  lines.push(
-    `🍱 總計：${lunchCount} 份`
-  );
-
+  // 兩個便當版本共用完全相同的函式
   $('lunchText').textContent=
-    lines.join('\n');
+    lunchTextFromReceiptData(receipts);
 
   $('posSales').textContent=
     fmt(pos);
@@ -592,6 +692,7 @@ async function run(){
 }
 
 function renderHistory(){
+
   const hist=
     JSON.parse(
       localStorage.getItem(
@@ -602,18 +703,18 @@ function renderHistory(){
   $('history').innerHTML=
     hist.length
       ? hist
-        .slice()
-        .reverse()
-        .map(
-          x=>
-          `<div style="padding:8px 0;border-bottom:1px solid #eee">
-            <b>${x.date}</b>
-            　POS ${fmt(x.pos)}
-            　實收 ${fmt(x.actual)}
-            　淨收入 ${fmt(x.net)}
-          </div>`
-        )
-        .join('')
+          .slice()
+          .reverse()
+          .map(
+            x=>
+              `<div style="padding:8px 0;border-bottom:1px solid #eee">
+                <b>${x.date}</b>
+                　POS ${fmt(x.pos)}
+                　實收 ${fmt(x.actual)}
+                　淨收入 ${fmt(x.net)}
+              </div>`
+          )
+          .join('')
       : '尚未儲存任何日結。';
 }
 
@@ -647,6 +748,7 @@ $('itemFile')
 $('clearReceipt').onclick=()=>{
 
   $('receiptFile').value='';
+
   updateFileLabels();
 
   currentSummary=null;
@@ -666,6 +768,7 @@ $('clearReceipt').onclick=()=>{
 $('clearItem').onclick=()=>{
 
   $('itemFile').value='';
+
   updateFileLabels();
 
   currentSummary=null;
