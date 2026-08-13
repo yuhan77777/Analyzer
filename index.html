@@ -1,10 +1,10 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.2</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.6</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.2</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
-<div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="set">⚙️ 設定</button></div>
+<div class="top"><div><h1>Analyzer V2.6</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
 <div class="card half"><h3>① Loyverse CSV</h3><label>收據 CSV</label><div class="row"><input id="rf" type="file" accept=".csv"><button class="alt sm" onclick="clearF('rf','rn')">刪除</button></div><div id="rn" class="note">尚未選擇</div><label>按商品收貨 CSV</label><div class="row"><input id="if" type="file" accept=".csv"><button class="alt sm" onclick="clearF('if','in')">刪除</button></div><div id="in" class="note">尚未選擇</div><div class="actions"><button id="lunchBtn">🍱 便當店清單</button><button id="calcBtn">開始結算</button></div><div class="note">便當店資料＝「類別：便當」。退款會把對應原銷售一起排除。</div></div>
@@ -12,7 +12,7 @@
 <div id="lunchBox" class="card hide"><div class="top"><div><h3 style="margin:0">🍱 便當店清單</h3><div class="note">「便當」類別全部列出；總數只計便當、麵、水餃、滷肉飯。單點、湯、滷蛋等不計數。</div></div><button class="alt" id="copyLunch">複製</button></div><pre id="lunchText"></pre></div>
 <div class="card half"><h3>③ 今日耗材調整</h3><div class="note">只在漏按／修正時用＋－；啤酒貼紙已由 Loyverse 綁定，不在這裡。</div><div class="list"><div class="grow"><b>免洗杯</b><div id="cupInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('cup',-1)">−</button><b id="cupAdj">0</b><button onclick="adj('cup',1)">＋</button></div></div><div class="list"><div class="grow"><b>黑色塑膠袋</b><div id="bagInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('bag',-1)">−</button><b id="bagAdj">0</b><button onclick="adj('bag',1)">＋</button></div></div></div>
 <div class="card half"><div class="top"><div><h3 style="margin:0">④ 今日代墊請款</h3><div class="note">不影響 POS／成本／毛利／實收，只進請款。</div></div><button class="sm" id="addAdv">＋新增</button></div><div id="advList" class="note">今天尚無代墊。</div></div>
-<div class="card half"><div class="top"><div><h3 style="margin:0">⑤ 今日新增預付款</h3><div class="note">今天新收到的預付款：增加預付餘額，也增加「實際收到」，但不增加 POS、營業額、毛利、淨收入。</div></div><button class="sm" id="addTopup">＋新增預付</button></div><div id="topupList" class="note">今天尚無新增預付款。</div></div>
+<div class="card half"><div class="top"><div><h3 style="margin:0">⑤ 今日新增預付款</h3><div class="note">只有真的收到新的預付款時才新增；增加預付餘額，也增加「實際收到」，但不增加 POS、營業額、毛利、淨收入。</div></div><button class="sm" id="addTopup">＋新增預付</button></div><div id="topupList" class="note">今天尚無新增預付款。</div></div>
 <div class="card"><h3>今日結果</h3><div id="empty" class="note">上傳兩份 CSV 後開始結算。</div><div id="result" class="hide"><div class="kpis"><div class="kpi"><small>POS 營業額</small><b id="pos">$0</b></div><div class="kpi"><small>應付便當店</small><b id="lp">$0</b></div><div class="kpi em"><small>實際收到</small><b id="actual">$0</b></div><div class="kpi em"><small>淨收入</small><b id="net">$0</b></div><div class="kpi"><small>福利社營業額</small><b id="store">$0</b></div><div class="kpi"><small>毛利</small><b id="gross">$0</b></div><div class="kpi"><small>毛利率</small><b id="margin">0%</b></div><div class="kpi"><small>便當計數</small><b id="lc">0</b></div></div></div></div>
 <div id="payCard" class="card half hide"><h3>付款拆分</h3><table><tbody id="payRows"></tbody></table></div>
 <div id="preCard" class="card half hide"><h3>預付餘額</h3><div id="preRows"></div></div>
@@ -29,6 +29,15 @@
 <div id="claims" class="card hide"><h3>💳 月結請款</h3><div class="note">一般月結只列日期＋金額；代墊才顯示項目明細。</div><div id="claimList"></div></div>
 </div></section>
 
+
+<section id="stock" class="tab"><div class="grid">
+<div class="card half"><h3>📦 目前庫存基準</h3><div class="note">可直接貼下班實際盤點。每行：「商品名稱 數量」。儲存後會成為新的實際庫存基準。</div><textarea id="stockPaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="saveStockSnapshot">儲存盤點基準</button></div></div>
+<div class="card half"><h3>➕ 新增進貨</h3><label>日期</label><input id="stockDate" type="date"><label>商品</label><input id="stockProduct" type="text" placeholder="例如：金牌"><label>入庫數量（瓶／包）</label><input id="stockQty" type="number" value="0" step="1"><label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：4箱×24瓶"><div class="actions"><button id="addStockIn">入庫</button></div><div id="stockAfter" class="banner hide"></div></div>
+<div class="card"><div class="top"><div><h3 style="margin:0">目前庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTable"></div></div>
+<div class="card half"><h3>🔍 實際盤點比對</h3><div class="note">貼入本次實際盤點，每行「商品名稱 數量」。Analyzer 會跟目前系統理論庫存比較。</div><textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="compareStockBtn">比對庫存</button><button class="alt" id="adoptSnapshotBtn">採用本次盤點為新基準</button></div><div id="compareResult"></div></div>
+<div class="card half"><h3>進貨紀錄</h3><div id="stockLog"></div></div>
+</div></section>
+
 <section id="set" class="tab"><div class="grid">
 <div class="card"><div class="top"><div><h3 style="margin:0">付款方式設定</h3><div class="note">名稱需與 Loyverse CSV 完全相同，可自己新增月結／預付／轉帳客戶。</div></div><button id="addPay">＋新增</button></div><div id="setPays"></div></div>
 <div class="card half"><h3>成本設定</h3><label>免洗杯／個</label><input id="cCup" type="number" step=".001"><label>黑色塑膠袋／個</label><input id="cBag" type="number" step=".1"><label>檳榔／包</label><input id="cBetel" type="number" step=".001"><div class="actions"><button id="saveCosts">儲存</button></div></div>
@@ -37,10 +46,93 @@
 </div>
 <div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
-const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
-let S=load(K.s,DEF),H=load(K.h,[]),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[];
+const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:92},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
+let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
+/* V2.3 一次性修正：
+   - 民哥目前正確預付餘額 = 92
+   - 移除先前誤登的「今日新增預付 1000」
+   - 若 2026-08-13 日結已經存過這筆 1000，也同步把實收減回 1000，
+     並把該日民哥預付結餘修正為 92。
+   只執行一次，之後正常使用「今日新增預付款」功能不受影響。
+*/
+(function migrateV23(){
+  const flag='a2_v23_prepaid_fix_done';
+  if(localStorage.getItem(flag)==='1') return;
+
+  const minPay=S.pay.find(x=>x.name==='預付(民哥)' || x.id==='min');
+  if(minPay){
+    minPay.bal=92;
+  }
+
+  const day=H.find(x=>x.date==='2026-08-13');
+  if(day){
+    const removed=(day.topups||[])
+      .filter(t=>t.name==='預付(民哥)' || t.paymentId==='min')
+      .reduce((a,t)=>a+n(t.amount),0);
+
+    if(removed>0){
+      day.topups=(day.topups||[]).filter(t=>!(t.name==='預付(民哥)' || t.paymentId==='min'));
+      day.topupTotal=Math.max(0,n(day.topupTotal)-removed);
+      day.actual=n(day.actual)-removed;
+    }
+
+    if(day.pre?.['預付(民哥)']){
+      const x=day.pre['預付(民哥)'];
+      x.add=0;
+      // 8/13 正確：前次 392 - 今日使用 300 + 新增 0 = 92
+      x.open=392;
+      x.use=300;
+      x.close=92;
+    }
+  }
+
+  localStorage.setItem(K.s,JSON.stringify(S));
+  localStorage.setItem(K.h,JSON.stringify(H));
+  localStorage.setItem(flag,'1');
+})();
+
+
+/* V2.6：把 8/12、8/13 的已知商品銷售正式接進理論庫存。
+   基準仍是 8/10 實際盤點，先加 8/12 進貨，再扣 8/12、8/13 銷售。 */
+(function migrateInventorySalesV26(){
+  const flag='a2_v26_inventory_sales_done';
+  if(localStorage.getItem(flag)==='1') return;
+
+  const sales812={
+    '伯朗咖啡':2,'健酪':1,'大保':5,'咖啡廣場(白)':1,'麥香奶茶':2,'阿咧':1,
+    '海尼根':2,'金牌':12,'日式無糖綠茶':1,'維大力':4,'小保':1,
+    '礦泉水(小)':1,'檳榔':2,'Fin':1,'七星(中淡)':1,'七星(濃)':3,'Peace 6號':4
+  };
+  const sales813={
+    '檳榔':6,'海尼根':12,'七星(濃)':2,'金牌':45,'Fin':3,'阿咧':3,'峰(金)':1,
+    '藍M':1,'麥香紅茶':1,'水蠻牛':1,'小保':3,'日式無糖綠茶':1,'大保':6,
+    '伯朗咖啡':1,'維大力':4,'礦泉水(小)':24,'礦泉水(大)':2,'Peace 6號':1,'科學麵':2
+  };
+
+  function deductKnown(date,sales){
+    Object.entries(sales).forEach(([p,qty])=>{
+      if(Object.prototype.hasOwnProperty.call(INV.items,p)){
+        INV.items[p]=n(INV.items[p])-qty;
+      }
+    });
+    INV.logs.push({id:'seed-sales-'+date,date,type:'sales',note:'V2.6 補入既有日結商品銷售',sales:{...sales}});
+    const day=H.find(x=>x.date===date);
+    if(day){day.salesByProduct={...sales};day.inventoryApplied=true}
+  }
+
+  if(INV.baseDate==='2026-08-10' || !INV.baseDate){
+    deductKnown('2026-08-12',sales812);
+    deductKnown('2026-08-13',sales813);
+    INV.lastSalesDate='2026-08-13';
+  }
+
+  localStorage.setItem(K.i,JSON.stringify(INV));
+  localStorage.setItem(K.h,JSON.stringify(H));
+  localStorage.setItem(flag,'1');
+})();
+
 function load(k,d){try{return JSON.parse(localStorage.getItem(k))||JSON.parse(JSON.stringify(d))}catch(e){return JSON.parse(JSON.stringify(d))}}
-function save(){localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem(K.h,JSON.stringify(H))}
+function save(){localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem(K.h,JSON.stringify(H));localStorage.setItem(K.i,JSON.stringify(INV))}
 function n(v){let x=parseFloat(String(v??'').replace(/,/g,''));return isFinite(x)?x:0}function f(v){return '$'+n(v).toLocaleString('zh-TW',{maximumFractionDigits:2})}function q(s){return String(s??'').trim()}function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function csv(t){let R=[],r=[],c='',z=false;for(let i=0;i<t.length;i++){let x=t[i],y=t[i+1];if(x=='"'){if(z&&y=='"'){c+='"';i++}else z=!z}else if(x==','&&!z){r.push(c);c=''}else if((x=='\n'||x=='\r')&&!z){if(x=='\r'&&y=='\n')i++;r.push(c);c='';if(r.some(v=>v!==''))R.push(r);r=[]}else c+=x}if(c||r.length){r.push(c);R.push(r)}if(!R.length)return[];let h=R[0].map(q);return R.slice(1).map(x=>Object.fromEntries(h.map((k,i)=>[k,q(x[i]??'')])))}async function read(id){let x=$(id).files[0];return x?csv(await x.text()):null}
 function dtime(s){return new Date(String(s).replace(' ','T'))}
@@ -187,10 +279,97 @@ $('addTopup').onclick=()=>{let c=S.pay.filter(x=>x.kind==='prepaid');if(!c.lengt
 window.adj=(k,v)=>{A[k]+=v;$(k+'Adj').textContent=A[k];if(cur)calc()}
 function unknown(R){let pm=pmap();return[...new Set(R.map(x=>q(x['付款方式'])).filter(Boolean))].filter(x=>!pm[x])}
 function showUn(a){if(!a.length){$('unknown').classList.add('hide');return}$('unknown').classList.remove('hide');$('unknown').innerHTML='<h3>⚠️ 發現未設定付款方式</h3><div class="note">請到「設定」新增後再結算：'+a.map(e).join('、')+'</div>'}
-async function calc(){let R=await read('rf'),I=await read('if');if(!R||!I)return alert('請上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betelCsv===0?Math.max(0,betel)*S.cost.betel:0,cost=base+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=n($('recover').value),unp=Knd.unpaid+n($('unpaid').value),topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={};S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0);pre[x.name]={id:x.id,open:n(x.bal),use,add,close:n(x.bal)-use+add}});cur={date:(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10),pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,net:g-park,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc},extra:{es,ec,ep:ep?.id||'',manualUnpaid:n($('unpaid').value)}};renderCalc()}
+
+function invMapItem(name,qty){
+  name=q(name); qty=n(qty);
+  let target=name,mult=1;
+
+  if(name==='保利達(大)') target='大保';
+  else if(name==='保利達(小)') target='小保';
+  else if(name==='金牌(3罐)'){target='金牌';mult=3}
+  else if(name==='金牌(單罐)'){target='金牌';mult=1}
+  else if(/^Bar\(3罐\)$/i.test(name)){target='Bar';mult=3}
+  else if(/^Bar\(單罐\)$/i.test(name)){target='Bar';mult=1}
+  else if(name==='礦泉水(小)單罐'){target='礦泉水(小)';mult=1}
+  else if(name==='礦泉水(小)整箱'){target='礦泉水(小)';mult=24}
+  else if(name==='礦泉水(大)單罐'||name==='礦泉水(大)結冰'){target='礦泉水(大)';mult=1}
+
+  return {target,qty:qty*mult};
+}
+
+function inventorySalesFromItems(I){
+  const out={};
+  I.forEach(x=>{
+    // 便當與耗材不納入飲料／酒／菸等商品庫存。
+    if(['便當','耗材'].includes(q(x['類別']))) return;
+    const mapped=invMapItem(x['商品'],x['數量']);
+    if(!mapped.target||mapped.qty===0) return;
+    out[mapped.target]=(out[mapped.target]||0)+mapped.qty;
+  });
+  // 退款在 Loyverse 按商品收貨 CSV 裡通常是負數，所以自然會加回庫存。
+  Object.keys(out).forEach(k=>{ if(Math.abs(out[k])<1e-9) delete out[k] });
+  return out;
+}
+
+function applyInventorySales(day,direction){
+  // direction = -1 代表扣銷售；+1 代表還原舊銷售。
+  if(!day?.salesByProduct) return;
+  // 若該日早於或等於最近實際盤點基準，不改目前庫存，因為盤點已覆蓋歷史理論值。
+  if(INV.baseDate && day.date<=INV.baseDate) return;
+
+  Object.entries(day.salesByProduct).forEach(([product,qty])=>{
+    if(!Object.prototype.hasOwnProperty.call(INV.items,product)) return;
+    INV.items[product]=n(INV.items[product])+direction*n(qty);
+  });
+}
+
+async function calc(){let R=await read('rf'),I=await read('if');if(!R||!I)return alert('請上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betelCsv===0?Math.max(0,betel)*S.cost.betel:0,cost=base+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=n($('recover').value),unp=Knd.unpaid+n($('unpaid').value),topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={};S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0);pre[x.name]={id:x.id,open:n(x.bal),use,add,close:n(x.bal)-use+add}});cur={date:(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10),pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,net:g-park,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc},salesByProduct:inventorySalesFromItems(I),extra:{es,ec,ep:ep?.id||'',manualUnpaid:n($('unpaid').value)}};renderCalc()}
 function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔補正',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['淨收入',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`}
 $('calcBtn').onclick=calc;$('lunchBtn').onclick=async()=>{let R=await read('rf'),I=await read('if');if(!R||!I)return alert('便當清單需要兩份 CSV');$('lunchText').textContent=lunchTxt(R,I);$('lunchBox').classList.remove('hide')};$('copyLunch').onclick=async()=>{try{await navigator.clipboard.writeText($('lunchText').textContent);alert('已複製')}catch(e){alert('請長按文字複製')}}
-$('saveDay').onclick=()=>{if(!cur)return;let old=H.find(x=>x.date===cur.date);if(old?.pre)Object.values(old.pre).forEach(x=>{let p=S.pay.find(z=>z.id===x.id);if(p)p.bal=x.open});S.pay.filter(x=>x.kind==='prepaid').forEach(p=>{let use=cur.pay[p.name]||0,add=topups.filter(t=>t.paymentId===p.id).reduce((a,t)=>a+n(t.amount),0);cur.pre[p.name]={id:p.id,open:n(p.bal),use,add,close:n(p.bal)-use+add};p.bal=cur.pre[p.name].close});cur.adv=JSON.parse(JSON.stringify(adv));cur.topups=JSON.parse(JSON.stringify(topups));cur.topupTotal=topups.reduce((a,x)=>a+n(x.amount),0);H=H.filter(x=>x.date!==cur.date);H.push(cur);H.sort((a,b)=>a.date.localeCompare(b.date));save();renderHist();renderSet();alert('已儲存 '+cur.date)}
+$('saveDay').onclick=()=>{
+  if(!cur)return;
+
+  const old=H.find(x=>x.date===cur.date);
+
+  // 若同一天是修正版，先把舊版銷售數量加回目前理論庫存。
+  if(old?.inventoryApplied) applyInventorySales(old,+1);
+
+  // 預付餘額覆蓋舊日結時先回復舊開帳餘額。
+  if(old?.pre) Object.values(old.pre).forEach(x=>{
+    let p=S.pay.find(z=>z.id===x.id);
+    if(p)p.bal=x.open;
+  });
+
+  S.pay.filter(x=>x.kind==='prepaid').forEach(p=>{
+    let use=cur.pay[p.name]||0,
+        add=topups.filter(t=>t.paymentId===p.id).reduce((a,t)=>a+n(t.amount),0);
+    cur.pre[p.name]={id:p.id,open:n(p.bal),use,add,close:n(p.bal)-use+add};
+    p.bal=cur.pre[p.name].close;
+  });
+
+  cur.adv=JSON.parse(JSON.stringify(adv));
+  cur.topups=JSON.parse(JSON.stringify(topups));
+  cur.topupTotal=topups.reduce((a,x)=>a+n(x.amount),0);
+
+  // 日結儲存時，自動從目前理論庫存扣掉本日淨銷售數量。
+  applyInventorySales(cur,-1);
+  cur.inventoryApplied=true;
+  INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
+  INV.logs.push({
+    id:'sale-'+cur.date+'-'+uid(),
+    date:cur.date,
+    type:'sales',
+    note:'日結自動扣除商品銷售',
+    sales:{...cur.salesByProduct}
+  });
+
+  H=H.filter(x=>x.date!==cur.date);
+  H.push(cur);
+  H.sort((a,b)=>a.date.localeCompare(b.date));
+  save();
+  renderHist();renderSet();renderStock();
+  alert('已儲存 '+cur.date+' 日結，並自動扣除當日商品銷售庫存');
+}
 function escCSV(v){let s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}function makeCSV(R){return R.map(x=>x.map(escCSV).join(',')).join('\n')}function dl(name,t,type='text/csv;charset=utf-8'){let b=new Blob([t],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),300)}
 $('expDay').onclick=()=>{if(!cur)return;dl(`Analyzer-${cur.date}-日結.csv`,makeCSV([['項目','金額'],['POS',cur.pos],['應付便當店',cur.lunchPay],['福利社營業額',cur.store],['實際收到',cur.actual],['毛利',cur.gross],['毛利率',cur.margin.toFixed(2)+'%'],['淨收入',cur.net]]))}
 function renderHist(){$('histList').innerHTML=H.length?H.slice().reverse().map(x=>`<div class="list"><div class="grow"><b>${x.date}</b><div class="note">POS ${f(x.pos)}｜實收 ${f(x.actual)}｜淨收入 ${f(x.net)}</div></div><button class="alt sm" onclick="viewD('${x.date}')">查看</button><button class="alt sm" onclick="editD('${x.date}')">修改</button><button class="danger sm" onclick="delD('${x.date}')">刪除</button></div>`).join(''):'<div class="note">尚無紀錄</div>'}
@@ -203,8 +382,83 @@ function claims(R){$('claimList').innerHTML=S.pay.filter(x=>x.kind==='monthly').
 window.copyC=async id=>{let p=S.pay.find(x=>x.id===id),c=client(p.name),R=monthRows,M=R.map(x=>({d:x.date,a:n(x.pay?.[p.name])})).filter(x=>x.a),A=R.flatMap(x=>(x.adv||[]).filter(a=>a.client===c||a.client===p.name).map(a=>({d:x.date,...a}))),mt=M.reduce((a,x)=>a+x.a,0),at=A.reduce((a,x)=>a+n(x.amount),0),L=[`${c} 請款`,`區間：${$('ms').value}～${$('me').value}`,'','【月結】',...M.map(x=>`${x.d}　${f(x.a)}`),'','【代墊】',...A.map(x=>`${x.d}　${x.item}　${f(x.amount)}`),'',`月結小計　${f(mt)}`,`代墊小計　${f(at)}`,`請款總計　${f(mt+at)}`];try{await navigator.clipboard.writeText(L.join('\n'));alert('已複製')}catch(e){alert(L.join('\n'))}}
 $('makeMonth').onclick=()=>{let R=mrows();monthRows=R;if(!R.length)return alert('此區間無日結');let sum=k=>R.reduce((a,x)=>a+n(x[k]),0),p=sum('pos'),g=sum('gross');['mSum','mDays','claims'].forEach(i=>$(i).classList.remove('hide'));$('mr').textContent=`${$('ms').value} ～ ${$('me').value}｜${R.length} 個日結`;$('mp').textContent=f(p);$('ml').textContent=f(sum('lunchPay'));$('mst').textContent=f(sum('store'));$('ma').textContent=f(sum('actual'));$('mg').textContent=f(g);$('mm').textContent=(p?g/p*100:0).toFixed(2)+'%';$('mpark').textContent=f(sum('park'));$('mn').textContent=f(sum('net'));$('mRows').innerHTML=R.map(x=>`<tr><td>${x.date}</td><td class="num">${f(x.pos)}</td><td class="num">${f(x.lunchPay)}</td><td class="num">${f(x.actual)}</td><td class="num">${f(x.gross)}</td><td class="num">${f(x.net)}</td></tr>`).join('');claims(R)}
 $('expMonth').onclick=()=>{let R=monthRows.length?monthRows:mrows();if(!R.length)return alert('先產生月報');dl(`Analyzer-${$('ms').value}-${$('me').value}-月報.csv`,makeCSV([['日期','POS','便當店','福利社營業額','實際收到','毛利','毛利率','淨收入'],...R.map(x=>[x.date,x.pos,x.lunchPay,x.store,x.actual,x.gross,x.margin.toFixed(2)+'%',x.net])]))}
-$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
-function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
+$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:''};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
+
+function parseStockText(t){
+  const out={};
+  String(t||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
+    const m=line.match(/^(.+?)\s+(-?\d+(?:\.\d+)?)$/);
+    if(m) out[q(m[1])]=n(m[2]);
+  });
+  return out;
+}
+
+function compareInventory(actual){
+  const names=[...new Set([...Object.keys(INV.items||{}),...Object.keys(actual||{})])].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  return names.map(name=>{
+    const system=n(INV.items[name]);
+    const hasActual=Object.prototype.hasOwnProperty.call(actual,name);
+    const actualQty=hasActual?n(actual[name]):null;
+    const diff=hasActual?actualQty-system:null;
+    return {name,system,actual:actualQty,diff};
+  });
+}
+function renderCompare(rows){
+  if(!rows||!rows.length){$('compareResult').innerHTML='<div class="note">尚無比對結果。</div>';return}
+  $('compareResult').innerHTML=`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th class="num">系統庫存</th><th class="num">實際盤點</th><th class="num">差異</th></tr></thead><tbody>${
+    rows.filter(x=>x.actual!==null).map(x=>`<tr><td>${e(x.name)}</td><td class="num">${x.system}</td><td class="num">${x.actual}</td><td class="num"><b style="color:${x.diff===0?'#315f4c':(x.diff<0?'#a33':'#8a6500')}">${x.diff>0?'+':''}${x.diff}</b></td></tr>`).join('')
+  }</tbody></table></div>`;
+}
+
+function renderStock(){
+  const rows=Object.entries(INV.items||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
+  $('stockBaseNote').textContent=INV.baseDate?`最近實際盤點基準：${INV.baseDate}${INV.lastSalesDate?'｜理論庫存已扣銷售至 '+INV.lastSalesDate:''}`:'尚未建立盤點基準';
+  $('stockTable').innerHTML=rows.length?`<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="note">尚無庫存資料</div>';
+  const logs=[...(INV.logs||[])].reverse();
+  $('stockLog').innerHTML=logs.length?logs.map(x=>{
+    if(x.type==='snapshot') return `<div class="list"><div class="grow"><b>${x.date} 實際盤點</b><div class="note">${e(x.note||'盤點基準')}</div></div><span class="pill">盤點</span></div>`;
+    if(x.type==='sales') return `<div class="list"><div class="grow"><b>${x.date} 日結銷售扣庫存</b><div class="note">${Object.entries(x.sales||{}).filter(([p])=>Object.prototype.hasOwnProperty.call(INV.items,p)).map(([p,qv])=>`${e(p)} -${qv}`).join('、')||'無可對應庫存商品'}</div></div><span class="pill">銷售</span></div>`;
+    return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜原 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}</div></div><span class="pill">+${x.qty}</span></div>`;
+  }).join(''):'<div class="note">尚無紀錄</div>';
+}
+$('saveStockSnapshot').onclick=()=>{
+  const x=parseStockText($('stockPaste').value);
+  if(!Object.keys(x).length) return alert('沒有辨識到盤點資料');
+  const d=$('stockDate').value||new Date().toISOString().slice(0,10);
+  INV.items=x;INV.baseDate=d;INV.logs.push({id:uid(),date:d,type:'snapshot',note:'手動實際盤點',items:{...x}});save();renderStock();alert('已儲存盤點基準');
+};
+$('addStockIn').onclick=()=>{
+  const product=q($('stockProduct').value),qty=n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value);
+  if(!product||qty<=0) return alert('請輸入商品與入庫數量');
+  const before=n(INV.items[product]),after=before+qty;
+  INV.items[product]=after;
+  INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note});
+  save();renderStock();
+  $('stockAfter').classList.remove('hide');
+  $('stockAfter').innerHTML=`<b>${e(product)}</b>：原庫存 ${before} ＋ 入庫 ${qty} ＝ <b>入庫後 ${after}</b>`;
+  $('stockQty').value=0;$('stockNote').value='';
+};
+$('exportStock').onclick=()=>{
+  dl('Analyzer-目前庫存.csv',makeCSV([['商品','目前數量'],...Object.entries(INV.items||{})]));
+};
+$('compareStockBtn').onclick=()=>{
+  const actual=parseStockText($('comparePaste').value);
+  if(!Object.keys(actual).length) return alert('沒有辨識到盤點資料');
+  currentCompare={date:$('stockDate').value||new Date().toISOString().slice(0,10),actual,rows:compareInventory(actual)};
+  renderCompare(currentCompare.rows);
+};
+$('adoptSnapshotBtn').onclick=()=>{
+  if(!currentCompare||!currentCompare.actual) return alert('請先按「比對庫存」');
+  if(!confirm('確定採用本次實際盤點為新的庫存基準？')) return;
+  INV.items={...currentCompare.actual};
+  INV.baseDate=currentCompare.date;
+  INV.lastSalesDate=currentCompare.date;
+  INV.logs.push({id:uid(),date:currentCompare.date,type:'snapshot',note:'盤點比對後採用為新基準',items:{...currentCompare.actual}});
+  save();renderStock();alert('已採用本次盤點為新基準');
+};
+
+
+function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock')renderStock();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
 window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;
-function init(){renderSet();renderAdv();renderTopups();renderHist();period(0);fl()}init();
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';renderSet();renderAdv();renderTopups();renderHist();renderStock();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
