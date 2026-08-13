@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.6</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.8</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.6</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.8</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -46,7 +46,7 @@
 </div>
 <div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
-const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:92},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
+const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
 let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
 /* V2.3 一次性修正：
    - 民哥目前正確預付餘額 = 92
@@ -323,7 +323,47 @@ function applyInventorySales(day,direction){
   });
 }
 
-async function calc(){let R=await read('rf'),I=await read('if');if(!R||!I)return alert('請上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betelCsv===0?Math.max(0,betel)*S.cost.betel:0,cost=base+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=n($('recover').value),unp=Knd.unpaid+n($('unpaid').value),topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={};S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0);pre[x.name]={id:x.id,open:n(x.bal),use,add,close:n(x.bal)-use+add}});cur={date:(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10),pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,net:g-park,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc},salesByProduct:inventorySalesFromItems(I),extra:{es,ec,ep:ep?.id||'',manualUnpaid:n($('unpaid').value)}};renderCalc()}
+
+function prepaidOpening(payment,date){
+  // 找「目前要結算日期之前」最近一個已儲存日結的期末預付餘額。
+  const prev=[...H]
+    .filter(x=>x.date<date)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+
+  for(const day of prev){
+    if(day.pre){
+      // 先用付款方式名稱找
+      if(day.pre[payment.name] && day.pre[payment.name].close!==undefined){
+        return n(day.pre[payment.name].close);
+      }
+      // 再用 payment id 找，避免名稱之後被修改
+      const hit=Object.values(day.pre).find(x=>x.id===payment.id && x.close!==undefined);
+      if(hit) return n(hit.close);
+    }
+  }
+  return n(payment.bal);
+}
+
+function refreshCurrentPrepaidBalances(){
+  // 目前餘額 = 每個預付帳戶最後一個已儲存日結的期末餘額。
+  S.pay.filter(p=>p.kind==='prepaid').forEach(p=>{
+    const days=[...H].sort((a,b)=>b.date.localeCompare(a.date));
+    for(const day of days){
+      if(!day.pre) continue;
+      if(day.pre[p.name]?.close!==undefined){
+        p.bal=n(day.pre[p.name].close);
+        return;
+      }
+      const hit=Object.values(day.pre).find(x=>x.id===p.id && x.close!==undefined);
+      if(hit){
+        p.bal=n(hit.close);
+        return;
+      }
+    }
+  });
+}
+
+async function calc(){let R=await read('rf'),I=await read('if');if(!R||!I)return alert('請上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betelCsv===0?Math.max(0,betel)*S.cost.betel:0,cost=base+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=n($('recover').value),unp=Knd.unpaid+n($('unpaid').value),topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={},reportDate=(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10);S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0),opening=prepaidOpening(x,reportDate);pre[x.name]={id:x.id,open:opening,use,add,close:opening-use+add}});cur={date:reportDate,pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,net:g-park,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc},salesByProduct:inventorySalesFromItems(I),extra:{es,ec,ep:ep?.id||'',manualUnpaid:n($('unpaid').value)}};renderCalc()}
 function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔補正',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['淨收入',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`}
 $('calcBtn').onclick=calc;$('lunchBtn').onclick=async()=>{let R=await read('rf'),I=await read('if');if(!R||!I)return alert('便當清單需要兩份 CSV');$('lunchText').textContent=lunchTxt(R,I);$('lunchBox').classList.remove('hide')};$('copyLunch').onclick=async()=>{try{await navigator.clipboard.writeText($('lunchText').textContent);alert('已複製')}catch(e){alert('請長按文字複製')}}
 $('saveDay').onclick=()=>{
@@ -334,17 +374,13 @@ $('saveDay').onclick=()=>{
   // 若同一天是修正版，先把舊版銷售數量加回目前理論庫存。
   if(old?.inventoryApplied) applyInventorySales(old,+1);
 
-  // 預付餘額覆蓋舊日結時先回復舊開帳餘額。
-  if(old?.pre) Object.values(old.pre).forEach(x=>{
-    let p=S.pay.find(z=>z.id===x.id);
-    if(p)p.bal=x.open;
-  });
-
-  S.pay.filter(x=>x.kind==='prepaid').forEach(p=>{
+  // 預付：期初一律取「前一個已儲存日結」的期末，不直接用目前餘額。
+  // 因此重新跑 8/13 時會正確得到 8/12 期末 392，再扣 8/13 使用 300 = 92。
+  S.pay.filter(p=>p.kind==='prepaid').forEach(p=>{
     let use=cur.pay[p.name]||0,
-        add=topups.filter(t=>t.paymentId===p.id).reduce((a,t)=>a+n(t.amount),0);
-    cur.pre[p.name]={id:p.id,open:n(p.bal),use,add,close:n(p.bal)-use+add};
-    p.bal=cur.pre[p.name].close;
+        add=topups.filter(t=>t.paymentId===p.id).reduce((a,t)=>a+n(t.amount),0),
+        opening=prepaidOpening(p,cur.date);
+    cur.pre[p.name]={id:p.id,open:opening,use,add,close:opening-use+add};
   });
 
   cur.adv=JSON.parse(JSON.stringify(adv));
@@ -366,6 +402,7 @@ $('saveDay').onclick=()=>{
   H=H.filter(x=>x.date!==cur.date);
   H.push(cur);
   H.sort((a,b)=>a.date.localeCompare(b.date));
+  refreshCurrentPrepaidBalances();
   save();
   renderHist();renderSet();renderStock();
   alert('已儲存 '+cur.date+' 日結，並自動扣除當日商品銷售庫存');
@@ -460,5 +497,49 @@ $('adoptSnapshotBtn').onclick=()=>{
 
 function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock')renderStock();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
 window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';renderSet();renderAdv();renderTopups();renderHist();renderStock();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+
+function repairHistoricalDays(){
+  // 每次啟動都逐日檢查；「只補缺少的日期」，絕不覆蓋已存在的日結。
+  const seeds=[
+    {date:'2026-08-04',pos:5915,lunchPay:1810,store:4105,actual:3250,gross:1519.9741379310344,margin:25.69694231497945,park:190,net:1329.9741379310344,
+     pay:{'Cash':5060,'月結(盛閎)':510,'預付(民哥)':345},
+     pre:{'預付(民哥)':{id:'min',open:1472,use:345,add:0,close:1127}},adv:[],topups:[],topupTotal:0,rec:0,unp:0,base:4121,cost:4395.025862068966,
+     cons:{cp:25,ca:1,bp:7,ba:8,cup:26,bag:8,cc:9.75,bc:16,btc:248.27586206896552},extra:{es:0,ec:0,ep:'',manualUnpaid:0}},
+    {date:'2026-08-06',pos:6745,lunchPay:2950,store:3795,actual:2985,gross:1508.866379310345,margin:22.370146468648556,park:190,net:1318.866379310345,
+     pay:{'Cash':5935,'月結(盛閎)':475,'預付(民哥)':335},
+     pre:{'預付(民哥)':{id:'min',open:1127,use:335,add:0,close:792}},adv:[],topups:[],topupTotal:0,rec:0,unp:0,base:5143,cost:5236.133620689655,
+     cons:{cp:13,ca:4,bp:13,ba:2,cup:17,bag:2,cc:6.375,bc:4,btc:82.75862068965517},extra:{es:0,ec:0,ep:'',manualUnpaid:0}},
+    {date:'2026-08-07',pos:4505,lunchPay:2040,store:2465,actual:2180,gross:1056.5560344827586,margin:23.4529641394619,park:190,net:866.5560344827586,
+     pay:{'Cash':4220,'月結(盛閎)':285},
+     pre:{'預付(民哥)':{id:'min',open:792,use:0,add:0,close:792}},adv:[],topups:[],topupTotal:0,rec:0,unp:0,base:3377,cost:3448.4439655172414,
+     cons:{cp:6,ca:3,bp:9,ba:3,cup:9,bag:3,cc:3.375,bc:6,btc:62.06896551724138},extra:{es:0,ec:0,ep:'',manualUnpaid:0}},
+    {date:'2026-08-10',pos:6180,lunchPay:1470,store:4710,actual:3705,gross:1535.9137931034484,margin:24.852973998437676,park:190,net:1345.9137931034484,
+     pay:{'Cash':5480,'月結(盛閎)':285,'預付(民哥)':280,'月結(消防)':135},
+     pre:{'預付(民哥)':{id:'min',open:792,use:280,add:0,close:512}},adv:[],topups:[],topupTotal:0,rec:0,unp:305,base:4396,cost:4644.086206896552,
+     cons:{cp:25,ca:3,bp:10,ba:5,cup:28,bag:5,cc:10.5,bc:10,btc:227.58620689655174},extra:{es:135,ec:95,ep:'fire',manualUnpaid:305}},
+    {date:'2026-08-12',pos:4975,lunchPay:2060,store:2915,actual:2530,gross:939.1206896551726,margin:18.87679778201352,park:190,net:749.1206896551726,
+     pay:{'Cash':4285,'月結(盛閎)':570,'預付(民哥)':120},
+     pre:{'預付(民哥)':{id:'min',open:512,use:120,add:0,close:392}},adv:[],topups:[],topupTotal:0,rec:305,unp:0,base:3984,cost:4035.8793103448274,
+     cons:{cp:8,ca:4,bp:6,ba:3,cup:12,bag:3,cc:4.5,bc:6,btc:41.37931034482759},extra:{es:0,ec:0,ep:'',manualUnpaid:0}},
+    {date:'2026-08-13',pos:8160,lunchPay:3100,store:5060,actual:4290,gross:1726.4870689655172,margin:21.15792976673428,park:190,net:1536.4870689655172,
+     pay:{'Cash':7145,'月結(消防)':135,'月結(盛閎)':335,'轉帳(北富銀)':245,'預付(民哥)':300},
+     pre:{'預付(民哥)':{id:'min',open:392,use:300,add:0,close:92}},adv:[],topups:[],topupTotal:0,rec:0,unp:0,base:6291,cost:6433.512931034483,
+     cons:{cp:14,ca:3,bp:15,ba:6,cup:17,bag:6,cc:6.375,bc:12,btc:124.13793103448276},extra:{es:0,ec:0,ep:'',manualUnpaid:0}}
+  ];
+
+  let changed=false;
+  seeds.forEach(day=>{
+    if(!H.some(x=>x.date===day.date)){
+      H.push(JSON.parse(JSON.stringify(day)));
+      changed=true;
+    }
+  });
+  H.sort((a,b)=>a.date.localeCompare(b.date));
+  if(changed){
+    refreshCurrentPrepaidBalances();
+    save();
+  }
+}
+
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';repairHistoricalDays();refreshCurrentPrepaidBalances();renderSet();renderAdv();renderTopups();renderHist();renderStock();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
