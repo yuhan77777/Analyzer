@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.9</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.10</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.9</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.10</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -33,8 +33,8 @@
 <section id="stock" class="tab"><div class="grid">
 <div class="card half"><h3>📦 目前庫存基準</h3><div class="note">可直接貼下班實際盤點。每行：「商品名稱 數量」。儲存後會成為新的實際庫存基準。</div><textarea id="stockPaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="saveStockSnapshot">儲存盤點基準</button></div></div>
 <div class="card half"><h3>➕ 新增進貨</h3><label>日期</label><input id="stockDate" type="date"><label>商品</label><input id="stockProduct" type="text" placeholder="例如：金牌"><label>入庫數量（瓶／包）</label><input id="stockQty" type="number" value="0" step="1"><label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：4箱×24瓶"><div class="actions"><button id="addStockIn">入庫</button></div><div id="stockAfter" class="banner hide"></div></div>
-<div class="card"><div class="top"><div><h3 style="margin:0">目前庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTable"></div></div>
-<div class="card half"><h3>🔍 實際盤點比對</h3><div class="note">貼入本次實際盤點，每行「商品名稱 數量」。Analyzer 會跟目前系統理論庫存比較。</div><textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="compareStockBtn">比對庫存</button><button class="alt" id="adoptSnapshotBtn">採用本次盤點為新基準</button></div><div id="compareResult"></div></div>
+<div class="card"><div class="top"><div><h3 id="stockTheoryTitle" style="margin:0">目前理論庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTheoryStatus" class="banner" style="margin-top:10px"></div><div id="stockTable"></div></div>
+<div class="card half"><h3>🔍 實際盤點比對</h3><div class="note">貼入本次實際盤點，每行「商品名稱 數量」。Analyzer 會拿妳的實盤，直接跟「目前理論庫存」比較。</div><textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="compareStockBtn">比對庫存</button><button class="alt" id="adoptSnapshotBtn">採用本次盤點為新基準</button></div><div id="compareResult"></div></div>
 <div class="card half"><h3>進貨紀錄</h3><div id="stockLog"></div></div>
 </div></section>
 
@@ -495,8 +495,17 @@ function renderCompare(rows){
 
 function renderStock(){
   const rows=Object.entries(INV.items||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
-  $('stockBaseNote').textContent=INV.baseDate?`最近實際盤點基準：${INV.baseDate}${INV.lastSalesDate?'｜理論庫存已扣銷售至 '+INV.lastSalesDate:''}`:'尚未建立盤點基準';
-  $('stockTable').innerHTML=rows.length?`<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="note">尚無庫存資料</div>';
+  const asOf=INV.lastSalesDate||INV.baseDate||'尚未建立';
+  $('stockTheoryTitle').textContent=`目前理論庫存（截至 ${asOf}）`;
+  $('stockBaseNote').textContent=INV.baseDate
+    ? `計算基準：${INV.baseDate} 下班實際盤點${INV.lastSalesDate?`｜之後已加入進貨並扣銷售至 ${INV.lastSalesDate}`:''}`
+    : '尚未建立實際盤點基準';
+  $('stockTheoryStatus').innerHTML=INV.baseDate
+    ? `<b>這裡顯示的不是 ${INV.baseDate} 原始盤點數量。</b><br>目前數量＝最近實際盤點基準＋之後進貨－之後淨銷售。明天下班盤點時，直接拿這欄跟實際數量比。`
+    : `請先建立一次實際盤點基準。`;
+  $('stockTable').innerHTML=rows.length
+    ? `<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前理論數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`
+    : '<div class="note">尚無庫存資料</div>';
   const logs=[...(INV.logs||[])].reverse();
   $('stockLog').innerHTML=logs.length?logs.map(x=>{
     if(x.type==='snapshot') return `<div class="list"><div class="grow"><b>${x.date} 實際盤點</b><div class="note">${e(x.note||'盤點基準')}</div></div><span class="pill">盤點</span></div>`;
@@ -522,7 +531,7 @@ $('addStockIn').onclick=()=>{
   $('stockQty').value=0;$('stockNote').value='';
 };
 $('exportStock').onclick=()=>{
-  dl('Analyzer-目前庫存.csv',makeCSV([['商品','目前數量'],...Object.entries(INV.items||{})]));
+  dl('Analyzer-目前理論庫存.csv',makeCSV([['商品','目前數量'],...Object.entries(INV.items||{})]));
 };
 $('compareStockBtn').onclick=()=>{
   const actual=parseStockText($('comparePaste').value);
