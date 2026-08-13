@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.10</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.12</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.10</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.12</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -32,7 +32,24 @@
 
 <section id="stock" class="tab"><div class="grid">
 <div class="card half"><h3>📦 目前庫存基準</h3><div class="note">可直接貼下班實際盤點。每行：「商品名稱 數量」。儲存後會成為新的實際庫存基準。</div><textarea id="stockPaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="saveStockSnapshot">儲存盤點基準</button></div></div>
-<div class="card half"><h3>➕ 新增進貨</h3><label>日期</label><input id="stockDate" type="date"><label>商品</label><input id="stockProduct" type="text" placeholder="例如：金牌"><label>入庫數量（瓶／包）</label><input id="stockQty" type="number" value="0" step="1"><label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：4箱×24瓶"><div class="actions"><button id="addStockIn">入庫</button></div><div id="stockAfter" class="banner hide"></div></div>
+<div class="card half"><h3>➕ 新增進貨</h3>
+<label>日期</label><input id="stockDate" type="date">
+
+<label>快速貼上叫貨明細</label>
+<textarea id="stockOrderPaste" rows="7" placeholder="大保*2&#10;伯朗*1&#10;藍山*1&#10;Peace 6號*2&#10;七星(濃)*1&#10;阿咧*1"></textarea>
+<div class="note">一般商品「*1」＝1箱；香菸「*1」＝1條＝10包。庫存仍以瓶／包計算。</div>
+<div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
+<div id="stockOrderPreview"></div>
+
+<div style="height:1px;background:var(--b);margin:14px 0"></div>
+<h4 style="margin:0 0 8px">單筆補登入庫</h4>
+<label>商品</label><select id="stockProduct"></select>
+<label>進貨單位</label><select id="stockUnit"></select>
+<label id="stockQtyLabel">數量</label><input id="stockQty" type="number" value="0" step="1">
+<div id="stockUnitHelp" class="note"></div>
+<label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
+<div class="actions"><button id="addStockIn">入庫</button></div>
+<div id="stockAfter" class="banner hide"></div></div>
 <div class="card"><div class="top"><div><h3 id="stockTheoryTitle" style="margin:0">目前理論庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTheoryStatus" class="banner" style="margin-top:10px"></div><div id="stockTable"></div></div>
 <div class="card half"><h3>🔍 實際盤點比對</h3><div class="note">貼入本次實際盤點，每行「商品名稱 數量」。Analyzer 會拿妳的實盤，直接跟「目前理論庫存」比較。</div><textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="compareStockBtn">比對庫存</button><button class="alt" id="adoptSnapshotBtn">採用本次盤點為新基準</button></div><div id="compareResult"></div></div>
 <div class="card half"><h3>進貨紀錄</h3><div id="stockLog"></div></div>
@@ -467,6 +484,91 @@ $('makeMonth').onclick=()=>{let R=mrows();monthRows=R;if(!R.length)return alert(
 $('expMonth').onclick=()=>{let R=monthRows.length?monthRows:mrows();if(!R.length)return alert('先產生月報');dl(`Analyzer-${$('ms').value}-${$('me').value}-月報.csv`,makeCSV([['日期','POS','便當店','福利社營業額','實際收到','毛利','毛利率','淨收入'],...R.map(x=>[x.date,x.pos,x.lunchPay,x.store,x.actual,x.gross,x.margin.toFixed(2)+'%',x.net])]))}
 $('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:''};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
 
+
+const STOCK_RULES={
+  '大保':{base:'罐',pack:'箱',size:12},
+  '小保':{base:'罐',pack:'箱',size:24},
+  '伯朗咖啡':{base:'罐',pack:'箱',size:24},
+  '藍山咖啡':{base:'罐',pack:'箱',size:24},
+  '阿咧':{base:'罐',pack:'箱',size:24},
+  '金牌':{base:'罐',pack:'箱',size:24},
+  'Bar':{base:'罐',pack:'箱',size:24},
+  '海尼根':{base:'罐',pack:'箱',size:24},
+  '日式無糖綠茶':{base:'瓶',pack:'箱',size:24},
+  '礦泉水(小)':{base:'瓶',pack:'箱',size:24},
+  'Peace 6號':{base:'包',pack:'條',size:10,cig:true},
+  '七星(濃)':{base:'包',pack:'條',size:10,cig:true},
+  '七星(中淡)':{base:'包',pack:'條',size:10,cig:true},
+  '藍M':{base:'包',pack:'條',size:10,cig:true},
+  '峰(金)':{base:'包',pack:'條',size:10,cig:true}
+};
+const STOCK_ALIASES={
+  '伯朗':'伯朗咖啡','藍山':'藍山咖啡','peace 6號':'Peace 6號','peace6號':'Peace 6號',
+  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)'
+};
+let pendingStockOrder=[];
+
+function canonicalStockName(name){
+  const raw=q(name), key=raw.toLowerCase().replace(/\s+/g,' ');
+  return STOCK_ALIASES[key] || STOCK_ALIASES[raw] || raw;
+}
+function stockRule(name){
+  const p=canonicalStockName(name);
+  if(STOCK_RULES[p]) return STOCK_RULES[p];
+  // 尚未建立箱規時，仍能用「瓶／包」單筆入庫；快速叫貨不亂猜。
+  return null;
+}
+function stockPackLabel(name){
+  const r=stockRule(name);
+  return r ? `${r.pack}（1${r.pack}＝${r.size}${r.base}）` : '尚未設定箱規';
+}
+function refreshStockProductSelect(){
+  if(!$('stockProduct')) return;
+  const names=[...new Set([...Object.keys(INV.items||{}),...Object.keys(STOCK_RULES)])].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  $('stockProduct').innerHTML=names.map(x=>`<option value="${e(x)}">${e(x)}</option>`).join('');
+  refreshStockUnitSelect();
+}
+function refreshStockUnitSelect(){
+  if(!$('stockProduct')||!$('stockUnit')) return;
+  const product=q($('stockProduct').value);
+  const r=stockRule(product);
+
+  if(r?.cig){
+    $('stockUnit').innerHTML='<option value="package">條</option><option value="base">包</option>';
+    $('stockQtyLabel').textContent='數量（條／包）';
+    $('stockUnitHelp').textContent=`例如：選「條」填 1 = 1條 = ${r.size}包；選「包」填 10 = 10包。`;
+  }else if(r){
+    $('stockUnit').innerHTML='<option value="package">箱</option><option value="base">'+r.base+'</option>';
+    $('stockQtyLabel').textContent=`數量（箱／${r.base}）`;
+    $('stockUnitHelp').textContent=`例如：選「箱」填 1 = 1箱 = ${r.size}${r.base}；選「${r.base}」填 ${r.size} = ${r.size}${r.base}。`;
+  }else{
+    $('stockUnit').innerHTML='<option value="base">單位數</option>';
+    $('stockQtyLabel').textContent='數量';
+    $('stockUnitHelp').textContent='此商品尚未設定箱規，只能直接輸入實際數量。';
+  }
+}
+function parseStockOrderText(text){
+  const result=[],errors=[];
+  String(text||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach((line,idx)=>{
+    // 支援：大保*2、大保 ×2、大保x2
+    const m=line.match(/^(.+?)\s*[\*xX×]\s*(\d+(?:\.\d+)?)\s*$/);
+    if(!m){errors.push(`第 ${idx+1} 行無法辨識：${line}`);return}
+    const product=canonicalStockName(m[1]);
+    const packs=n(m[2]);
+    const rule=stockRule(product);
+    if(!rule){errors.push(`${product} 尚未設定 1箱／1條 的數量`);return}
+    result.push({
+      product,packs,
+      packUnit:rule.pack,
+      baseUnit:rule.base,
+      packSize:rule.size,
+      qty:packs*rule.size,
+      note:`${packs}${rule.pack}×${rule.size}${rule.base}`
+    });
+  });
+  return {result,errors};
+}
+
 function parseStockText(t){
   const out={};
   String(t||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
@@ -494,6 +596,7 @@ function renderCompare(rows){
 }
 
 function renderStock(){
+  refreshStockProductSelect();
   const rows=Object.entries(INV.items||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
   const asOf=INV.lastSalesDate||INV.baseDate||'尚未建立';
   $('stockTheoryTitle').textContent=`目前理論庫存（截至 ${asOf}）`;
@@ -519,15 +622,50 @@ $('saveStockSnapshot').onclick=()=>{
   const d=$('stockDate').value||new Date().toISOString().slice(0,10);
   INV.items=x;INV.baseDate=d;INV.logs.push({id:uid(),date:d,type:'snapshot',note:'手動實際盤點',items:{...x}});save();renderStock();alert('已儲存盤點基準');
 };
-$('addStockIn').onclick=()=>{
-  const product=q($('stockProduct').value),qty=n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value);
-  if(!product||qty<=0) return alert('請輸入商品與入庫數量');
-  const before=n(INV.items[product]),after=before+qty;
-  INV.items[product]=after;
-  INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note});
+$('parseStockOrder').onclick=()=>{
+  const parsed=parseStockOrderText($('stockOrderPaste').value);
+  pendingStockOrder=parsed.result;
+  const rows=pendingStockOrder.map(x=>{
+    const before=n(INV.items[x.product]),after=before+x.qty;
+    return `<tr><td>${e(x.product)}</td><td>${x.packs}${x.packUnit}</td><td class="num">+${x.qty}${x.baseUnit}</td><td class="num">${before} → <b>${after}</b></td></tr>`;
+  }).join('');
+  $('stockOrderPreview').innerHTML=
+    (parsed.errors.length?`<div class="banner" style="color:#a33">${parsed.errors.map(e).join('<br>')}</div>`:'')+
+    (rows?`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th>叫貨</th><th class="num">換算入庫</th><th class="num">入庫後</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
+  $('confirmStockOrder').disabled=!pendingStockOrder.length || parsed.errors.length>0;
+};
+$('confirmStockOrder').onclick=()=>{
+  if(!pendingStockOrder.length)return alert('請先解析進貨');
+  const date=$('stockDate').value||new Date().toISOString().slice(0,10);
+  pendingStockOrder.forEach((x,idx)=>{
+    const before=n(INV.items[x.product]),after=before+x.qty;
+    INV.items[x.product]=after;
+    INV.logs.push({id:uid(),date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit});
+  });
   save();renderStock();
   $('stockAfter').classList.remove('hide');
-  $('stockAfter').innerHTML=`<b>${e(product)}</b>：原庫存 ${before} ＋ 入庫 ${qty} ＝ <b>入庫後 ${after}</b>`;
+  $('stockAfter').innerHTML=`已完成 ${pendingStockOrder.length} 項進貨，庫存已更新。`;
+  $('stockOrderPaste').value='';$('stockOrderPreview').innerHTML='';pendingStockOrder=[];$('confirmStockOrder').disabled=true;
+};
+$('addStockIn').onclick=()=>{
+  const product=q($('stockProduct').value),rawQty=n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value),unit=$('stockUnit').value;
+  if(!product||rawQty<=0)return alert('請輸入商品與數量');
+  let qty=rawQty,displayNote=note;
+  if(unit==='package'){
+    const r=stockRule(product);
+    if(!r)return alert(product+' 尚未設定箱規，請改用實際數量入庫');
+    qty=rawQty*r.size;
+    displayNote=(note?note+'｜':'')+`${rawQty}${r.pack}×${r.size}${r.base}`;
+  }
+  const before=n(INV.items[product]),after=before+qty;
+  INV.items[product]=after;
+  INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note:displayNote});
+  save();renderStock();
+  $('stockAfter').classList.remove('hide');
+  const r=stockRule(product);
+  const baseLabel=r?.base||'個';
+  const unitText=unit==='package'&&r?`${rawQty}${r.pack}＝${qty}${r.base}`:`${rawQty}${baseLabel}`;
+  $('stockAfter').innerHTML=`<b>${e(product)}</b>：原庫存 ${before}${baseLabel} ＋ 入庫 ${unitText} ＝ <b>入庫後 ${after}${baseLabel}</b>`;
   $('stockQty').value=0;$('stockNote').value='';
 };
 $('exportStock').onclick=()=>{
@@ -551,7 +689,7 @@ $('adoptSnapshotBtn').onclick=()=>{
 
 
 function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock')renderStock();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
-window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;
+window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;if($('stockProduct'))$('stockProduct').onchange=refreshStockUnitSelect;
 
 
 function repairSpecialRecordsV29(){
@@ -616,5 +754,5 @@ function repairHistoricalDays(){
   }
 }
 
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';repairHistoricalDays();repairSpecialRecordsV29();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';repairHistoricalDays();repairSpecialRecordsV29();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
