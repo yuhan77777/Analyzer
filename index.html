@@ -1,15 +1,15 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.1</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.2</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.1</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.2</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
 <div class="card half"><h3>① Loyverse CSV</h3><label>收據 CSV</label><div class="row"><input id="rf" type="file" accept=".csv"><button class="alt sm" onclick="clearF('rf','rn')">刪除</button></div><div id="rn" class="note">尚未選擇</div><label>按商品收貨 CSV</label><div class="row"><input id="if" type="file" accept=".csv"><button class="alt sm" onclick="clearF('if','in')">刪除</button></div><div id="in" class="note">尚未選擇</div><div class="actions"><button id="lunchBtn">🍱 便當店清單</button><button id="calcBtn">開始結算</button></div><div class="note">便當店資料＝「類別：便當」。退款會把對應原銷售一起排除。</div></div>
 <div class="card half"><h3>② 特殊調整</h3><div class="grid" style="margin-top:0"><div class="half"><label>停車費</label><input id="park" type="number" value="190"></div><div class="half"><label>以前未收款今天收回</label><input id="recover" type="number" value="0"></div><div class="half"><label>今天未收款</label><input id="unpaid" type="number" value="0"></div><div class="half"><label>補登付款方式</label><select id="extraPay"></select></div><div class="half"><label>補登銷售額</label><input id="extraSale" type="number" value="0"></div><div class="half"><label>補登成本</label><input id="extraCost" type="number" value="0"></div></div></div>
-<div id="lunchBox" class="card hide"><div class="top"><div><h3 style="margin:0">🍱 便當店清單</h3><div class="note">單點、湯列出但不計總數；其他「便當類別」商品計入總數。</div></div><button class="alt" id="copyLunch">複製</button></div><pre id="lunchText"></pre></div>
+<div id="lunchBox" class="card hide"><div class="top"><div><h3 style="margin:0">🍱 便當店清單</h3><div class="note">「便當」類別全部列出；總數只計便當、麵、水餃、滷肉飯。單點、湯、滷蛋等不計數。</div></div><button class="alt" id="copyLunch">複製</button></div><pre id="lunchText"></pre></div>
 <div class="card half"><h3>③ 今日耗材調整</h3><div class="note">只在漏按／修正時用＋－；啤酒貼紙已由 Loyverse 綁定，不在這裡。</div><div class="list"><div class="grow"><b>免洗杯</b><div id="cupInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('cup',-1)">−</button><b id="cupAdj">0</b><button onclick="adj('cup',1)">＋</button></div></div><div class="list"><div class="grow"><b>黑色塑膠袋</b><div id="bagInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('bag',-1)">−</button><b id="bagAdj">0</b><button onclick="adj('bag',1)">＋</button></div></div></div>
 <div class="card half"><div class="top"><div><h3 style="margin:0">④ 今日代墊請款</h3><div class="note">不影響 POS／成本／毛利／實收，只進請款。</div></div><button class="sm" id="addAdv">＋新增</button></div><div id="advList" class="note">今天尚無代墊。</div></div>
 <div class="card half"><div class="top"><div><h3 style="margin:0">⑤ 今日新增預付款</h3><div class="note">今天新收到的預付款：增加預付餘額，也增加「實際收到」，但不增加 POS、營業額、毛利、淨收入。</div></div><button class="sm" id="addTopup">＋新增預付</button></div><div id="topupList" class="note">今天尚無新增預付款。</div></div>
@@ -44,9 +44,132 @@ function save(){localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem
 function n(v){let x=parseFloat(String(v??'').replace(/,/g,''));return isFinite(x)?x:0}function f(v){return '$'+n(v).toLocaleString('zh-TW',{maximumFractionDigits:2})}function q(s){return String(s??'').trim()}function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function csv(t){let R=[],r=[],c='',z=false;for(let i=0;i<t.length;i++){let x=t[i],y=t[i+1];if(x=='"'){if(z&&y=='"'){c+='"';i++}else z=!z}else if(x==','&&!z){r.push(c);c=''}else if((x=='\n'||x=='\r')&&!z){if(x=='\r'&&y=='\n')i++;r.push(c);c='';if(r.some(v=>v!==''))R.push(r);r=[]}else c+=x}if(c||r.length){r.push(c);R.push(r)}if(!R.length)return[];let h=R[0].map(q);return R.slice(1).map(x=>Object.fromEntries(h.map((k,i)=>[k,q(x[i]??'')])))}async function read(id){let x=$(id).files[0];return x?csv(await x.text()):null}
 function dtime(s){return new Date(String(s).replace(' ','T'))}
-function active(R){let s=[];[...R].sort((a,b)=>dtime(a['日期'])-dtime(b['日期'])).forEach(r=>{if(q(r['收據類型'])==='銷售')s.push({...r,c:false});else if(q(r['收據類型'])==='退款'){let a=Math.abs(n(r['淨銷售額'])),d=q(r['描述']),p=q(r['付款方式']);for(let i=s.length-1;i>=0;i--){let x=s[i];if(!x.c&&Math.abs(n(x['淨銷售額']))===a&&q(x['描述'])===d&&q(x['付款方式'])===p){x.c=true;break}}}});return s.filter(x=>!x.c)}
-function lunch(R,I){let ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),tm=Object.fromEntries(ac.map(x=>[q(x['收據號碼']),x['日期']])),g={};I.filter(x=>q(x['收據類型'])==='銷售'&&q(x['類別'])==='便當'&&nos.has(q(x['收據號碼']))).forEach(x=>(g[q(x['收據號碼'])]??=[]).push({item:q(x['商品']),qty:n(x['數量'])}));let o=Object.entries(g).sort((a,b)=>dtime(tm[a[0]])-dtime(tm[b[0]])).map(([no,x])=>({no,items:x})),ct=0;o.forEach(x=>x.items.forEach(y=>{if(!/單點|湯/.test(y.item))ct+=y.qty}));return{o,ct,date:(ac[0]?.['日期']||I[0]?.['日期']||'').slice(0,10)}}
-function lunchTxt(R,I){let x=lunch(R,I),L=[`🍱 ${x.date||'今日'} 便當訂單`,''];x.o.forEach((o,i)=>L.push(`${i+1}. `+o.items.map(y=>`${y.item} ×${y.qty}`).join('、'),''));L.push(`🍱 總計：${x.ct} 份`);return L.join('\n')}
+function active(R){
+  // 這個函式仍供其他結算用途使用：全額退款可對應原收據。
+  let s=[];
+  [...R].sort((a,b)=>dtime(a['日期'])-dtime(b['日期'])).forEach(r=>{
+    if(q(r['收據類型'])==='銷售'){
+      s.push({...r,c:false});
+    }else if(q(r['收據類型'])==='退款'){
+      let a=Math.abs(n(r['淨銷售額'])),d=q(r['描述']),p=q(r['付款方式']);
+      for(let i=s.length-1;i>=0;i--){
+        let x=s[i];
+        if(!x.c && Math.abs(n(x['淨銷售額']))===a && q(x['描述'])===d && q(x['付款方式'])===p){
+          x.c=true;break;
+        }
+      }
+    }
+  });
+  return s.filter(x=>!x.c);
+}
+
+/*
+  便當店清單的退款不能只靠「整張收據完全相同」判斷。
+  Loyverse 可能只退款一張單裡的其中一個品項，例如：
+  原單：牛腩×2、排骨×3、控肉×1
+  後來只退款：控肉×1
+  所以這裡改成「商品層級沖銷」：
+  1. 類別＝便當的銷售先建立每張訂單。
+  2. 遇到退款品項時，依 商品名稱＋付款方式，從退款時間之前最近的有效銷售往回扣數量。
+  3. 全額退款會使整張原訂單歸零；部分退款只移除被退的品項。
+*/
+function lunch(R,I){
+  const receiptInfo={};
+  R.forEach(r=>{
+    receiptInfo[q(r['收據號碼'])]={
+      date:r['日期'],
+      pay:q(r['付款方式']),
+      type:q(r['收據類型'])
+    };
+  });
+
+  const rows=I
+    .filter(x=>q(x['類別'])==='便當')
+    .sort((a,b)=>dtime(a['日期'])-dtime(b['日期']));
+
+  const orders=[];
+
+  rows.forEach(x=>{
+    const type=q(x['收據類型']);
+    const no=q(x['收據號碼']);
+    const item=q(x['商品']);
+    const qty=Math.abs(n(x['數量']));
+    const pay=receiptInfo[no]?.pay || '';
+    const when=x['日期'];
+
+    if(type==='銷售' && qty>0){
+      let order=orders.find(o=>o.no===no);
+      if(!order){
+        order={no,date:when,pay,items:[]};
+        orders.push(order);
+      }
+      let found=order.items.find(y=>y.item===item);
+      if(found) found.qty+=qty;
+      else order.items.push({item,qty});
+      return;
+    }
+
+    if(type==='退款' && qty>0){
+      let remain=qty;
+
+      // 從最近的原銷售往回沖銷；優先要求付款方式相同。
+      const candidates=orders
+        .filter(o=>dtime(o.date)<=dtime(when) && (!pay || !o.pay || o.pay===pay))
+        .sort((a,b)=>dtime(b.date)-dtime(a.date));
+
+      for(const o of candidates){
+        if(remain<=0) break;
+        const found=o.items.find(y=>y.item===item && y.qty>0);
+        if(!found) continue;
+        const deduct=Math.min(found.qty,remain);
+        found.qty-=deduct;
+        remain-=deduct;
+      }
+
+      // 若因舊資料付款名稱不一致仍未沖完，再不限制付款方式補找一次。
+      if(remain>0){
+        const fallback=orders
+          .filter(o=>dtime(o.date)<=dtime(when))
+          .sort((a,b)=>dtime(b.date)-dtime(a.date));
+        for(const o of fallback){
+          if(remain<=0) break;
+          const found=o.items.find(y=>y.item===item && y.qty>0);
+          if(!found) continue;
+          const deduct=Math.min(found.qty,remain);
+          found.qty-=deduct;
+          remain-=deduct;
+        }
+      }
+    }
+  });
+
+  const effective=orders
+    .map(o=>({...o,items:o.items.filter(x=>x.qty>0)}))
+    .filter(o=>o.items.length>0)
+    .sort((a,b)=>dtime(a.date)-dtime(b.date));
+
+  let ct=0;
+  effective.forEach(o=>o.items.forEach(y=>{
+    // 清單：類別＝便當全部列。
+    // 總數：只有「便當、麵、水餃、滷肉飯」計數。
+    // 單點、湯、滷蛋等只列清單、不計總數。
+    const countable=/便當|麵|水餃|滷肉飯/.test(y.item) && !/單點|湯/.test(y.item);
+    if(countable) ct+=y.qty;
+  }));
+
+  return {
+    o:effective,
+    ct,
+    date:(effective[0]?.date || rows[0]?.['日期'] || '').slice(0,10)
+  };
+}
+
+function lunchTxt(R,I){
+  let x=lunch(R,I),L=[`🍱 ${x.date||'今日'} 便當訂單`,''];
+  x.o.forEach((o,i)=>L.push(`${i+1}. `+o.items.map(y=>`${y.item} ×${y.qty}`).join('、'),''));
+  L.push(`🍱 總計：${x.ct} 份`);
+  return L.join('\n');
+}
 function pmap(){return Object.fromEntries(S.pay.map(x=>[x.name,x]))}function kl(k){return{cash:'現金',transfer:'轉帳',monthly:'月結',prepaid:'預付',unpaid:'未收款'}[k]||k}
 function renderSet(){let pm=pmap();$('extraPay').innerHTML=S.pay.map(x=>`<option value="${x.id}">${e(x.name)}｜${kl(x.kind)}</option>`).join('');$('cCup').value=S.cost.cup;$('cBag').value=S.cost.bag;$('cBetel').value=S.cost.betel;$('setPays').innerHTML=S.pay.map((x,i)=>`<div class="list"><div class="grow"><b>${e(x.name)}</b> <span class="pill">${kl(x.kind)}</span>${x.kind==='prepaid'?`<div class="note">目前餘額 ${f(x.bal)}</div>`:''}</div><button class="alt sm" onclick="editP(${i})">修改</button><button class="danger sm" onclick="delP(${i})">刪除</button></div>`).join('')}
 function openM(h){$('mb').innerHTML=h;$('modal').classList.remove('hide')}function closeM(){$('modal').classList.add('hide')}window.closeM=closeM;
