@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.12</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.14</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.12</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.14</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -51,6 +51,7 @@
 <div class="actions"><button id="addStockIn">入庫</button></div>
 <div id="stockAfter" class="banner hide"></div></div>
 <div class="card"><div class="top"><div><h3 id="stockTheoryTitle" style="margin:0">目前理論庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTheoryStatus" class="banner" style="margin-top:10px"></div><div id="stockTable"></div></div>
+<div class="card"><div class="top"><div><h3 style="margin:0">📲 Loyverse 待調整清單</h3><div class="note">進貨完成或盤點有落差時自動加入。盤點結果會覆蓋同商品較舊的待調整數字。</div></div><div class="actions"><button class="alt sm" id="copyLoyversePending">複製清單</button><button class="danger sm" id="clearLoyversePending">清空</button></div></div><div id="loyversePendingList"></div></div>
 <div class="card half"><h3>🔍 實際盤點比對</h3><div class="note">貼入本次實際盤點，每行「商品名稱 數量」。Analyzer 會拿妳的實盤，直接跟「目前理論庫存」比較。</div><textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea><div class="actions"><button id="compareStockBtn">比對庫存</button><button class="alt" id="adoptSnapshotBtn">採用本次盤點為新基準</button></div><div id="compareResult"></div></div>
 <div class="card half"><h3>進貨紀錄</h3><div id="stockLog"></div></div>
 </div></section>
@@ -64,7 +65,7 @@
 <div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
 const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
-let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
+let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{}}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
 /* V2.3 一次性修正：
    - 民哥目前正確預付餘額 = 92
    - 移除先前誤登的「今日新增預付 1000」
@@ -450,7 +451,17 @@ function dayAdjustments(x){
     rows.push({label:'補登成本',amount:n(x.extra.ec)});
   }
 
-  // 新增預付款也屬於特殊異動。
+  // 預付款：日結紀錄要看到「前次餘額、今日使用、今日新增、剩餘」。
+  if(x.pre){
+    Object.entries(x.pre).forEach(([name,p])=>{
+      rows.push({
+        label:`${name}｜前次 ${f(p.open)}｜今日使用 ${f(p.use)}｜今日新增 ${f(p.add||0)}｜剩餘`,
+        amount:n(p.close)
+      });
+    });
+  }
+
+  // 新增預付款明細仍保留。
   (x.topups||[]).forEach(t=>{
     rows.push({label:'新增預付 '+t.name,amount:n(t.amount)});
   });
@@ -463,7 +474,7 @@ function renderHist(){
     const adj=dayAdjustments(x);
     const detail=adj.length
       ? `<div class="note" style="margin-top:5px">${adj.map(a=>`• ${e(a.label)}：${f(a.amount)}`).join('<br>')}</div>`
-      : `<div class="note" style="margin-top:5px">特殊異動：無</div>`;
+      : `<div class="note" style="margin-top:5px">特殊異動／預付：無</div>`;
     return `<div class="list"><div class="grow"><b>${x.date}</b><div class="note">POS ${f(x.pos)}｜實收 ${f(x.actual)}｜淨收入 ${f(x.net)}</div>${detail}</div><button class="alt sm" onclick="viewD('${x.date}')">查看</button><button class="alt sm" onclick="editD('${x.date}')">修改</button><button class="danger sm" onclick="delD('${x.date}')">刪除</button></div>`;
   }).join(''):'<div class="note">尚無紀錄</div>'
 }
@@ -472,7 +483,7 @@ window.viewD=d=>{
       T=(x.topups||[]).map(t=>`<div class="list"><span>${e(t.name)}</span><b>+${f(t.amount)}</b></div>`).join(''),
       adj=dayAdjustments(x),
       AHTML=adj.length?adj.map(a=>`<div class="list"><span>${e(a.label)}</span><b>${f(a.amount)}</b></div>`).join(''):'<div class="note">無</div>';
-  openM(`<h3>${d} 日結</h3><div class="kpis"><div class="kpi"><small>POS</small><b>${f(x.pos)}</b></div><div class="kpi"><small>便當店</small><b>${f(x.lunchPay)}</b></div><div class="kpi"><small>實收</small><b>${f(x.actual)}</b></div><div class="kpi"><small>淨收入</small><b>${f(x.net)}</b></div></div><h4>特殊異動／補登</h4>${AHTML}<h4>新增預付款</h4>${T||'<div class="note">無</div>'}`)
+  openM(`<h3>${d} 日結</h3><div class="kpis"><div class="kpi"><small>POS</small><b>${f(x.pos)}</b></div><div class="kpi"><small>便當店</small><b>${f(x.lunchPay)}</b></div><div class="kpi"><small>實收</small><b>${f(x.actual)}</b></div><div class="kpi"><small>淨收入</small><b>${f(x.net)}</b></div></div><h4>特殊異動／補登／預付</h4>${AHTML}<h4>新增預付款</h4>${T||'<div class="note">無</div>'}`)
 }
 window.editD=d=>{let x=H.find(z=>z.date===d);adv=JSON.parse(JSON.stringify(x.adv||[]));topups=JSON.parse(JSON.stringify(x.topups||[]));A={cup:0,bag:0};$('park').value=x.park;$('recover').value=x.rec||0;$('unpaid').value=x.extra?.manualUnpaid||0;$('extraSale').value=x.extra?.es||0;$('extraCost').value=x.extra?.ec||0;renderAdv();renderTopups();sw('daily');$('editBanner').classList.remove('hide');$('editBanner').innerHTML=`正在修改 <b>${d}</b>：請重新上傳這一天最新 CSV，再結算並儲存。`}
 window.delD=d=>{if(confirm('確定刪除 '+d+'？')){H=H.filter(x=>x.date!==d);save();renderHist()}}
@@ -482,7 +493,18 @@ function claims(R){$('claimList').innerHTML=S.pay.filter(x=>x.kind==='monthly').
 window.copyC=async id=>{let p=S.pay.find(x=>x.id===id),c=client(p.name),R=monthRows,M=R.map(x=>({d:x.date,a:n(x.pay?.[p.name])})).filter(x=>x.a),A=R.flatMap(x=>(x.adv||[]).filter(a=>a.client===c||a.client===p.name).map(a=>({d:x.date,...a}))),mt=M.reduce((a,x)=>a+x.a,0),at=A.reduce((a,x)=>a+n(x.amount),0),L=[`${c} 請款`,`區間：${$('ms').value}～${$('me').value}`,'','【月結】',...M.map(x=>`${x.d}　${f(x.a)}`),'','【代墊】',...A.map(x=>`${x.d}　${x.item}　${f(x.amount)}`),'',`月結小計　${f(mt)}`,`代墊小計　${f(at)}`,`請款總計　${f(mt+at)}`];try{await navigator.clipboard.writeText(L.join('\n'));alert('已複製')}catch(e){alert(L.join('\n'))}}
 $('makeMonth').onclick=()=>{let R=mrows();monthRows=R;if(!R.length)return alert('此區間無日結');let sum=k=>R.reduce((a,x)=>a+n(x[k]),0),p=sum('pos'),g=sum('gross');['mSum','mDays','claims'].forEach(i=>$(i).classList.remove('hide'));$('mr').textContent=`${$('ms').value} ～ ${$('me').value}｜${R.length} 個日結`;$('mp').textContent=f(p);$('ml').textContent=f(sum('lunchPay'));$('mst').textContent=f(sum('store'));$('ma').textContent=f(sum('actual'));$('mg').textContent=f(g);$('mm').textContent=(p?g/p*100:0).toFixed(2)+'%';$('mpark').textContent=f(sum('park'));$('mn').textContent=f(sum('net'));$('mRows').innerHTML=R.map(x=>`<tr><td>${x.date}</td><td class="num">${f(x.pos)}</td><td class="num">${f(x.lunchPay)}</td><td class="num">${f(x.actual)}</td><td class="num">${f(x.gross)}</td><td class="num">${f(x.net)}</td></tr>`).join('');claims(R)}
 $('expMonth').onclick=()=>{let R=monthRows.length?monthRows:mrows();if(!R.length)return alert('先產生月報');dl(`Analyzer-${$('ms').value}-${$('me').value}-月報.csv`,makeCSV([['日期','POS','便當店','福利社營業額','實際收到','毛利','毛利率','淨收入'],...R.map(x=>[x.date,x.pos,x.lunchPay,x.store,x.actual,x.gross,x.margin.toFixed(2)+'%',x.net])]))}
-$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:''};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
+
+$('copyLoyversePending').onclick=async()=>{
+  const rows=Object.entries(INV.pending||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
+  const text=rows.length?rows.map(([p,x])=>`${p} → ${x.value}`).join('\n'):'目前沒有需要調整的商品';
+  try{await navigator.clipboard.writeText(text);alert('已複製 Loyverse 待調整清單')}catch(err){alert(text)}
+};
+$('clearLoyversePending').onclick=()=>{
+  if(!confirm('確定清空全部 Loyverse 待調整清單？'))return;
+  INV.pending={};save();renderLoyversePending();
+};
+
+$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{}};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
 
 
 const STOCK_RULES={
@@ -595,8 +617,27 @@ function renderCompare(rows){
   }</tbody></table></div>`;
 }
 
+
+function addLoyversePending(product,value,reason){
+  INV.pending=INV.pending||{};
+  INV.pending[product]={value:n(value),reason:q(reason),updatedAt:new Date().toISOString()};
+}
+function renderLoyversePending(){
+  INV.pending=INV.pending||{};
+  const rows=Object.entries(INV.pending).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
+  $('loyversePendingList').innerHTML=rows.length
+    ? rows.map(([product,x])=>`<div class="list"><div class="grow"><b>${e(product)}</b><div class="note">${e(x.reason||'庫存調整')}</div></div><div class="right"><div><b>${x.value}</b></div><div class="note">Loyverse 改成</div></div><button class="danger sm" onclick="removePending('${encodeURIComponent(product)}')">完成</button></div>`).join('')
+    : '<div class="note">目前沒有需要調整的商品。</div>';
+}
+window.removePending=product=>{
+  product=decodeURIComponent(product);
+  if(INV.pending) delete INV.pending[product];
+  save();renderLoyversePending();
+};
+
 function renderStock(){
   refreshStockProductSelect();
+  renderLoyversePending();
   const rows=Object.entries(INV.items||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
   const asOf=INV.lastSalesDate||INV.baseDate||'尚未建立';
   $('stockTheoryTitle').textContent=`目前理論庫存（截至 ${asOf}）`;
@@ -640,6 +681,7 @@ $('confirmStockOrder').onclick=()=>{
   pendingStockOrder.forEach((x,idx)=>{
     const before=n(INV.items[x.product]),after=before+x.qty;
     INV.items[x.product]=after;
+    addLoyversePending(x.product,after,`進貨 ${x.packs}${x.packUnit}（+${x.qty}${x.baseUnit}）`);
     INV.logs.push({id:uid(),date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit});
   });
   save();renderStock();
@@ -659,6 +701,7 @@ $('addStockIn').onclick=()=>{
   }
   const before=n(INV.items[product]),after=before+qty;
   INV.items[product]=after;
+  addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
   INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note:displayNote});
   save();renderStock();
   $('stockAfter').classList.remove('hide');
@@ -676,6 +719,10 @@ $('compareStockBtn').onclick=()=>{
   if(!Object.keys(actual).length) return alert('沒有辨識到盤點資料');
   currentCompare={date:$('stockDate').value||new Date().toISOString().slice(0,10),actual,rows:compareInventory(actual)};
   renderCompare(currentCompare.rows);
+  currentCompare.rows.filter(x=>x.actual!==null && x.diff!==0).forEach(x=>{
+    addLoyversePending(x.name,x.actual,`盤點差異 ${x.diff>0?'+':''}${x.diff}（系統 ${x.system} → 實盤 ${x.actual}）`);
+  });
+  save();renderLoyversePending();
 };
 $('adoptSnapshotBtn').onclick=()=>{
   if(!currentCompare||!currentCompare.actual) return alert('請先按「比對庫存」');
@@ -684,7 +731,7 @@ $('adoptSnapshotBtn').onclick=()=>{
   INV.baseDate=currentCompare.date;
   INV.lastSalesDate=currentCompare.date;
   INV.logs.push({id:uid(),date:currentCompare.date,type:'snapshot',note:'盤點比對後採用為新基準',items:{...currentCompare.actual}});
-  save();renderStock();alert('已採用本次盤點為新基準');
+  save();renderStock();renderLoyversePending();alert('已採用本次盤點為新基準');
 };
 
 
@@ -754,5 +801,5 @@ function repairHistoricalDays(){
   }
 }
 
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';repairHistoricalDays();repairSpecialRecordsV29();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};repairHistoricalDays();repairSpecialRecordsV29();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
