@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.16</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.17</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.16</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.17</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -62,10 +62,20 @@
 <label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
 <div class="actions"><button id="addStockIn">入庫</button></div>
 <div id="stockAfter" class="banner hide"></div></div>
+<div class="card half">
+<h3>📥 匯入 Loyverse 目前庫存</h3>
+<div class="note">使用 Loyverse 匯出的商品 CSV。Analyzer 會抓 <b>Name</b>、<b>Track stock</b>、<b>In stock [工地福利社]</b>，只讀有追蹤庫存的商品。</div>
+<label>Loyverse 商品 CSV</label>
+<div class="row"><input id="loyverseStockFile" type="file" accept=".csv,text/csv"><button class="alt sm" id="clearLoyverseStockFile">刪除</button></div>
+<div id="loyverseStockFileName" class="note">尚未選擇</div>
+<div class="actions"><button id="importLoyverseStock">讀取目前庫存</button></div>
+<div id="loyverseStockImportResult" class="banner hide"></div>
+</div>
+
 <div class="card"><div class="top"><div><h3 id="stockTheoryTitle" style="margin:0">目前理論庫存</h3><div id="stockBaseNote" class="note"></div></div><button class="alt" id="exportStock">匯出庫存 CSV</button></div><div id="stockTheoryStatus" class="banner" style="margin-top:10px"></div><div id="stockTable"></div></div>
 <div class="card"><div class="top"><div><h3 style="margin:0">📲 Loyverse 待調整清單</h3><div class="note">進貨完成或盤點有落差時自動加入。盤點結果會覆蓋同商品較舊的待調整數字。</div></div><div class="actions"><button class="alt sm" id="copyLoyversePending">複製清單</button><button class="danger sm" id="clearLoyversePending">清空</button></div></div><div id="loyversePendingList"></div></div>
 <div class="card half"><h3>🔍 今天下班實際盤點</h3>
-<div class="note">平常每天就用這裡。先貼今天下班盤點 → 比對理論庫存 → 看差異／Loyverse 待調整 → 最後才採用新基準。</div>
+<div class="note">平常每天就用這裡。先貼今天下班盤點 → 同時比對 Analyzer 理論庫存與 Loyverse 目前庫存 → 看差異／待修改 → 最後才採用新基準。</div>
 <textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea>
 <div class="actions"><button id="compareStockBtn">① 比對庫存</button><button class="alt" id="adoptSnapshotBtn">② 採用本次盤點為新基準</button></div>
 <div id="compareResult"></div></div>
@@ -81,7 +91,7 @@
 <div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
 const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
-let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{}}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
+let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
 /* V2.3 一次性修正：
    - 民哥目前正確預付餘額 = 92
    - 移除先前誤登的「今日新增預付 1000」
@@ -521,7 +531,7 @@ $('clearLoyversePending').onclick=()=>{
   INV.pending={};save();renderLoyversePending();
 };
 
-$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{}};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
+$('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
 
 
 const STOCK_RULES={
@@ -608,6 +618,29 @@ function parseStockOrderText(text){
   return {result,errors};
 }
 
+
+$('loyverseStockFile').onchange=()=>{
+  $('loyverseStockFileName').textContent=$('loyverseStockFile').files[0]?'目前：'+$('loyverseStockFile').files[0].name:'尚未選擇';
+};
+$('clearLoyverseStockFile').onclick=()=>{
+  $('loyverseStockFile').value='';
+  $('loyverseStockFileName').textContent='尚未選擇';
+  $('loyverseStockImportResult').classList.add('hide');
+};
+$('importLoyverseStock').onclick=async()=>{
+  const rows=await read('loyverseStockFile');
+  if(!rows)return alert('請先選擇 Loyverse 商品 CSV');
+  const parsed=parseLoyverseStockRows(rows);
+  if(parsed.errors.length)return alert(parsed.errors.join('\n'));
+
+  INV.loyverseStock=parsed.out;
+  INV.loyverseStockDate=new Date().toISOString().slice(0,10);
+  save();
+  $('loyverseStockImportResult').classList.remove('hide');
+  $('loyverseStockImportResult').innerHTML=`已讀取 <b>${Object.keys(parsed.out).length}</b> 個追蹤庫存商品。欄位：${e(parsed.stockCol||'')}`;
+  renderStock();
+};
+
 function parseStockText(t){
   const out={};
   String(t||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(line=>{
@@ -618,19 +651,25 @@ function parseStockText(t){
 }
 
 function compareInventory(actual){
-  const names=[...new Set([...Object.keys(INV.items||{}),...Object.keys(actual||{})])].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  const names=[...new Set([...Object.keys(INV.items||{}),...Object.keys(INV.loyverseStock||{}),...Object.keys(actual||{})])].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
   return names.map(name=>{
     const system=n(INV.items[name]);
     const hasActual=Object.prototype.hasOwnProperty.call(actual,name);
     const actualQty=hasActual?n(actual[name]):null;
+    const hasLv=Object.prototype.hasOwnProperty.call(INV.loyverseStock||{},name);
+    const loyverse=hasLv?n(INV.loyverseStock[name]):null;
     const diff=hasActual?actualQty-system:null;
-    return {name,system,actual:actualQty,diff};
+    return {name,system,loyverse,actual:actualQty,diff};
   });
 }
 function renderCompare(rows){
   if(!rows||!rows.length){$('compareResult').innerHTML='<div class="note">尚無比對結果。</div>';return}
-  $('compareResult').innerHTML=`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th class="num">系統庫存</th><th class="num">實際盤點</th><th class="num">差異</th></tr></thead><tbody>${
-    rows.filter(x=>x.actual!==null).map(x=>`<tr><td>${e(x.name)}</td><td class="num">${x.system}</td><td class="num">${x.actual}</td><td class="num"><b style="color:${x.diff===0?'#315f4c':(x.diff<0?'#a33':'#8a6500')}">${x.diff>0?'+':''}${x.diff}</b></td></tr>`).join('')
+  $('compareResult').innerHTML=`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th class="num">Analyzer理論</th><th class="num">Loyverse目前</th><th class="num">實際盤點</th><th class="num">盤差</th><th class="num">Loyverse應改</th></tr></thead><tbody>${
+    rows.filter(x=>x.actual!==null).map(x=>{
+      const lv=x.loyverse===null?'—':x.loyverse;
+      const need=x.loyverse===null?'—':(x.loyverse===x.actual?'✓':x.actual);
+      return `<tr><td>${e(x.name)}</td><td class="num">${x.system}</td><td class="num">${lv}</td><td class="num">${x.actual}</td><td class="num"><b style="color:${x.diff===0?'#315f4c':(x.diff<0?'#a33':'#8a6500')}">${x.diff>0?'+':''}${x.diff}</b></td><td class="num"><b>${need}</b></td></tr>`
+    }).join('')
   }</tbody></table></div>`;
 }
 
@@ -648,9 +687,46 @@ function renderLoyversePending(){
 }
 window.removePending=product=>{
   product=decodeURIComponent(product);
+  const item=INV.pending?.[product];
+  if(item){
+    INV.loyverseStock=INV.loyverseStock||{};
+    INV.loyverseStock[product]=n(item.value);
+  }
   if(INV.pending) delete INV.pending[product];
-  save();renderLoyversePending();
+  save();renderLoyversePending();renderStock();
 };
+
+
+function normalizeLoyverseStockName(name){
+  name=q(name);
+  if(name==='保利達(大)') return '大保';
+  if(name==='保利達(小)') return '小保';
+  if(name==='伯朗') return '伯朗咖啡';
+  if(name==='藍山') return '藍山咖啡';
+  return name;
+}
+function parseLoyverseStockRows(rows){
+  const out={},errors=[];
+  if(!rows?.length) return {out,errors:['檔案沒有資料']};
+
+  const sample=rows[0];
+  const stockCol=Object.keys(sample).find(k=>/^In stock \[.*\]$/i.test(q(k)));
+  if(!stockCol) errors.push('找不到 In stock [店名] 欄位');
+
+  rows.forEach(r=>{
+    const track=q(r['Track stock']).toUpperCase();
+    if(track!=='Y' && track!=='YES' && track!=='TRUE') return;
+
+    const rawName=q(r['Name']);
+    if(!rawName) return;
+    const name=normalizeLoyverseStockName(rawName);
+    if(stockCol && r[stockCol]!==undefined && q(r[stockCol])!==''){
+      out[name]=n(r[stockCol]);
+    }
+  });
+
+  return {out,errors,stockCol};
+}
 
 function renderStock(){
   refreshStockProductSelect();
@@ -662,7 +738,7 @@ function renderStock(){
     ? `計算基準：${INV.baseDate} 下班實際盤點${INV.lastSalesDate?`｜之後已加入進貨並扣銷售至 ${INV.lastSalesDate}`:''}`
     : '尚未建立實際盤點基準';
   $('stockTheoryStatus').innerHTML=INV.baseDate
-    ? `<b>目前理論庫存＝最近實際盤點＋後續進貨－後續淨銷售。</b><br>「比對庫存」只會顯示差異，不會改庫存；只有按「採用本次盤點為新基準」才會更新基準。`
+    ? `<b>目前理論庫存＝最近實際盤點＋後續進貨－後續淨銷售。</b><br>${INV.loyverseStockDate?`Loyverse 庫存已匯入：${INV.loyverseStockDate}。`:'尚未匯入 Loyverse 目前庫存。'}「比對庫存」只顯示差異；只有按「採用本次盤點為新基準」才更新基準。`
     : `請先建立一次實際盤點基準。`;
   $('stockTable').innerHTML=rows.length
     ? `<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前理論數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`
@@ -736,9 +812,17 @@ $('compareStockBtn').onclick=()=>{
   if(!Object.keys(actual).length) return alert('沒有辨識到盤點資料');
   currentCompare={date:$('stockDate').value||new Date().toISOString().slice(0,10),actual,rows:compareInventory(actual)};
   renderCompare(currentCompare.rows);
-  currentCompare.rows.filter(x=>x.actual!==null && x.diff!==0).forEach(x=>{
-    addLoyversePending(x.name,x.actual,`盤點差異 ${x.diff>0?'+':''}${x.diff}（系統 ${x.system} → 實盤 ${x.actual}）`);
-  });
+
+  currentCompare.rows
+    .filter(x=>x.actual!==null && x.loyverse!==null && x.loyverse!==x.actual)
+    .forEach(x=>{
+      addLoyversePending(
+        x.name,
+        x.actual,
+        `Loyverse ${x.loyverse} → 實盤 ${x.actual}｜Analyzer理論 ${x.system}｜盤差 ${x.diff>0?'+':''}${x.diff}`
+      );
+    });
+
   save();renderLoyversePending();
 };
 $('adoptSnapshotBtn').onclick=()=>{
@@ -833,5 +917,5 @@ function repairHistoricalDays(){
   }
 }
 
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
