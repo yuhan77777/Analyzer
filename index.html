@@ -1,9 +1,9 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.18</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.19</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.18</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top"><div><h1>Analyzer V2.19</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -917,5 +917,53 @@ function repairHistoricalDays(){
   }
 }
 
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+
+function migrateV219Fixed813Baseline(){
+  const key='analyzer_v219_fixed813_done';
+  if(localStorage.getItem(key)==='1') return;
+
+  const base={"健酪":18,"麥香紅茶":18,"伯朗咖啡":33,"藍山咖啡":37,"Fin":44,"麥香奶茶":23,"日式無糖綠茶":26,"白毫烏龍":5,"冬瓜茶":23,"青草茶":28,"阿咧":23,"咖啡廣場(白)":14,"咖啡廣場(藍)":12,"蠻牛":10,"沙士":15,"水蠻牛":13,"維大力":19,"可口可樂":11,"康貝特200P":5,"金牌":47,"Bar":74,"海尼根":33,"大保":27,"小保":17,"檳榔":20,"科學麵":27,"七星(濃)":8,"七星(中淡)":5,"Peace 6號":18,"藍M":6,"峰(金)":8};
+  INV.items={...base};
+  INV.baseDate='2026-08-13';
+
+  // Remove every old 8/13 snapshot and keep exactly one authoritative snapshot.
+  INV.logs=(INV.logs||[]).filter(log=>!(log?.type==='snapshot' && log?.date==='2026-08-13'));
+  INV.logs.push({
+    id:'snapshot-2026-08-13-fixed',
+    date:'2026-08-13',
+    type:'snapshot',
+    note:'8/13 下班實際盤點（V2.19固定基準）',
+    items:{...base}
+  });
+
+  // Same date/type only keeps one newest sales log.
+  const seen=new Set(), rev=[];
+  for(let i=INV.logs.length-1;i>=0;i--){
+    const log=INV.logs[i];
+    if(log?.type==='sales'){
+      const k=log.date||'';
+      if(seen.has(k)) continue;
+      seen.add(k);
+    }
+    rev.push(log);
+  }
+  INV.logs=rev.reverse();
+
+  // 8/13 actual count is AFTER 8/13 sales, so never deduct 8/13 sales again.
+  // If 8/14 day-end already exists, rebuild theory from 8/13 baseline and deduct 8/14 once.
+  const d14=H.find(x=>x.date==='2026-08-14');
+  if(d14?.salesByProduct){
+    Object.entries(d14.salesByProduct).forEach(([product,qty])=>{
+      if(Object.prototype.hasOwnProperty.call(INV.items,product))
+        INV.items[product]=n(INV.items[product])-n(qty);
+    });
+    INV.lastSalesDate='2026-08-14';
+  } else {
+    INV.lastSalesDate='2026-08-13';
+  }
+
+  localStorage.setItem(key,'1');
+}
+
+function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script></body></html>
