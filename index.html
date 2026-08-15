@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.24.3</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.24.5</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -8,7 +8,7 @@
 body.readonly .write-only{display:none!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.24.3</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.24.5</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -66,7 +66,7 @@ body.readonly .write-only{display:none!important}
   <div class="actions"><button class="danger" id="saveStockSnapshot">⚠️ 強制重設庫存基準</button></div>
 </details>
 </div>
-<div class="card half"><h3>➕ 新增進貨</h3>
+<div class="card half"><h3>➕ 新增進貨</h3><div class="note">進貨完成後會出現在下方「庫存異動紀錄」；若登錯，可直接按該筆右側「刪除」，系統會自動把數量扣回。</div>
 <label>日期</label><input id="stockDate" type="date">
 
 <label>快速貼上叫貨明細</label>
@@ -763,6 +763,36 @@ function renderLoyversePending(){
       }).join('')
     : '<div class="banner"><b>✓ 目前沒有盤差需要修改 Loyverse。</b></div>';
 }
+
+window.deleteStockIn=encodedId=>{
+  const id=decodeURIComponent(encodedId);
+  const log=(INV.logs||[]).find(x=>x.id===id && x.type==='in');
+  if(!log)return alert('找不到這筆進貨紀錄');
+
+  const product=q(log.product),qty=n(log.qty);
+  const current=n(INV.items?.[product]);
+  const after=current-qty;
+
+  if(!confirm(`確定刪除這筆進貨？\n\n${product}  -${qty}\n目前 ${current} → 刪除後 ${after}\n\n這會把這筆進貨數量從庫存扣回。`)) return;
+
+  INV.items=INV.items||{};
+  INV.items[product]=after;
+
+  INV.logs=(INV.logs||[]).filter(x=>x.id!==id);
+
+  // 若這商品目前在 Loyverse 待調整清單中，同步更新應改數字
+  if(INV.pending?.[product]){
+    INV.pending[product].value=after;
+    INV.pending[product].reason=`刪除進貨後，目前理論庫存 ${after}`;
+    INV.pending[product].updatedAt=new Date().toISOString();
+  }
+
+  save();
+  renderStock();
+  renderRestock();
+  alert(`已刪除進貨：${product} -${qty}\n目前理論庫存：${after}`);
+};
+
 window.removePending=product=>{
   product=decodeURIComponent(product);
   const item=INV.pending?.[product];
@@ -855,8 +885,32 @@ function renderStock(){
     ? `<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前理論數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`
     : '<div class="note">尚無庫存資料</div>';
   const logs=[...(INV.logs||[])].reverse();
-  $('stockLog').innerHTML=logs.length?logs.map(x=>{
-    if(x.type==='snapshot') return `<div class="list"><div class="grow"><b>${x.date} 實際盤點</b><div class="note">${e(x.note||'盤點基準')}</div></div><span class="pill">盤點</span></div>`;
+  $('stockLog').innerHTML=logs.length?logs.map(log=>{
+    let body='';
+    if(log.type==='sales'){
+      body=Object.entries(log.sales||{}).map(([p,q])=>`${e(p)} -${n(q)}`).join('、');
+    }else if(log.type==='in'){
+      body=`${e(log.product||'')} +${n(log.qty)}${log.note?`｜${e(log.note)}`:''}`;
+    }else if(log.type==='snapshot'){
+      body=e(log.note||'實際盤點');
+    }else{
+      body=e(log.note||'');
+    }
+
+    const typeLabel=log.type==='sales'?'銷售':log.type==='in'?'進貨':log.type==='snapshot'?'盤點':e(log.type||'');
+    const delBtn=log.type==='in'
+      ? `<button class="danger sm" onclick="deleteStockIn('${encodeURIComponent(log.id)}')">刪除</button>`
+      : '';
+
+    return `<div class="list">
+      <div class="grow">
+        <b>${e(log.date||'')} ${log.type==='snapshot'?'實際盤點':log.type==='sales'?'日結銷售扣庫存':log.type==='in'?'進貨入庫':e(log.note||'庫存異動')}</b>
+        <div class="note">${body}</div>
+      </div>
+      <span class="pill">${typeLabel}</span>
+      ${delBtn}
+    </div>`;
+  }).join(''):'<div class="note">尚無庫存異動紀錄。</div>';
     if(x.type==='sales') return `<div class="list"><div class="grow"><b>${x.date} 日結銷售扣庫存</b><div class="note">${Object.entries(x.sales||{}).filter(([p])=>Object.prototype.hasOwnProperty.call(INV.items,p)).map(([p,qv])=>`${e(p)} -${qv}`).join('、')||'無可對應庫存商品'}</div></div><span class="pill">銷售</span></div>`;
     return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜原 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}</div></div><span class="pill">+${x.qty}</span></div>`;
   }).join(''):'<div class="note">尚無紀錄</div>';
@@ -896,20 +950,23 @@ $('confirmStockOrder').onclick=()=>{
 $('addStockIn').onclick=()=>{
   const product=q($('stockProduct').value),rawQty=n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value),unit=$('stockUnit').value;
   if(!product||rawQty<=0)return alert('請輸入商品與數量');
+
+  const r=stockRule(product);
   let qty=rawQty,displayNote=note;
+
   if(unit==='package'){
-    const r=stockRule(product);
     if(!r)return alert(product+' 尚未設定箱規，請改用實際數量入庫');
     qty=rawQty*r.size;
     displayNote=(note?note+'｜':'')+`${rawQty}${r.pack}×${r.size}${r.base}`;
   }
+
   const before=n(INV.items[product]),after=before+qty;
   INV.items[product]=after;
   addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
   INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note:displayNote});
   save();renderStock();
+
   $('stockAfter').classList.remove('hide');
-  const r=stockRule(product);
   const baseLabel=r?.base||'個';
   const unitText=unit==='package'&&r?`${rawQty}${r.pack}＝${qty}${r.base}`:`${rawQty}${baseLabel}`;
   $('stockAfter').innerHTML=`<b>${e(product)}</b>：原庫存 ${before}${baseLabel} ＋ 入庫 ${unitText} ＝ <b>入庫後 ${after}${baseLabel}</b>`;
@@ -1087,7 +1144,45 @@ function migrateV220PendingCleanup(){
   localStorage.setItem(key,'1');
 }
 
-function init(){initMinStock();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+
+function repairV2244GoldStock(){
+  const key='analyzer_v2244_gold_stock_fix';
+  if(localStorage.getItem(key)==='1') return;
+
+  const d='2026-08-15';
+  const day=H.find(x=>x.date===d);
+  const sold=n(day?.salesByProduct?.['金牌']);
+
+  // 只針對這次已知異常狀態修復：8/15 已有日結，且金牌明顯大於應有的 48。
+  if(day && sold===30 && n(INV.items?.['金牌'])>48){
+    INV.items['金牌']=48;
+
+    // 舊 bug 在 push log 之前就中斷，所以補回唯一一筆正確的 2箱進貨紀錄。
+    const hasCorrect=(INV.logs||[]).some(x=>x.type==='in' && x.date===d && x.product==='金牌' && n(x.qty)===48);
+    if(!hasCorrect){
+      INV.logs.push({
+        id:'repair-gold-in-2026-08-15',
+        date:d,
+        type:'in',
+        product:'金牌',
+        qty:48,
+        before:30,
+        after:78,
+        note:'2箱×24罐（V2.24.4 修復單筆入庫紀錄）'
+      });
+    }
+
+    // Loyverse 待調整若有金牌，改成目前正確理論值。
+    if(INV.pending?.['金牌']){
+      INV.pending['金牌'].value=48;
+      INV.pending['金牌'].reason='V2.24.4 修復後目前理論庫存 48';
+    }
+  }
+
+  localStorage.setItem(key,'1');
+}
+
+function init(){initMinStock();repairV2244GoldStock();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
