@@ -66,7 +66,7 @@ body.readonly .write-only{display:none!important}
   <div class="actions"><button class="danger" id="saveStockSnapshot">⚠️ 強制重設庫存基準</button></div>
 </details>
 </div>
-<div class="card half"><h3>➕ 新增進貨</h3><div class="note">進貨完成後會出現在下方「庫存異動紀錄」；若登錯，可直接按該筆右側「刪除」，系統會自動把數量扣回。</div>
+<div class="card half"><h3>➕ 新增進貨</h3><div class="note">進貨登錯可到下方「庫存異動紀錄」直接刪除，系統會自動把該筆數量扣回。</div>
 <label>日期</label><input id="stockDate" type="date">
 
 <label>快速貼上叫貨明細</label>
@@ -763,36 +763,6 @@ function renderLoyversePending(){
       }).join('')
     : '<div class="banner"><b>✓ 目前沒有盤差需要修改 Loyverse。</b></div>';
 }
-
-window.deleteStockIn=encodedId=>{
-  const id=decodeURIComponent(encodedId);
-  const log=(INV.logs||[]).find(x=>x.id===id && x.type==='in');
-  if(!log)return alert('找不到這筆進貨紀錄');
-
-  const product=q(log.product),qty=n(log.qty);
-  const current=n(INV.items?.[product]);
-  const after=current-qty;
-
-  if(!confirm(`確定刪除這筆進貨？\n\n${product}  -${qty}\n目前 ${current} → 刪除後 ${after}\n\n這會把這筆進貨數量從庫存扣回。`)) return;
-
-  INV.items=INV.items||{};
-  INV.items[product]=after;
-
-  INV.logs=(INV.logs||[]).filter(x=>x.id!==id);
-
-  // 若這商品目前在 Loyverse 待調整清單中，同步更新應改數字
-  if(INV.pending?.[product]){
-    INV.pending[product].value=after;
-    INV.pending[product].reason=`刪除進貨後，目前理論庫存 ${after}`;
-    INV.pending[product].updatedAt=new Date().toISOString();
-  }
-
-  save();
-  renderStock();
-  renderRestock();
-  alert(`已刪除進貨：${product} -${qty}\n目前理論庫存：${after}`);
-};
-
 window.removePending=product=>{
   product=decodeURIComponent(product);
   const item=INV.pending?.[product];
@@ -885,36 +855,37 @@ function renderStock(){
     ? `<div style="overflow:auto"><table><thead><tr><th>商品</th><th class="num">目前理論數量</th></tr></thead><tbody>${rows.map(([a,b])=>`<tr><td>${e(a)}</td><td class="num"><b>${b}</b></td></tr>`).join('')}</tbody></table></div>`
     : '<div class="note">尚無庫存資料</div>';
   const logs=[...(INV.logs||[])].reverse();
-  $('stockLog').innerHTML=logs.length?logs.map(log=>{
-    let body='';
-    if(log.type==='sales'){
-      body=Object.entries(log.sales||{}).map(([p,q])=>`${e(p)} -${n(q)}`).join('、');
-    }else if(log.type==='in'){
-      body=`${e(log.product||'')} +${n(log.qty)}${log.note?`｜${e(log.note)}`:''}`;
-    }else if(log.type==='snapshot'){
-      body=e(log.note||'實際盤點');
-    }else{
-      body=e(log.note||'');
-    }
-
-    const typeLabel=log.type==='sales'?'銷售':log.type==='in'?'進貨':log.type==='snapshot'?'盤點':e(log.type||'');
-    const delBtn=log.type==='in'
-      ? `<button class="danger sm" onclick="deleteStockIn('${encodeURIComponent(log.id)}')">刪除</button>`
-      : '';
-
-    return `<div class="list">
-      <div class="grow">
-        <b>${e(log.date||'')} ${log.type==='snapshot'?'實際盤點':log.type==='sales'?'日結銷售扣庫存':log.type==='in'?'進貨入庫':e(log.note||'庫存異動')}</b>
-        <div class="note">${body}</div>
-      </div>
-      <span class="pill">${typeLabel}</span>
-      ${delBtn}
-    </div>`;
-  }).join(''):'<div class="note">尚無庫存異動紀錄。</div>';
+  $('stockLog').innerHTML=logs.length?logs.map(x=>{
+    if(x.type==='snapshot') return `<div class="list"><div class="grow"><b>${x.date} 實際盤點</b><div class="note">${e(x.note||'盤點基準')}</div></div><span class="pill">盤點</span></div>`;
     if(x.type==='sales') return `<div class="list"><div class="grow"><b>${x.date} 日結銷售扣庫存</b><div class="note">${Object.entries(x.sales||{}).filter(([p])=>Object.prototype.hasOwnProperty.call(INV.items,p)).map(([p,qv])=>`${e(p)} -${qv}`).join('、')||'無可對應庫存商品'}</div></div><span class="pill">銷售</span></div>`;
-    return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜原 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}</div></div><span class="pill">+${x.qty}</span></div>`;
+    return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜原 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}</div></div><span class="pill">+${x.qty}</span><button class="danger sm" onclick="deleteStockIn('${encodeURIComponent(x.id)}')">刪除</button></div>`;
   }).join(''):'<div class="note">尚無紀錄</div>';
 }
+
+window.deleteStockIn=encodedId=>{
+  const id=decodeURIComponent(encodedId);
+  const log=(INV.logs||[]).find(x=>x.id===id && x.type==='in');
+  if(!log)return alert('找不到這筆進貨紀錄');
+
+  const product=q(log.product),qty=n(log.qty);
+  const current=n(INV.items?.[product]),after=current-qty;
+
+  if(!confirm(`確定刪除這筆進貨？\n\n${product} -${qty}\n目前 ${current} → 刪除後 ${after}\n\n刪除後會自動把這筆進貨數量從庫存扣回。`))return;
+
+  INV.items[product]=after;
+  INV.logs=(INV.logs||[]).filter(x=>x.id!==id);
+
+  if(INV.pending?.[product]){
+    INV.pending[product].value=after;
+    INV.pending[product].reason=`刪除進貨後，目前理論庫存 ${after}`;
+  }
+
+  save();
+  renderStock();
+  renderRestock();
+  alert(`已刪除進貨：${product} -${qty}\n目前理論庫存：${after}`);
+};
+
 $('saveStockSnapshot').onclick=()=>{
   const x=parseStockText($('stockPaste').value);
   if(!Object.keys(x).length) return alert('沒有辨識到盤點資料');
