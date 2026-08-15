@@ -2,21 +2,29 @@
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
+.cloud-ok{background:#e8f4ec!important;color:#23543f!important}
+.cloud-warn{background:#fff2d8!important;color:#875d00!important}
+.cloud-bad{background:#f8e7e7!important;color:#9b2c2c!important}
+body.readonly .write-only{display:none!important}
 </style></head><body><div class="wrap">
 <div class="top">
   <div><h1>Analyzer V2.23</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-    <span class="pill">📱 本機資料庫</span>
-    <span id="cloudStatus" class="pill">☁️ 尚未登入</span>
-    <button id="firebaseLoginBtn" class="sm">使用 Google 登入</button>
+    <span class="pill">📱 本機</span>
+    <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
+    <button id="firebaseLoginBtn" class="sm">Google 登入</button>
     <button id="firebaseLogoutBtn" class="alt sm hide">登出</button>
   </div>
 </div>
 <div id="firebaseUserBar" class="banner hide" style="margin-top:10px">
-  <div><b id="firebaseUserName">—</b></div>
-  <div class="note" id="firebaseUserEmail">—</div>
-  <div class="note">Firebase UID：<span id="firebaseUID" style="word-break:break-all">—</span></div>
-  <div class="note">目前先測試登入；Firestore 尚未開放讀寫，不會動到妳原本本機資料。</div>
+  <div class="top">
+    <div>
+      <b id="firebaseUserName">—</b>
+      <div class="note" id="firebaseUserEmail">—</div>
+      <div class="note">UID：<span id="firebaseUID" style="word-break:break-all">—</span></div>
+    </div>
+    <span id="firebaseRole" class="pill">—</span>
+  </div>
 </div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
@@ -101,6 +109,17 @@
 <section id="set" class="tab"><div class="grid">
 <div class="card"><div class="top"><div><h3 style="margin:0">付款方式設定</h3><div class="note">名稱需與 Loyverse CSV 完全相同，可自己新增月結／預付／轉帳客戶。</div></div><button id="addPay">＋新增</button></div><div id="setPays"></div></div>
 <div class="card half"><h3>成本設定</h3><label>免洗杯／個</label><input id="cCup" type="number" step=".001"><label>黑色塑膠袋／個</label><input id="cBag" type="number" step=".1"><label>檳榔／包</label><input id="cBetel" type="number" step=".001"><div class="actions"><button id="saveCosts">儲存</button></div></div>
+
+<div class="card half">
+  <h3>☁️ Firebase 雙層備份</h3>
+  <div class="note">本機資料照常保存；登入後可再備份到 Firestore。第一次不會用空雲端覆蓋手機資料。</div>
+  <div id="cloudPanelStatus" class="banner">尚未登入 Firebase。</div>
+  <div class="actions">
+    <button id="cloudUploadBtn" class="write-only" disabled>☁️ 備份本機到雲端</button>
+    <button id="cloudDownloadBtn" class="alt" disabled>⬇️ 從雲端還原</button>
+  </div>
+  <div id="cloudLastSync" class="note" style="margin-top:8px">最後同步：—</div>
+</div>
 <div class="card half"><h3>資料備份</h3><div class="actions"><button id="backup">📤 匯出 JSON</button><button class="alt" id="restore">📥 匯入 JSON</button><input id="bf" class="hide" type="file" accept=".json"></div></div>
 </div></section>
 </div>
@@ -192,7 +211,22 @@ let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',la
 })();
 
 function load(k,d){try{return JSON.parse(localStorage.getItem(k))||JSON.parse(JSON.stringify(d))}catch(e){return JSON.parse(JSON.stringify(d))}}
-function save(){localStorage.setItem(K.s,JSON.stringify(S));localStorage.setItem(K.h,JSON.stringify(H));localStorage.setItem(K.i,JSON.stringify(INV))}
+function save(){
+  localStorage.setItem(K.s,JSON.stringify(S));
+  localStorage.setItem(K.h,JSON.stringify(H));
+  localStorage.setItem(K.i,JSON.stringify(INV));
+  let meta={};try{meta=JSON.parse(localStorage.getItem('a2cloudmeta')||'{}')}catch(e){}
+  meta.pending=true;meta.lastLocalChange=Date.now();
+  localStorage.setItem('a2cloudmeta',JSON.stringify(meta));
+  if(window.queueCloudSync) window.queueCloudSync();
+}
+window.getAnalyzerState=()=>({S:JSON.parse(JSON.stringify(S)),H:JSON.parse(JSON.stringify(H)),INV:JSON.parse(JSON.stringify(INV))});
+window.replaceAnalyzerState=(state)=>{
+  if(!state||!state.S||!state.H||!state.INV) throw new Error('雲端資料格式不完整');
+  localStorage.setItem(K.s,JSON.stringify(state.S));
+  localStorage.setItem(K.h,JSON.stringify(state.H));
+  localStorage.setItem(K.i,JSON.stringify(state.INV));
+};
 function n(v){let x=parseFloat(String(v??'').replace(/,/g,''));return isFinite(x)?x:0}function f(v){return '$'+n(v).toLocaleString('zh-TW',{maximumFractionDigits:2})}function q(s){return String(s??'').trim()}function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function csv(t){let R=[],r=[],c='',z=false;for(let i=0;i<t.length;i++){let x=t[i],y=t[i+1];if(x=='"'){if(z&&y=='"'){c+='"';i++}else z=!z}else if(x==','&&!z){r.push(c);c=''}else if((x=='\n'||x=='\r')&&!z){if(x=='\r'&&y=='\n')i++;r.push(c);c='';if(r.some(v=>v!==''))R.push(r);r=[]}else c+=x}if(c||r.length){r.push(c);R.push(r)}if(!R.length)return[];let h=R[0].map(q);return R.slice(1).map(x=>Object.fromEntries(h.map((k,i)=>[k,q(x[i]??'')])))}async function read(id){let x=$(id).files[0];return x?csv(await x.text()):null}
 function dtime(s){return new Date(String(s).replace(' ','T'))}
@@ -1015,12 +1049,12 @@ function init(){initMinStock();INV.lastSalesDate=INV.lastSalesDate||'';INV.pendi
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCWSvuXgQvvp2C046Emgnu4-UVjGDY6Lo8",
@@ -1031,71 +1065,187 @@ const firebaseConfig = {
   appId: "1:760630317595:web:4edd67688cf26968595ebe"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const firebaseAuth = getAuth(firebaseApp);
-firebaseAuth.useDeviceLanguage();
+const OWNER_UID = "veSoVwfcFUM89Mey4SsqRjk6kIh1";
+const CLOUD_DOC = "main";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+auth.useDeviceLanguage();
 
 const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
+provider.setCustomParameters({prompt:"select_account"});
 
-const loginBtn = document.getElementById("firebaseLoginBtn");
-const logoutBtn = document.getElementById("firebaseLogoutBtn");
-const cloudStatus = document.getElementById("cloudStatus");
-const userBar = document.getElementById("firebaseUserBar");
-const userName = document.getElementById("firebaseUserName");
-const userEmail = document.getElementById("firebaseUserEmail");
-const uidBox = document.getElementById("firebaseUID");
+const $c=id=>document.getElementById(id);
+const loginBtn=$c("firebaseLoginBtn"), logoutBtn=$c("firebaseLogoutBtn");
+const cloudStatus=$c("cloudStatus"), userBar=$c("firebaseUserBar");
+const userName=$c("firebaseUserName"), userEmail=$c("firebaseUserEmail"), uidBox=$c("firebaseUID"), roleBox=$c("firebaseRole");
+const uploadBtn=$c("cloudUploadBtn"), downloadBtn=$c("cloudDownloadBtn");
+const panel=$c("cloudPanelStatus"), lastSync=$c("cloudLastSync");
 
-loginBtn?.addEventListener("click", async () => {
-  loginBtn.disabled = true;
-  cloudStatus.textContent = "☁️ 登入中…";
-  try {
-    await signInWithPopup(firebaseAuth, provider);
-  } catch (err) {
-    console.error(err);
-    cloudStatus.textContent = "☁️ 登入失敗";
-    let msg = err?.message || String(err);
-    if (err?.code === "auth/unauthorized-domain") {
-      msg = "Firebase 尚未授權這個 GitHub Pages 網域。請把 yuhan77777.github.io 加到 Authentication → 設定 → 已授權網域。";
-    } else if (err?.code === "auth/popup-blocked") {
-      msg = "瀏覽器擋住登入彈窗，請允許此網站彈出式視窗後再試一次。";
-    } else if (err?.code === "auth/popup-closed-by-user") {
-      msg = "登入視窗被關閉，尚未完成登入。";
+let currentUser=null, cloudExists=false, cloudWritable=false, syncTimer=null;
+
+function setStatus(text,kind="warn"){
+  cloudStatus.textContent=text;
+  cloudStatus.classList.remove("cloud-ok","cloud-warn","cloud-bad");
+  cloudStatus.classList.add(kind==="ok"?"cloud-ok":kind==="bad"?"cloud-bad":"cloud-warn");
+}
+function meta(){
+  try{return JSON.parse(localStorage.getItem("a2cloudmeta")||"{}")}catch(e){return{}}
+}
+function setMeta(patch){
+  const m={...meta(),...patch}; localStorage.setItem("a2cloudmeta",JSON.stringify(m)); renderSyncTime();
+}
+function renderSyncTime(){
+  const m=meta();
+  lastSync.textContent="最後同步："+(m.lastCloudSync?new Date(m.lastCloudSync).toLocaleString("zh-TW"):"—");
+}
+function hasMeaningfulLocalData(){
+  try{
+    const st=window.getAnalyzerState?.();
+    return !!(st && ((st.H?.length||0)>0 || Object.keys(st.INV?.items||{}).length>0));
+  }catch(e){return false}
+}
+function setReadonlyMode(readonly){
+  document.body.classList.toggle("readonly",readonly);
+  roleBox.textContent=readonly?"👀 唯讀":"👑 管理者";
+  // 介面層防誤按；真正權限仍由 Firestore Rules 決定。
+  const ids=[
+    "saveDay","addAdv","addTopup","saveCosts","addPay",
+    "saveStockSnapshot","parseStockOrder","confirmStockOrder","addStockIn",
+    "compareStockBtn","adoptSnapshotBtn","clearLoyversePending","saveMinStock",
+    "restore"
+  ];
+  ids.forEach(id=>{const el=$c(id);if(el)el.disabled=readonly});
+}
+async function inspectCloud(){
+  if(!currentUser)return;
+  panel.textContent="正在檢查雲端備份…";
+  try{
+    const snap=await getDoc(doc(db,"analyzerSync",CLOUD_DOC));
+    cloudExists=snap.exists();
+    downloadBtn.disabled=!cloudExists;
+    if(cloudExists){
+      const d=snap.data();
+      const when=d.updatedAt?.toDate?.();
+      panel.innerHTML=`☁️ 已找到雲端備份${when?`（${when.toLocaleString("zh-TW")}）`:""}。<br>為避免誤覆蓋，本裝置不會自動把雲端蓋過本機；需要時請按「從雲端還原」。`;
+      setStatus("☁️ 已連線","ok");
+    }else{
+      panel.innerHTML=hasMeaningfulLocalData()
+        ?"☁️ 雲端目前是空的。請在這台主要裝置按「備份本機到雲端」建立第一份雲端備份。"
+        :"☁️ 雲端目前是空的，而且本機也沒有可備份資料。";
+      setStatus("☁️ 雲端空白","warn");
     }
-    alert("Google 登入沒有完成：\n" + msg);
-  } finally {
-    loginBtn.disabled = false;
-  }
-});
-
-logoutBtn?.addEventListener("click", async () => {
-  try {
-    await signOut(firebaseAuth);
-  } catch (err) {
+    uploadBtn.disabled=!cloudWritable;
+  }catch(err){
     console.error(err);
-    alert("登出失敗：" + (err?.message || err));
+    cloudExists=false;
+    uploadBtn.disabled=true;downloadBtn.disabled=true;
+    if(err?.code==="permission-denied"){
+      panel.textContent="這個帳號沒有 Firestore 存取權限。";
+      setStatus("☁️ 無權限","bad");
+    }else{
+      panel.textContent="雲端連線失敗："+(err?.message||err);
+      setStatus("☁️ 連線失敗","bad");
+    }
   }
+}
+async function uploadNow(manual=false){
+  if(!currentUser||!cloudWritable)return;
+  const state=window.getAnalyzerState?.();
+  if(!state)return;
+  if(manual && !confirm("確定把『這台裝置目前的 Analyzer 資料』備份到雲端？"))return;
+  try{
+    setStatus("☁️ 同步中…","warn");
+    panel.textContent="正在把本機資料備份到 Firestore…";
+    await setDoc(doc(db,"analyzerSync",CLOUD_DOC),{
+      ...state,
+      version:"V2.23",
+      updatedBy:currentUser.uid,
+      updatedAt:serverTimestamp()
+    });
+    cloudExists=true;
+    downloadBtn.disabled=false;
+    setMeta({pending:false,lastCloudSync:Date.now()});
+    panel.textContent="✅ 本機資料已備份到雲端。之後在這台裝置儲存日結／庫存／設定時，會自動再備份一次。";
+    setStatus("☁️ 已同步","ok");
+  }catch(err){
+    console.error(err);
+    setStatus("☁️ 同步失敗","bad");
+    panel.textContent="雲端備份失敗："+(err?.message||err);
+  }
+}
+async function downloadNow(){
+  if(!currentUser||!cloudExists)return;
+  if(!confirm("從雲端還原會把『這台裝置目前的 Analyzer 本機資料』換成雲端版本。確定要繼續嗎？"))return;
+  try{
+    const snap=await getDoc(doc(db,"analyzerSync",CLOUD_DOC));
+    if(!snap.exists())return alert("雲端目前沒有備份");
+    const d=snap.data();
+    window.replaceAnalyzerState({S:d.S,H:d.H,INV:d.INV});
+    setMeta({pending:false,lastCloudSync:Date.now()});
+    alert("雲端資料已還原到本機，頁面即將重新整理。");
+    location.reload();
+  }catch(err){
+    console.error(err);
+    alert("雲端還原失敗："+(err?.message||err));
+  }
+}
+window.queueCloudSync=()=>{
+  if(!currentUser||!cloudWritable||!cloudExists)return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>uploadNow(false),900);
+};
+
+uploadBtn?.addEventListener("click",()=>uploadNow(true));
+downloadBtn?.addEventListener("click",downloadNow);
+logoutBtn?.addEventListener("click",()=>signOut(auth));
+
+loginBtn?.addEventListener("click",async()=>{
+  loginBtn.disabled=true;
+  setStatus("☁️ 登入中…","warn");
+  try{
+    // 先用 popup；iPhone Safari 在授權網域正確時通常可正常使用。
+    // 若瀏覽器擋 popup，再退回 redirect。
+    await signInWithPopup(auth,provider);
+  }catch(err){
+    console.error(err);
+    if(["auth/popup-blocked","auth/operation-not-supported-in-this-environment"].includes(err?.code)){
+      await signInWithRedirect(auth,provider);
+      return;
+    }
+    let msg=err?.message||String(err);
+    if(err?.code==="auth/unauthorized-domain") msg="Firebase 尚未授權這個網域。請確認 yuhan77777.github.io 已加入 Authentication → 設定 → 已授權網域。";
+    alert("Google 登入沒有完成：\n"+msg);
+    setStatus("☁️ 登入失敗","bad");
+  }finally{loginBtn.disabled=false}
 });
 
-onAuthStateChanged(firebaseAuth, user => {
-  if (user) {
-    cloudStatus.textContent = "☁️ Google 已登入";
-    loginBtn.classList.add("hide");
-    logoutBtn.classList.remove("hide");
-    userBar.classList.remove("hide");
-    userName.textContent = user.displayName || "Google 使用者";
-    userEmail.textContent = user.email || "";
-    uidBox.textContent = user.uid;
-  } else {
-    cloudStatus.textContent = "☁️ 尚未登入";
-    loginBtn.classList.remove("hide");
-    logoutBtn.classList.add("hide");
-    userBar.classList.add("hide");
-    userName.textContent = "—";
-    userEmail.textContent = "—";
-    uidBox.textContent = "—";
+try{await getRedirectResult(auth)}catch(err){console.error("redirect result",err)}
+
+onAuthStateChanged(auth,async user=>{
+  currentUser=user;
+  if(!user){
+    userBar.classList.add("hide");loginBtn.classList.remove("hide");logoutBtn.classList.add("hide");
+    uploadBtn.disabled=true;downloadBtn.disabled=true;cloudWritable=false;cloudExists=false;
+    panel.textContent="尚未登入 Firebase。";
+    setStatus("☁️ 尚未登入","warn");
+    document.body.classList.remove("readonly");
+    renderSyncTime();
+    return;
   }
+
+  userBar.classList.remove("hide");loginBtn.classList.add("hide");logoutBtn.classList.remove("hide");
+  userName.textContent=user.displayName||"Google 使用者";
+  userEmail.textContent=user.email||"";
+  uidBox.textContent=user.uid;
+  cloudWritable=user.uid===OWNER_UID;
+  setReadonlyMode(!cloudWritable);
+  setStatus("☁️ 已登入","ok");
+  await inspectCloud();
+  renderSyncTime();
 });
+renderSyncTime();
 </script>
 
 </body></html>
