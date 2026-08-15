@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.24</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.24.1.1</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -8,7 +8,7 @@
 body.readonly .write-only{display:none!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.24</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.24.1.1</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -123,7 +123,7 @@ body.readonly .write-only{display:none!important}
 <div class="card half"><h3>資料備份</h3><div class="actions"><button id="backup">📤 匯出 JSON</button><button class="alt" id="restore">📥 匯入 JSON</button><input id="bf" class="hide" type="file" accept=".json"></div></div>
 </div></section>
 </div>
-<div class="card"><details><summary>📦 最低庫存設定</summary><div class="note" style="margin:8px 0">平常可收合。低於最低庫存才提醒；科學麵、香菸為包，其餘為罐。</div><input id="minStockSearch" type="text" placeholder="搜尋商品"><div id="minStockSettings"></div><div class="actions"><button id="saveMinStock">儲存最低庫存設定</button></div></details></div><div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
+<=div class="card"><details><summary>📦 最低庫存設定<=/summary><div class="note" style="margin:8px 0">平常可收合。低於最低庫存才提醒；科學麵、香菸為包，其餘為罐。<=/div><input id="minStockSearch" type="text" placeholder="搜尋商品"><div id="minStockSettings"></div><div class="actions"><button id="saveMinStock">儲存最低庫存設定<=/button></div></details></div><div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉<=/button></div></div></div>
 <script>
 const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
 let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
@@ -568,7 +568,7 @@ window.delD=d=>{
   const day=H.find(x=>x.date===d);
   if(!day) return;
 
-  // V2.24：刪除日結必須可逆。只有當初真的套用過庫存才加回，避免重複還原。
+  // V2.24.1：刪除日結必須可逆。只有當初真的套用過庫存才加回，避免重複還原。
   if(day.inventoryApplied) applyInventorySales(day,+1);
   INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===d));
   H=H.filter(x=>x.date!==d);
@@ -809,9 +809,9 @@ function parseLoyverseStockRows(rows){
 const DEFAULT_MIN_STOCK={"健酪":4,"麥香紅茶":8,"伯朗咖啡":8,"藍山咖啡":8,"Fin":12,"麥香奶茶":8,"日式無糖綠茶":8,"白毫烏龍":4,"冬瓜茶":4,"青草茶":4,"阿咧":8,"咖啡廣場(白)":4,"咖啡廣場(藍)":4,"蠻牛":4,"沙士":4,"水蠻牛":8,"維大力":8,"可口可樂":4,"康貝特200P":4,"金牌":48,"Bar":12,"海尼根":12,"大保":12,"小保":8,"科學麵":5,"七星(濃)":3,"七星(中淡)":3,"Peace 6號":5,"藍M":3,"峰(金)":3};
 function initMinStock(){S.minStock=S.minStock||{};S.minStockEnabled=S.minStockEnabled||{};Object.entries(DEFAULT_MIN_STOCK).forEach(([p,v])=>{if(S.minStock[p]===undefined)S.minStock[p]=v;if(S.minStockEnabled[p]===undefined)S.minStockEnabled[p]=true})}
 function minStockUnit(p){return p==='科學麵'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p)?'包':'罐'}
-function renderMinStockSettings(){if(!$('minStockSettings'))return;initMinStock();let k=q($('minStockSearch')?.value).toLowerCase();let ns=Object.keys(S.minStock).filter(p=>!k||p.toLowerCase().includes(k)).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('minStockSettings').innerHTML=ns.map(p=>`<div class="list"><div class="grow"><b>${e(p)}</b><div class="note">${minStockUnit(p)}</div></div><label><input class="minEnable" data-p="${encodeURIComponent(p)}" type="checkbox" ${S.minStockEnabled[p]!==false?'checked':''}> 提醒</label><input class="minVal" data-p="${encodeURIComponent(p)}" type="number" min="0" value="${n(S.minStock[p])}" style="width:80px"></div>`).join('')}
+function renderMinStockSettings(){if(!$('minStockSettings'))return;initMinStock();let k=q($('minStockSearch')?.value).toLowerCase();let ns=Object.keys(S.minStock).filter(p=>!k||p.toLowerCase().includes(k)).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('minStockSettings').innerHTML=ns.map(p=>`<=div class="list"><div class="grow"><b>${e(p)}<=/b><div class="note">${minStockUnit(p)}<=/div></div><label><input class="minEnable" data-p="${encodeURIComponent(p)}" type="checkbox" ${S.minStockEnabled[p]!==false?'checked':''}> 提醒<=/label><input class="minVal" data-p="${encodeURIComponent(p)}" type="number" min="0" value="${n(S.minStock[p])}" style="width:80px"></div>`).join('')}
 function inventoryForRestock(){
-  // V2.24：尚未儲存日結時，補貨提醒先用「本次報表結算後」的預估庫存。
+  // V2.24.1：尚未儲存日結時，補貨提醒先用「本次報表結算後」的預估庫存。
   // 只做畫面預覽，不改 INV.items；真正扣庫存仍只在「儲存日結」發生。
   const items={...(INV.items||{})};
   if(!cur?.date||!cur?.salesByProduct) return {items,preview:false};
@@ -833,9 +833,9 @@ function renderRestock(){
   if(!$('restockList'))return;
   initMinStock();
   const state=inventoryForRestock(),items=state.items;
-  let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(items,p)&&n(items[p])<n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(items,p)&&n(items[p])<=n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
   const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 預估庫存</b>：已先扣除 ${e(cur.date)} 這次上傳報表的淨銷售；按「儲存日結」後才會正式寫入庫存。</div>`:'';
-  $('restockList').innerHTML=head+(rs.length?rs.map(p=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}</b></div><div class="right"><b>${n(items[p])} ${minStockUnit(p)}</b><div class="note">${state.preview?'預估':'目前'}</div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}</b><div class="note">最低</div></div></div>`).join(''):'<div class="banner"><b>✓ 目前沒有需要補貨的商品。</b></div>');
+  $('restockList').innerHTML=head+(rs.length?rs.map(p=>`<=div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}<=/b></div><div class="right"><b>${n(items[p])} ${minStockUnit(p)}<=/b><div class="note">${state.preview?'預估':'目前'}<=/div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}<=/b><div class="note">最低<=/div></div></div>`).join(''):'<=div class="banner"><b>✓ 目前沒有需要補貨的商品。<=/b></div>');
 }
 
 function renderStock(){
