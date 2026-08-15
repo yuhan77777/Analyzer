@@ -1,9 +1,23 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.20</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.23</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
 </style></head><body><div class="wrap">
-<div class="top"><div><h1>Analyzer V2.20</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div><span class="pill">本機資料庫</span></div>
+<div class="top">
+  <div><h1>Analyzer V2.23</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+    <span class="pill">📱 本機資料庫</span>
+    <span id="cloudStatus" class="pill">☁️ 尚未登入</span>
+    <button id="firebaseLoginBtn" class="sm">使用 Google 登入</button>
+    <button id="firebaseLogoutBtn" class="alt sm hide">登出</button>
+  </div>
+</div>
+<div id="firebaseUserBar" class="banner hide" style="margin-top:10px">
+  <div><b id="firebaseUserName">—</b></div>
+  <div class="note" id="firebaseUserEmail">—</div>
+  <div class="note">Firebase UID：<span id="firebaseUID" style="word-break:break-all">—</span></div>
+  <div class="note">目前先測試登入；Firestore 尚未開放讀寫，不會動到妳原本本機資料。</div>
+</div>
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
@@ -49,7 +63,7 @@
 
 <label>快速貼上叫貨明細</label>
 <textarea id="stockOrderPaste" rows="7" placeholder="大保*2&#10;伯朗*1&#10;藍山*1&#10;Peace 6號*2&#10;七星(濃)*1&#10;阿咧*1"></textarea>
-<div class="note">一般商品「*1」＝1箱；香菸「*1」＝1條＝10包。庫存仍以瓶／包計算。</div>
+<div class="note">叫貨規則：香菸 *1＝1條＝10包；大保、大水 *1＝12；科學麵 *1＝40包；其餘商品 *1＝1箱＝24。</div>
 <div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
 <div id="stockOrderPreview"></div>
 
@@ -62,6 +76,7 @@
 <label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
 <div class="actions"><button id="addStockIn">入庫</button></div>
 <div id="stockAfter" class="banner hide"></div></div>
+<div class="card"><h3>🛒 補貨提醒</h3><div class="note">只顯示低於最低庫存的商品。</div><div id="restockList"></div></div>
 <div class="card half">
 <h3>📥 匯入 Loyverse 目前庫存</h3>
 <div class="note">使用 Loyverse 匯出的商品 CSV。Analyzer 會抓 <b>Name</b>、<b>Track stock</b>、<b>In stock [工地福利社]</b>，只讀有追蹤庫存的商品。</div>
@@ -89,7 +104,7 @@
 <div class="card half"><h3>資料備份</h3><div class="actions"><button id="backup">📤 匯出 JSON</button><button class="alt" id="restore">📥 匯入 JSON</button><input id="bf" class="hide" type="file" accept=".json"></div></div>
 </div></section>
 </div>
-<div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
+<div class="card"><details><summary>📦 最低庫存設定</summary><div class="note" style="margin:8px 0">平常可收合。低於最低庫存才提醒；科學麵、香菸為包，其餘為罐。</div><input id="minStockSearch" type="text" placeholder="搜尋商品"><div id="minStockSettings"></div><div class="actions"><button id="saveMinStock">儲存最低庫存設定</button></div></details></div><div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
 const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
 let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
@@ -532,29 +547,25 @@ $('clearLoyversePending').onclick=()=>{
   INV.pending={};save();renderLoyversePending();
 };
 
+if($('minStockSearch'))$('minStockSearch').oninput=renderMinStockSettings;
+if($('saveMinStock'))$('saveMinStock').onclick=()=>{document.querySelectorAll('.minVal').forEach(x=>S.minStock[decodeURIComponent(x.dataset.p)]=Math.max(0,n(x.value)));document.querySelectorAll('.minEnable').forEach(x=>S.minStockEnabled[decodeURIComponent(x.dataset.p)]=x.checked);save();renderMinStockSettings();renderRestock();alert('最低庫存設定已儲存')};
+
 $('backup').onclick=()=>dl(`Analyzer-V2-backup.json`,JSON.stringify({S,H,INV},null,2),'application/json;charset=utf-8');$('restore').onclick=()=>$('bf').click();$('bf').onchange=async()=>{try{let x=JSON.parse(await $('bf').files[0].text());if(!confirm('覆蓋目前資料？'))return;S=x.S;H=x.H;INV=x.INV||{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''};save();init();alert('已匯入')}catch(e){alert('格式錯誤')}}
 
 
 const STOCK_RULES={
-  '大保':{base:'罐',pack:'箱',size:12},
-  '小保':{base:'罐',pack:'箱',size:24},
-  '伯朗咖啡':{base:'罐',pack:'箱',size:24},
-  '藍山咖啡':{base:'罐',pack:'箱',size:24},
-  '阿咧':{base:'罐',pack:'箱',size:24},
-  '金牌':{base:'罐',pack:'箱',size:24},
-  'Bar':{base:'罐',pack:'箱',size:24},
-  '海尼根':{base:'罐',pack:'箱',size:24},
-  '日式無糖綠茶':{base:'瓶',pack:'箱',size:24},
-  '礦泉水(小)':{base:'瓶',pack:'箱',size:24},
   'Peace 6號':{base:'包',pack:'條',size:10,cig:true},
   '七星(濃)':{base:'包',pack:'條',size:10,cig:true},
   '七星(中淡)':{base:'包',pack:'條',size:10,cig:true},
   '藍M':{base:'包',pack:'條',size:10,cig:true},
-  '峰(金)':{base:'包',pack:'條',size:10,cig:true}
+  '峰(金)':{base:'包',pack:'條',size:10,cig:true},
+  '大保':{base:'瓶',pack:'箱',size:12},
+  '大水':{base:'瓶',pack:'箱',size:12},
+  '科學麵':{base:'包',pack:'箱',size:40}
 };
 const STOCK_ALIASES={
   '伯朗':'伯朗咖啡','藍山':'藍山咖啡','peace 6號':'Peace 6號','peace6號':'Peace 6號',
-  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)'
+  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)','查理王白毫烏龍':'白毫烏龍','查理王無糖綠':'日式無糖綠茶'
 };
 let pendingStockOrder=[];
 
@@ -565,7 +576,7 @@ function canonicalStockName(name){
 function stockRule(name){
   const p=canonicalStockName(name);
   if(STOCK_RULES[p]) return STOCK_RULES[p];
-  // 尚未建立箱規時，仍能用「瓶／包」單筆入庫；快速叫貨不亂猜。
+  if(p) return {base:'罐',pack:'箱',size:24};
   return null;
 }
 function stockPackLabel(name){
@@ -744,7 +755,14 @@ function parseLoyverseStockRows(rows){
   return {out,errors,stockCol};
 }
 
+const DEFAULT_MIN_STOCK={"健酪":4,"麥香紅茶":8,"伯朗咖啡":8,"藍山咖啡":8,"Fin":12,"麥香奶茶":8,"日式無糖綠茶":8,"白毫烏龍":4,"冬瓜茶":4,"青草茶":4,"阿咧":8,"咖啡廣場(白)":4,"咖啡廣場(藍)":4,"蠻牛":4,"沙士":4,"水蠻牛":8,"維大力":8,"可口可樂":4,"康貝特200P":4,"金牌":48,"Bar":12,"海尼根":12,"大保":12,"小保":8,"科學麵":5,"七星(濃)":3,"七星(中淡)":3,"Peace 6號":5,"藍M":3,"峰(金)":3};
+function initMinStock(){S.minStock=S.minStock||{};S.minStockEnabled=S.minStockEnabled||{};Object.entries(DEFAULT_MIN_STOCK).forEach(([p,v])=>{if(S.minStock[p]===undefined)S.minStock[p]=v;if(S.minStockEnabled[p]===undefined)S.minStockEnabled[p]=true})}
+function minStockUnit(p){return p==='科學麵'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p)?'包':'罐'}
+function renderMinStockSettings(){if(!$('minStockSettings'))return;initMinStock();let k=q($('minStockSearch')?.value).toLowerCase();let ns=Object.keys(S.minStock).filter(p=>!k||p.toLowerCase().includes(k)).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('minStockSettings').innerHTML=ns.map(p=>`<div class="list"><div class="grow"><b>${e(p)}</b><div class="note">${minStockUnit(p)}</div></div><label><input class="minEnable" data-p="${encodeURIComponent(p)}" type="checkbox" ${S.minStockEnabled[p]!==false?'checked':''}> 提醒</label><input class="minVal" data-p="${encodeURIComponent(p)}" type="number" min="0" value="${n(S.minStock[p])}" style="width:80px"></div>`).join('')}
+function renderRestock(){if(!$('restockList'))return;initMinStock();let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(INV.items||{},p)&&n(INV.items[p])<n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('restockList').innerHTML=rs.length?rs.map(p=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}</b></div><div class="right"><b>${n(INV.items[p])} ${minStockUnit(p)}</b><div class="note">目前</div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}</b><div class="note">最低</div></div></div>`).join(''):'<div class="banner"><b>✓ 目前沒有需要補貨的商品。</b></div>'}
+
 function renderStock(){
+  initMinStock();renderMinStockSettings();renderRestock();
   refreshStockProductSelect();
   renderLoyversePending();
   const rows=Object.entries(INV.items||{}).sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
@@ -992,5 +1010,92 @@ function migrateV220PendingCleanup(){
   localStorage.setItem(key,'1');
 }
 
-function init(){INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
-</script></body></html>
+function init(){initMinStock();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCWSvuXgQvvp2C046Emgnu4-UVjGDY6Lo8",
+  authDomain: "analyzer-83c12.firebaseapp.com",
+  projectId: "analyzer-83c12",
+  storageBucket: "analyzer-83c12.firebasestorage.app",
+  messagingSenderId: "760630317595",
+  appId: "1:760630317595:web:4edd67688cf26968595ebe"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(firebaseApp);
+firebaseAuth.useDeviceLanguage();
+
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+
+const loginBtn = document.getElementById("firebaseLoginBtn");
+const logoutBtn = document.getElementById("firebaseLogoutBtn");
+const cloudStatus = document.getElementById("cloudStatus");
+const userBar = document.getElementById("firebaseUserBar");
+const userName = document.getElementById("firebaseUserName");
+const userEmail = document.getElementById("firebaseUserEmail");
+const uidBox = document.getElementById("firebaseUID");
+
+loginBtn?.addEventListener("click", async () => {
+  loginBtn.disabled = true;
+  cloudStatus.textContent = "☁️ 登入中…";
+  try {
+    await signInWithPopup(firebaseAuth, provider);
+  } catch (err) {
+    console.error(err);
+    cloudStatus.textContent = "☁️ 登入失敗";
+    let msg = err?.message || String(err);
+    if (err?.code === "auth/unauthorized-domain") {
+      msg = "Firebase 尚未授權這個 GitHub Pages 網域。請把 yuhan77777.github.io 加到 Authentication → 設定 → 已授權網域。";
+    } else if (err?.code === "auth/popup-blocked") {
+      msg = "瀏覽器擋住登入彈窗，請允許此網站彈出式視窗後再試一次。";
+    } else if (err?.code === "auth/popup-closed-by-user") {
+      msg = "登入視窗被關閉，尚未完成登入。";
+    }
+    alert("Google 登入沒有完成：\n" + msg);
+  } finally {
+    loginBtn.disabled = false;
+  }
+});
+
+logoutBtn?.addEventListener("click", async () => {
+  try {
+    await signOut(firebaseAuth);
+  } catch (err) {
+    console.error(err);
+    alert("登出失敗：" + (err?.message || err));
+  }
+});
+
+onAuthStateChanged(firebaseAuth, user => {
+  if (user) {
+    cloudStatus.textContent = "☁️ Google 已登入";
+    loginBtn.classList.add("hide");
+    logoutBtn.classList.remove("hide");
+    userBar.classList.remove("hide");
+    userName.textContent = user.displayName || "Google 使用者";
+    userEmail.textContent = user.email || "";
+    uidBox.textContent = user.uid;
+  } else {
+    cloudStatus.textContent = "☁️ 尚未登入";
+    loginBtn.classList.remove("hide");
+    logoutBtn.classList.add("hide");
+    userBar.classList.add("hide");
+    userName.textContent = "—";
+    userEmail.textContent = "—";
+    uidBox.textContent = "—";
+  }
+});
+</script>
+
+</body></html>
