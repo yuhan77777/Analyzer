@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.13</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.14</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.13</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.14</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -99,7 +99,9 @@ body.readonly .write-only{display:none!important}
 <div id="betelBatchBox" class="banner hide" style="margin-top:10px">
   <b>🌿 檳榔批次成本</b>
   <div class="note">填這批「實付總額」。Analyzer 會用本次入庫包數自動算每包成本，並把付款金額列入該日現金流支出。</div>
+  <label>本批數量（包）</label><input id="betelBatchQty" type="number" min="0" step="1" value="0">
   <label>本批實付總額（元）</label><input id="betelBatchAmount" type="number" min="0" step="1" value="0">
+  <div id="betelBatchUnitCost" class="note">每包成本：$0</div>
 </div>
 <label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
 <div class="actions"><button id="addStockIn">入庫</button></div>
@@ -491,7 +493,8 @@ function inventorySalesFromItems(I){
     if(['便當','耗材'].includes(q(x['類別']))) return;
     const mapped=invMapItem(x['商品'],x['數量']);
     if(!mapped.target||mapped.qty===0) return;
-    out[mapped.target]=(out[mapped.target]||0)+mapped.qty;
+    const stockName=mapped.target==='鋒(金)'?'峰(金)':mapped.target;
+    out[stockName]=(out[stockName]||0)+mapped.qty;
   });
   // 退款在 Loyverse 按商品收貨 CSV 裡通常是負數，所以自然會加回庫存。
   Object.keys(out).forEach(k=>{ if(Math.abs(out[k])<1e-9) delete out[k] });
@@ -530,7 +533,6 @@ function rebuildInventoryFromLatestSnapshot(){
     });
   });
 
-  Object.keys(items).forEach(p=>items[p]=Math.max(0,n(items[p])));
   INV.items=items;
   INV.baseDate=baseDate;
   const dates=[...byDate.keys()].sort();
@@ -776,7 +778,7 @@ function applyCurrentSalesImmediately(){
   cur.inventoryPreviewApplied=false;
 }
 
-function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔銷售成本（批次）',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['檳榔今日進貨現金支出',cur.betelCashOut||0],['淨收入／現金流',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`;if($('betelCostInfo'))$('betelCostInfo').textContent=cur.cons.betelParts?.length?`檳榔成本明細：${formatBetelParts(cur.cons.betelParts)}`:'本日無檳榔銷售'}
+function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日未收款 <span class="pill">未收款</span></td><td class="num">-${f(cur.unp)}</td></tr><tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔銷售成本（批次）',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['檳榔今日進貨現金支出',cur.betelCashOut||0],['淨收入／現金流',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`;if($('betelCostInfo'))$('betelCostInfo').textContent=cur.cons.betelParts?.length?`檳榔成本明細：${formatBetelParts(cur.cons.betelParts)}`:'本日無檳榔銷售'}
 $('calcBtn').onclick=calc;$('lunchBtn').onclick=async()=>{let R,I;if(API_R&&API_I){R=JSON.parse(JSON.stringify(API_R));I=JSON.parse(JSON.stringify(API_I))}else{R=await read('rf');I=await read('if')}if(!R||!I)return alert('請先按「從 Loyverse 讀取」，或上傳兩份 CSV 後再產生便當清單');$('lunchText').textContent=lunchTxt(R,I);$('lunchBox').classList.remove('hide')};$('copyLunch').onclick=async()=>{try{await navigator.clipboard.writeText($('lunchText').textContent);alert('已複製')}catch(e){alert('請長按文字複製')}}
 $('saveDay').onclick=()=>{
   if(!cur)return;
@@ -1758,8 +1760,17 @@ $('confirmStockOrder').onclick=()=>{
   $('stockAfter').innerHTML=`已完成 ${pendingStockOrder.length} 項進貨，庫存已更新。<br><b>本張進貨單：${f(orderTotal)}</b>`;
   $('stockOrderPaste').value='';$('stockOrderPreview').innerHTML='';pendingStockOrder=[];$('confirmStockOrder').disabled=true;
 };
+if($('betelBatchQty')){
+  const updateBetelCost=()=>{
+    const qty=n($('betelBatchQty').value),amt=n($('betelBatchAmount').value);
+    if($('betelBatchUnitCost')) $('betelBatchUnitCost').textContent='每包成本：'+f(qty>0?amt/qty:0);
+    if(q($('stockProduct').value)==='檳榔') $('stockQty').value=qty;
+  };
+  $('betelBatchQty').addEventListener('input',updateBetelCost);
+  $('betelBatchAmount').addEventListener('input',updateBetelCost);
+}
 $('addStockIn').onclick=()=>{
-  const product=q($('stockProduct').value),rawQty=n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value),unit=$('stockUnit').value;
+  const product=q($('stockProduct').value),rawQty=q($('stockProduct').value)==='檳榔'?n($('betelBatchQty')?.value):n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value),unit=$('stockUnit').value;
   if(!product||rawQty<=0)return alert('請輸入商品與數量');
 
   const r=stockRule(product);
@@ -1773,6 +1784,7 @@ $('addStockIn').onclick=()=>{
 
   const before=n(INV.items[product]),after=before+qty;
   const betelAmount=product==='檳榔'?n($('betelBatchAmount')?.value):0;
+  if(product==='檳榔' && rawQty<=0)return alert('檳榔進貨請填「本批數量（包）」');
   if(product==='檳榔' && betelAmount<=0)return alert('檳榔進貨請填「本批實付總額」');
   INV.items[product]=after;
   if(product==='檳榔'){
