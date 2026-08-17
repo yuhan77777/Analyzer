@@ -556,10 +556,33 @@ function currentReceiptChoices(){
   const rows=(API_R||[]);
   const seen=new Set(), out=[];
   rows.forEach(r=>{
-    const receipt=q(r['收據流水號']||r['收據號碼']||r['receipt_number']||r['receipt']||'');
+    const receipt=q(r.receipt_number||r['收據流水號']||r['收據號碼']||r.receipt||'');
     if(!receipt||seen.has(receipt))return;
     seen.add(receipt);
-    const amount=n(r['總額']||r['銷售額']||r['total_money']||r['total']||r['amount']||0);
+
+    // Loyverse /v1.0/receipts 的整張收據金額是 total_money。
+    // 若資料曾被 Analyzer 正規化，也保留其他欄位名稱作 fallback。
+    let amount=n(
+      r.total_money ??
+      r.total ??
+      r.amount ??
+      r['總額'] ??
+      r['銷售額'] ??
+      0
+    );
+
+    // 極端 fallback：若上層沒有總額，才由 line_items 加總。
+    if(!amount && Array.isArray(r.line_items)){
+      amount=r.line_items.reduce((sum,it)=>{
+        const lineTotal=n(
+          it.total_money ??
+          it.gross_total_money ??
+          (n(it.price)*n(it.quantity))
+        );
+        return sum+lineTotal;
+      },0);
+    }
+
     out.push({receipt,amount});
   });
   return out;
