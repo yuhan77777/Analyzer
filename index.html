@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.24.7</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.27.1</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -8,7 +8,7 @@
 body.readonly .write-only{display:none!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.24.7</h1><div class="note">日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.27.1</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -29,10 +29,21 @@ body.readonly .write-only{display:none!important}
 <div class="tabs"><button class="tb on" data-t="daily">📊 今日結帳</button><button class="tb" data-t="hist">📅 日結紀錄</button><button class="tb" data-t="month">📈 月報表</button><button class="tb" data-t="stock">📦 進貨／庫存</button><button class="tb" data-t="set">⚙️ 設定</button></div>
 
 <section id="daily" class="tab on"><div id="editBanner" class="banner hide"></div><div id="unknown" class="card hide" style="margin-top:12px"></div><div class="grid">
-<div class="card half"><h3>① Loyverse CSV</h3><label>收據 CSV</label><div class="row"><input id="rf" type="file" accept=".csv"><button class="alt sm" onclick="clearF('rf','rn')">刪除</button></div><div id="rn" class="note">尚未選擇</div><label>按商品收貨 CSV</label><div class="row"><input id="if" type="file" accept=".csv"><button class="alt sm" onclick="clearF('if','in')">刪除</button></div><div id="in" class="note">尚未選擇</div><div class="actions"><button id="lunchBtn">🍱 便當店清單</button><button id="calcBtn">開始結算</button></div><div class="note">便當店資料＝「類別：便當」。退款會把對應原銷售一起排除。</div></div>
-<div class="card half"><h3>② 特殊調整</h3><div class="grid" style="margin-top:0"><div class="half"><label>停車費</label><input id="park" type="number" value="190"></div><div class="half"><label>以前未收款今天收回</label><input id="recover" type="number" value="0"></div><div class="half"><label>今天未收款</label><input id="unpaid" type="number" value="0"></div><div class="half"><label>補登付款方式</label><select id="extraPay"></select></div><div class="half"><label>補登銷售額</label><input id="extraSale" type="number" value="0"></div><div class="half"><label>補登成本</label><input id="extraCost" type="number" value="0"></div></div></div>
+<div class="card half"><h3>① Loyverse 今日資料</h3>
+<div class="banner" style="margin-top:0"><b>✨ V2.27 API 模式</b><div class="note">直接從 Loyverse 讀取指定日期，不需要下載兩份 CSV。CSV 仍保留作為備用。</div></div>
+<label>結帳日期</label><input id="loyverseApiDate" type="date">
+<div class="actions"><button id="loyverseApiFetch">🔄 從 Loyverse 讀取</button><button id="loyverseApiClear" class="alt">改用 CSV</button></div>
+<div id="loyverseApiStatus" class="note" style="margin-top:8px">尚未讀取 Loyverse API。</div>
+<details style="margin-top:12px"><summary><b>📄 CSV 備用模式</b></summary>
+<label>收據 CSV</label><div class="row"><input id="rf" type="file" accept=".csv"><button class="alt sm" onclick="clearF('rf','rn')">刪除</button></div><div id="rn" class="note">尚未選擇</div>
+<label>按商品收貨 CSV</label><div class="row"><input id="if" type="file" accept=".csv"><button class="alt sm" onclick="clearF('if','in')">刪除</button></div><div id="in" class="note">尚未選擇</div></details>
+<div class="actions"><button id="lunchBtn">🍱 便當店清單</button><button id="calcBtn">開始結算</button></div><div class="note">便當店資料＝「類別：便當」。退款會把對應原銷售一起排除。</div></div>
+<div class="card half"><h3>② 特殊調整</h3><div class="grid" style="margin-top:0"><div class="half"><label>停車費</label><input id="park" type="number" value="190"></div><div class="half"><label>以前未收款今天收回</label><input id="recover" type="number" value="0" class="hide"><div id="unpaidOpenList" class="note">目前沒有尚未收款紀錄。</div></div>
+<div class="half"><label>今天未收款</label><input id="unpaid" type="number" value="0" class="hide">
+<div class="row"><input id="unpaidReceipt" type="text" placeholder="收據流水號，例如 1-0148"><input id="unpaidAmount" type="number" min="0" step="1" value="0" placeholder="金額"></div>
+<input id="unpaidNote" type="text" placeholder="備註（可不填）"><div class="actions"><button class="sm" id="addUnpaidDetail">＋新增未收款</button></div><div id="todayUnpaidList" class="note">今天尚無手動未收款。</div></div><div class="half"><label>補登付款方式</label><select id="extraPay"></select></div><div class="half"><label>補登銷售額</label><input id="extraSale" type="number" value="0"></div><div class="half"><label>補登成本</label><input id="extraCost" type="number" value="0"></div></div></div>
 <div id="lunchBox" class="card hide"><div class="top"><div><h3 style="margin:0">🍱 便當店清單</h3><div class="note">「便當」類別全部列出；總數只計便當、燴飯、麵、水餃、滷肉飯。單點、湯不計數。</div></div><button class="alt" id="copyLunch">複製</button></div><pre id="lunchText"></pre></div>
-<div class="card half"><h3>③ 今日耗材調整</h3><div class="note">只在漏按／修正時用＋－；啤酒貼紙已由 Loyverse 綁定，不在這裡。</div><div class="list"><div class="grow"><b>免洗杯</b><div id="cupInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('cup',-1)">−</button><b id="cupAdj">0</b><button onclick="adj('cup',1)">＋</button></div></div><div class="list"><div class="grow"><b>黑色塑膠袋</b><div id="bagInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('bag',-1)">−</button><b id="bagAdj">0</b><button onclick="adj('bag',1)">＋</button></div></div></div>
+<div class="card half"><h3>③ 今日耗材調整</h3><div class="note">只在漏按／修正時用＋－；啤酒貼紙已由 Loyverse 綁定，不在這裡。</div><div class="list"><div class="grow"><b>免洗杯</b><div id="cupInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('cup',-1)">−</button><b id="cupAdj">0</b><button onclick="adj('cup',1)">＋</button></div></div><div class="list"><div class="grow"><b>黑色塑膠袋</b><div id="bagInfo" class="note">尚未結算</div><div id="betelCostInfo" class="note"></div></div><div class="step"><button class="alt" onclick="adj('bag',-1)">−</button><b id="bagAdj">0</b><button onclick="adj('bag',1)">＋</button></div></div></div>
 <div class="card half"><div class="top"><div><h3 style="margin:0">④ 今日代墊請款</h3><div class="note">不影響 POS／成本／毛利／實收，只進請款。</div></div><button class="sm" id="addAdv">＋新增</button></div><div id="advList" class="note">今天尚無代墊。</div></div>
 <div class="card half"><div class="top"><div><h3 style="margin:0">⑤ 今日新增預付款</h3><div class="note">只有真的收到新的預付款時才新增；增加預付餘額，也增加「實際收到」，但不增加 POS、營業額、毛利、淨收入。</div></div><button class="sm" id="addTopup">＋新增預付</button></div><div id="topupList" class="note">今天尚無新增預付款。</div></div>
 <div class="card"><h3>今日結果</h3><div id="empty" class="note">上傳兩份 CSV 後開始結算。</div><div id="result" class="hide"><div class="kpis"><div class="kpi"><small>POS 營業額</small><b id="pos">$0</b></div><div class="kpi"><small>應付便當店</small><b id="lp">$0</b></div><div class="kpi em"><small>實際收到</small><b id="actual">$0</b></div><div class="kpi em"><small>淨收入</small><b id="net">$0</b></div><div class="kpi"><small>福利社營業額</small><b id="store">$0</b></div><div class="kpi"><small>毛利</small><b id="gross">$0</b></div><div class="kpi"><small>毛利率</small><b id="margin">0%</b></div><div class="kpi"><small>便當計數</small><b id="lc">0</b></div></div></div></div>
@@ -47,6 +58,7 @@ body.readonly .write-only{display:none!important}
 <section id="month" class="tab"><div class="grid">
 <div class="card"><h3>📈 月報表／自訂區間</h3><div class="grid" style="margin-top:0"><div class="half"><label>開始</label><input id="ms" type="date"></div><div class="half"><label>結束</label><input id="me" type="date"></div></div><div class="actions"><button class="alt" onclick="period(0)">本期21～20</button><button class="alt" onclick="period(-1)">上期</button><button id="makeMonth">產生</button><button class="alt" id="expMonth">📤 匯出月報</button></div></div>
 <div id="mSum" class="card hide"><h3>區間合計</h3><div id="mr" class="note"></div><div class="kpis"><div class="kpi"><small>POS</small><b id="mp">$0</b></div><div class="kpi"><small>便當店</small><b id="ml">$0</b></div><div class="kpi"><small>福利社營業額</small><b id="mst">$0</b></div><div class="kpi em"><small>實際收到</small><b id="ma">$0</b></div><div class="kpi"><small>毛利</small><b id="mg">$0</b></div><div class="kpi"><small>毛利率</small><b id="mm">0%</b></div><div class="kpi"><small>停車費</small><b id="mpark">$0</b></div><div class="kpi em"><small>淨收入</small><b id="mn">$0</b></div></div></div>
+<div id="mPurchase" class="card hide"><h3>📦 本期進貨</h3><div class="kpis"><div class="kpi em"><small>進貨總額</small><b id="mPurchaseTotal">$0</b></div><div class="kpi"><small>進貨筆數</small><b id="mPurchaseCount">0</b></div></div><details style="margin-top:10px"><summary><b>查看進貨明細</b></summary><div id="mPurchaseRows" style="margin-top:8px"></div></details></div>
 <div id="mDays" class="card hide"><h3>每日明細</h3><div style="overflow:auto"><table><thead><tr><th>日期</th><th class="num">POS</th><th class="num">便當店</th><th class="num">實收</th><th class="num">毛利</th><th class="num">淨收入</th></tr></thead><tbody id="mRows"></tbody></table></div></div>
 <div id="claims" class="card hide"><h3>💳 月結請款</h3><div class="note">一般月結只列日期＋金額；代墊才顯示項目明細。</div><div id="claimList"></div></div>
 </div></section>
@@ -72,7 +84,8 @@ body.readonly .write-only{display:none!important}
 <label>快速貼上叫貨明細</label>
 <textarea id="stockOrderPaste" rows="7" placeholder="大保*2&#10;伯朗*1&#10;藍山*1&#10;Peace 6號*2&#10;七星(濃)*1&#10;阿咧*1"></textarea>
 <div class="note">叫貨規則：香菸 *1＝1條＝10包；大保、大水 *1＝12；科學麵 *1＝40包；其餘商品 *1＝1箱＝24。</div>
-<div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
+<div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="addStockOrderRow">＋新增品項</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
+<div class="note">解析後會自動帶入預設箱／條價格；本次價格不同可直接修改。修改只影響這張進貨單，不會改掉預設價格。</div>
 <div id="stockOrderPreview"></div>
 
 <div style="height:1px;background:var(--b);margin:14px 0"></div>
@@ -81,6 +94,11 @@ body.readonly .write-only{display:none!important}
 <label>進貨單位</label><select id="stockUnit"></select>
 <label id="stockQtyLabel">數量</label><input id="stockQty" type="number" value="0" step="1">
 <div id="stockUnitHelp" class="note"></div>
+<div id="betelBatchBox" class="banner hide" style="margin-top:10px">
+  <b>🌿 檳榔批次成本</b>
+  <div class="note">填這批「實付總額」。Analyzer 會用本次入庫包數自動算每包成本，並把付款金額列入該日現金流支出。</div>
+  <label>本批實付總額（元）</label><input id="betelBatchAmount" type="number" min="0" step="1" value="0">
+</div>
 <label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
 <div class="actions"><button id="addStockIn">入庫</button></div>
 <div id="stockAfter" class="banner hide"></div></div>
@@ -105,11 +123,11 @@ body.readonly .write-only{display:none!important}
 </details>
 </div>
 <div class="card half"><h3>🔍 今天下班實際盤點</h3>
-<div class="note">平常每天就用這裡。先貼今天下班盤點 → 同時比對 Analyzer 理論庫存與 Loyverse 目前庫存 → 看差異／待修改 → 最後才採用新基準。</div>
+<div class="note">平常每天就用這裡。若實盤比理論少，妳可以直接判定「漏按銷售」或「其他損耗」；漏按銷售會補進當天營業額與成本。最後再採用本次盤點為新基準。</div>
 <textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea>
 <div class="actions"><button id="compareStockBtn">① 比對庫存</button><button class="alt" id="adoptSnapshotBtn">② 採用本次盤點為新基準</button></div>
 <div id="compareResult"></div></div>
-<div class="card"><div class="top"><div><h3 style="margin:0">📲 Loyverse 待調整清單</h3><div class="note">只顯示「實際盤點與 Loyverse 不一致」的商品；紅色＝短少，黃色＝實盤較多。</div></div><div class="actions"><button class="alt sm" id="copyLoyversePending">複製清單</button><button class="danger sm" id="clearLoyversePending">清空</button></div></div><div id="loyversePendingList"></div></div>
+<div class="card"><div class="top"><div><h3 style="margin:0">📲 Loyverse 待調整清單</h3><div class="note">會列出兩種需要同步 Loyverse 的情況：① 進貨後的最新總庫存；② 實際盤點與 Loyverse 不一致。盤差紅色＝短少、黃色＝實盤較多。</div></div><div class="actions"><button class="alt sm" id="copyLoyversePending">複製清單</button><button class="danger sm" id="clearLoyversePending">清空</button></div></div><div id="loyversePendingList"></div></div>
 
 <div class="card half"><h3>庫存異動紀錄</h3><div id="stockLog"></div></div>
 </div></section>
@@ -134,7 +152,7 @@ body.readonly .write-only{display:none!important}
 <div class="card"><details><summary>📦 最低庫存設定</summary><div class="note" style="margin:8px 0">平常可收合。低於或等於最低庫存就提醒；科學麵、香菸為包，其餘為罐。</div><input id="minStockSearch" type="text" placeholder="搜尋商品"><div id="minStockSettings"></div><div class="actions"><button id="saveMinStock">儲存最低庫存設定</button></div></details></div><div id="modal" class="modal hide"><div><div id="mb"></div><div class="actions"><button class="alt" onclick="closeM()">關閉</button></div></div></div>
 <script>
 const $=i=>document.getElementById(i),K={s:'a2s',h:'a2h',i:'a2i'},DEF={cost:{cup:.375,bag:2,betel:20.689655},pay:[{id:'cash',name:'Cash',kind:'cash',bal:0},{id:'bank',name:'轉帳(北富銀)',kind:'transfer',bal:0},{id:'sh',name:'月結(盛閎)',kind:'monthly',bal:0},{id:'fire',name:'月結(消防)',kind:'monthly',bal:0},{id:'min',name:'預付(民哥)',kind:'prepaid',bal:392},{id:'u',name:'未收款',kind:'unpaid',bal:0}]};
-let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''}),cur=null,adv=[],topups=[],A={cup:0,bag:0},monthRows=[],currentCompare=null;
+let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',lastSalesDate:'',pending:{},loyverseStock:{},loyverseStockDate:''}),cur=null,adv=[],topups=[],unpaidDetails=[],recoverDetails=[],A={cup:0,bag:0},monthRows=[],currentCompare=null,API_R=null,API_I=null,API_META=null;
 /* V2.3 一次性修正：
    - 民哥目前正確預付餘額 = 92
    - 移除先前誤登的「今日新增預付 1000」
@@ -236,7 +254,11 @@ window.replaceAnalyzerState=(state)=>{
   localStorage.setItem(K.i,JSON.stringify(state.INV));
 };
 function n(v){let x=parseFloat(String(v??'').replace(/,/g,''));return isFinite(x)?x:0}function f(v){return '$'+n(v).toLocaleString('zh-TW',{maximumFractionDigits:2})}function q(s){return String(s??'').trim()}function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
-function csv(t){let R=[],r=[],c='',z=false;for(let i=0;i<t.length;i++){let x=t[i],y=t[i+1];if(x=='"'){if(z&&y=='"'){c+='"';i++}else z=!z}else if(x==','&&!z){r.push(c);c=''}else if((x=='\n'||x=='\r')&&!z){if(x=='\r'&&y=='\n')i++;r.push(c);c='';if(r.some(v=>v!==''))R.push(r);r=[]}else c+=x}if(c||r.length){r.push(c);R.push(r)}if(!R.length)return[];let h=R[0].map(q);return R.slice(1).map(x=>Object.fromEntries(h.map((k,i)=>[k,q(x[i]??'')])))}async function read(id){let x=$(id).files[0];return x?csv(await x.text()):null}
+function csv(t){let R=[],r=[],c='',z=false;for(let i=0;i<t.length;i++){let x=t[i],y=t[i+1];if(x=='"'){if(z&&y=='"'){c+='"';i++}else z=!z}else if(x==','&&!z){r.push(c);c=''}else if((x=='\n'||x=='\r')&&!z){if(x=='\r'&&y=='\n')i++;r.push(c);c='';if(r.some(v=>v!==''))R.push(r);r=[]}else c+=x}if(c||r.length){r.push(c);R.push(r)}if(!R.length)return[];let h=R[0].map(q);return R.slice(1).map(x=>Object.fromEntries(h.map((k,i)=>[k,q(x[i]??'')])))}async function read(id){
+  if(id==='rf'&&API_R)return JSON.parse(JSON.stringify(API_R));
+  if(id==='if'&&API_I)return JSON.parse(JSON.stringify(API_I));
+  let x=$(id).files[0];return x?csv(await x.text()):null
+}
 function dtime(s){return new Date(String(s).replace(' ','T'))}
 function active(R){
   // 這個函式仍供其他結算用途使用：全額退款可對應原收據。
@@ -399,6 +421,67 @@ function invMapItem(name,qty){
   return {target,qty:qty*mult};
 }
 
+
+function initBetelBatches(){
+  INV.betelBatches=Array.isArray(INV.betelBatches)?INV.betelBatches:[];
+}
+function betelBatchCostForSale(qty,commit=false){
+  initBetelBatches();
+  let left=Math.max(0,n(qty)), total=0, parts=[];
+  for(const b of INV.betelBatches){
+    const avail=Math.max(0,n(b.remaining));
+    if(left<=0) break;
+    if(avail<=0) continue;
+    const take=Math.min(left,avail), unit=n(b.unitCost);
+    total+=take*unit;
+    parts.push({batchId:b.id,qty:take,unitCost:unit,amount:take*unit});
+    if(commit)b.remaining=avail-take;
+    left-=take;
+  }
+  // 舊庫存/未建立批次的數量，才用設定中的預設成本補。
+  if(left>0){
+    const unit=n(S.cost.betel);
+    total+=left*unit;
+    parts.push({batchId:'legacy',qty:left,unitCost:unit,amount:left*unit});
+  }
+  return {total,parts};
+}
+function betelCashOutForDate(date){
+  initBetelBatches();
+  return INV.betelBatches.filter(b=>b.date===date).reduce((a,b)=>a+n(b.amount),0);
+}
+function formatBetelParts(parts){
+  return (parts||[]).map(x=>`${n(x.qty)}包 × $${n(x.unitCost).toFixed(2)} = $${n(x.amount).toFixed(2)}`).join(' ＋ ');
+}
+
+
+function updateStockSaleDefaults(I){
+  S.stockSaleDefaults=S.stockSaleDefaults||{};
+  const agg={};
+
+  I.forEach(x=>{
+    if(['便當','耗材'].includes(q(x['類別']))) return;
+    const mapped=invMapItem(x['商品'],x['數量']);
+    if(!mapped.target || !mapped.qty) return;
+
+    const k=mapped.target;
+    agg[k]=agg[k]||{qty:0,sales:0,cost:0};
+    agg[k].qty+=n(mapped.qty);
+    agg[k].sales+=n(x['淨銷售額']);
+    agg[k].cost+=n(x['銷售成本']);
+  });
+
+  Object.entries(agg).forEach(([product,a])=>{
+    if(a.qty>0){
+      S.stockSaleDefaults[product]={
+        unitSale:a.sales/a.qty,
+        unitCost:a.cost/a.qty,
+        updatedAt:new Date().toISOString()
+      };
+    }
+  });
+}
+
 function inventorySalesFromItems(I){
   const out={};
   I.forEach(x=>{
@@ -465,16 +548,148 @@ function refreshCurrentPrepaidBalances(){
   });
 }
 
-async function calc(){let R=await read('rf'),I=await read('if');if(!R||!I)return alert('請上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betelCsv===0?Math.max(0,betel)*S.cost.betel:0,cost=base+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=n($('recover').value),unp=Knd.unpaid+n($('unpaid').value),topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={},reportDate=(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10);S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0),opening=prepaidOpening(x,reportDate);pre[x.name]={id:x.id,open:opening,use,add,close:opening-use+add}});cur={date:reportDate,pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,net:g-park,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc},salesByProduct:inventorySalesFromItems(I),extra:{es,ec,ep:ep?.id||'',manualUnpaid:n($('unpaid').value)}};renderCalc();renderRestock()}
-function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔補正',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['淨收入',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`}
-$('calcBtn').onclick=calc;$('lunchBtn').onclick=async()=>{let R=await read('rf'),I=await read('if');if(!R||!I)return alert('便當清單需要兩份 CSV');$('lunchText').textContent=lunchTxt(R,I);$('lunchBox').classList.remove('hide')};$('copyLunch').onclick=async()=>{try{await navigator.clipboard.writeText($('lunchText').textContent);alert('已複製')}catch(e){alert('請長按文字複製')}}
+
+function openUnpaidRecords(){
+  const all=[];
+  H.forEach(day=>(day.unpaidDetails||[]).forEach(u=>{if(!u.paidDate)all.push({...u,sourceDate:day.date})}));
+  return all.sort((a,b)=>(a.sourceDate||'').localeCompare(b.sourceDate||''));
+}
+function renderUnpaidManager(){
+  if(!$('todayUnpaidList'))return;
+  $('todayUnpaidList').innerHTML=unpaidDetails.length?unpaidDetails.map((u,i)=>`<div class="list"><div class="grow"><b>收據 ${e(u.receipt)}</b><div class="note">${f(u.amount)}${u.note?'｜'+e(u.note):''}</div></div><button class="danger sm" onclick="removeTodayUnpaid(${i})">刪除</button></div>`).join(''):'<div class="note">今天尚無手動未收款。</div>';
+  const open=openUnpaidRecords();
+  $('unpaidOpenList').innerHTML=open.length?open.map(u=>{const selected=recoverDetails.some(r=>r.id===u.id);return `<div class="list"><div class="grow"><b>收據 ${e(u.receipt)}</b><div class="note">${e(u.sourceDate)}｜${f(u.amount)}${u.note?'｜'+e(u.note):''}</div></div><button class="${selected?'danger':'alt'} sm" onclick="toggleRecoverUnpaid('${encodeURIComponent(u.id)}')">${selected?'取消':'今天收款'}</button></div>`}).join(''):'<div class="note">目前沒有尚未收款紀錄。</div>';
+}
+window.removeTodayUnpaid=i=>{unpaidDetails.splice(i,1);renderUnpaidManager()};
+window.toggleRecoverUnpaid=encodedId=>{const id=decodeURIComponent(encodedId),idx=recoverDetails.findIndex(x=>x.id===id);if(idx>=0)recoverDetails.splice(idx,1);else{const u=openUnpaidRecords().find(x=>x.id===id);if(u)recoverDetails.push({...u})}renderUnpaidManager()};
+$('addUnpaidDetail').onclick=()=>{
+  const receipt=q($('unpaidReceipt').value),amount=n($('unpaidAmount').value),note=q($('unpaidNote').value);
+  if(!receipt)return alert('請輸入收據流水號');
+  if(amount<=0)return alert('請輸入未收款金額');
+  const exists=[...H.flatMap(d=>d.unpaidDetails||[]),...unpaidDetails].some(x=>q(x.receipt)===receipt);
+  if(exists)return alert('這個收據流水號已經有未收款紀錄：'+receipt);
+  unpaidDetails.push({id:uid(),receipt,amount,note,paidDate:''});
+  $('unpaidReceipt').value='';$('unpaidAmount').value=0;$('unpaidNote').value='';renderUnpaidManager();
+};
+
+
+const LOYVERSE_API_ENDPOINT='https://asia-east1-analyzer-83c12.cloudfunctions.net/analyzerApi';
+function apiLocalDate(){
+  const d=new Date(), y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function normalizeApiPaymentName(name){
+  name=q(name);
+  if(S.pay.some(p=>p.name===name))return name;
+  if(['現金','Cash','CASH'].includes(name)){
+    const p=S.pay.find(x=>x.kind==='cash');if(p)return p.name;
+  }
+  return name;
+}
+function clearApiData(show=true){
+  API_R=null;API_I=null;API_META=null;
+  if($('loyverseApiStatus'))$('loyverseApiStatus').textContent=show?'已切換為 CSV 備用模式。':'尚未讀取 Loyverse API。';
+  if($('rn'))$('rn').textContent='尚未選擇';
+  if($('in'))$('in').textContent='尚未選擇';
+}
+async function fetchLoyverseApi(){
+  const date=$('loyverseApiDate')?.value||apiLocalDate();
+  const btn=$('loyverseApiFetch'), status=$('loyverseApiStatus');
+  btn.disabled=true;status.textContent=`正在讀取 ${date} Loyverse 資料…`;
+  try{
+    const url=LOYVERSE_API_ENDPOINT+'?date='+encodeURIComponent(date);
+    const idToken=await window.getAnalyzerFirebaseToken?.();
+    if(!idToken)throw new Error('請先在 Analyzer 右上角完成 Google 登入');
+    const resp=await fetch(url,{method:'GET',cache:'no-store',headers:{Authorization:'Bearer '+idToken}});
+    const data=await resp.json().catch(()=>({ok:false,error:'Firebase 回傳格式不是 JSON'}));
+    if(!resp.ok||!data.ok)throw new Error(data.error||data.loyverse?.message||`HTTP ${resp.status}`);
+    if(!Array.isArray(data.receiptRows)||!Array.isArray(data.itemRows))throw new Error('API 回傳缺少 Analyzer 資料列');
+    API_R=data.receiptRows.map(r=>({...r,'付款方式':normalizeApiPaymentName(r['付款方式'])}));
+    API_I=data.itemRows;
+    API_META=data.meta||{};
+    const unknownPays=unknown(API_R);
+    const payWarn=unknownPays.length?`｜⚠️ 未設定付款：${unknownPays.join('、')}`:'';
+    status.innerHTML=`✅ <b>${e(date)}</b> 已讀取｜收據 ${n(API_META.receipts)} 張｜商品明細 ${n(API_META.items)} 筆${payWarn}<br><b>現在可直接按「開始結算」，不用上傳 CSV。</b>`;
+    $('rn').textContent=`API：${date} 收據 ${n(API_META.receipts)} 張`;
+    $('in').textContent=`API：${date} 商品明細 ${n(API_META.items)} 筆`;
+    if(API_META.receipts===0)alert(`${date} 沒有抓到 Loyverse 收據。請確認日期。`);
+    else alert(`✅ ${date} Loyverse 資料已取得\n收據 ${n(API_META.receipts)} 張｜商品明細 ${n(API_META.items)} 筆`);
+  }catch(err){
+    console.error(err);clearApiData(false);status.textContent='❌ Loyverse 讀取失敗：'+(err?.message||err);alert('Loyverse 讀取失敗：\n'+(err?.message||err));
+  }finally{btn.disabled=false}
+}
+if($('loyverseApiDate'))$('loyverseApiDate').value=apiLocalDate();
+$('loyverseApiFetch')?.addEventListener('click',fetchLoyverseApi);
+$('loyverseApiClear')?.addEventListener('click',()=>clearApiData(true));
+$('rf')?.addEventListener('change',()=>{if($('rf').files?.length)clearApiData(true)});
+$('if')?.addEventListener('change',()=>{if($('if').files?.length)clearApiData(true)});
+
+async function calc(){let R,I;if(API_R&&API_I){R=JSON.parse(JSON.stringify(API_R));I=JSON.parse(JSON.stringify(API_I))}else{R=await read('rf');I=await read('if')}if(!R||!I)return alert('請先按「從 Loyverse 讀取」，或改用 CSV 備用模式上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),betelBatch=betelBatchCostForSale(Math.max(0,betel),false),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betel>0?betelBatch.total:0,cost=base-betelCsv+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=recoverDetails.reduce((a,x)=>a+n(x.amount),0)+n($('recover').value),manualUnpaid=unpaidDetails.reduce((a,x)=>a+n(x.amount),0)+n($('unpaid').value),unp=Knd.unpaid+manualUnpaid,topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-unp+rec+topupTotal,pre={},reportDate=(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10);S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0),opening=prepaidOpening(x,reportDate);pre[x.name]={id:x.id,open:opening,use,add,close:opening-use+add}});updateStockSaleDefaults(I);let betelCashOut=betelCashOutForDate(reportDate);cur={date:reportDate,pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,betelCashOut,net:g-park-betelCashOut,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),unpaidDetails:JSON.parse(JSON.stringify(unpaidDetails)),recoverDetails:JSON.parse(JSON.stringify(recoverDetails)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc,betelQty:Math.max(0,betel),betelParts:betelBatch.parts},salesByProduct:inventorySalesFromItems(I),inventoryPreviewApplied:false,extra:{es,ec,ep:ep?.id||'',manualUnpaid}};applyCurrentSalesImmediately();renderCalc();renderRestock()}
+
+
+function restoreBetelUsage(day){
+  initBetelBatches();
+  (day?.betelBatchUsage||[]).forEach(u=>{
+    if(u.batchId==='legacy')return;
+    const b=INV.betelBatches.find(x=>x.id===u.batchId);
+    if(b)b.remaining=n(b.remaining)+n(u.qty);
+  });
+}
+function commitBetelUsage(day){
+  const qty=n(day?.salesByProduct?.['檳榔']);
+  if(qty<=0){day.betelBatchUsage=[];return}
+  const x=betelBatchCostForSale(qty,true);
+  day.betelBatchUsage=x.parts;
+  day.cons=day.cons||{};
+  day.cons.btc=x.total;
+  day.cons.betelParts=x.parts;
+}
+
+function applyCurrentSalesImmediately(){
+  if(!cur?.date || !cur?.salesByProduct) return;
+
+  // 若同一天已有正式日結，先還原舊版銷售扣庫存，再套用這次最新報表，
+  // 確保重新上傳/重算同一天不會重複扣。
+  const old=H.find(x=>x.date===cur.date);
+  if(old?.inventoryApplied){
+    applyInventorySales(old,+1);
+    restoreBetelUsage(old);
+    old.inventoryApplied=false;
+  }
+
+  // 若這一輪計算已經扣過，就不要再扣一次。
+  if(cur.inventoryPreviewApplied) return;
+
+  // 同日期銷售 log 只保留一筆最新結果。
+  INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===cur.date));
+
+  applyInventorySales(cur,-1);
+  commitBetelUsage(cur);
+  cur.inventoryPreviewApplied=true;
+  INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
+
+  INV.logs.push({
+    id:'sale-'+cur.date,
+    date:cur.date,
+    type:'sales',
+    note:'結帳報表上傳後立即扣除商品銷售',
+    sales:{...cur.salesByProduct}
+  });
+
+  save();
+  renderStock();
+  renderRestock();
+}
+
+function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔銷售成本（批次）',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['檳榔今日進貨現金支出',cur.betelCashOut||0],['淨收入／現金流',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`;if($('betelCostInfo'))$('betelCostInfo').textContent=cur.cons.betelParts?.length?`檳榔成本明細：${formatBetelParts(cur.cons.betelParts)}`:'本日無檳榔銷售'}
+$('calcBtn').onclick=calc;$('lunchBtn').onclick=async()=>{let R,I;if(API_R&&API_I){R=JSON.parse(JSON.stringify(API_R));I=JSON.parse(JSON.stringify(API_I))}else{R=await read('rf');I=await read('if')}if(!R||!I)return alert('請先按「從 Loyverse 讀取」，或上傳兩份 CSV 後再產生便當清單');$('lunchText').textContent=lunchTxt(R,I);$('lunchBox').classList.remove('hide')};$('copyLunch').onclick=async()=>{try{await navigator.clipboard.writeText($('lunchText').textContent);alert('已複製')}catch(e){alert('請長按文字複製')}}
 $('saveDay').onclick=()=>{
   if(!cur)return;
 
   const old=H.find(x=>x.date===cur.date);
 
-  // 若同一天是修正版，先把舊版銷售數量加回目前理論庫存。
-  if(old?.inventoryApplied) applyInventorySales(old,+1);
+  // 銷售庫存在「開始結算」成功後已經立即處理。
+  // 儲存日結這裡不再重複加回／扣除，避免同一天被扣兩次。
 
   // 預付：期初一律取「前一個已儲存日結」的期末，不直接用目前餘額。
   // 因此重新跑 8/13 時會正確得到 8/12 期末 392，再扣 8/13 使用 300 = 92。
@@ -489,17 +704,18 @@ $('saveDay').onclick=()=>{
   cur.topups=JSON.parse(JSON.stringify(topups));
   cur.topupTotal=topups.reduce((a,x)=>a+n(x.amount),0);
 
-  // 日結儲存時：同一天永遠只保留一筆銷售扣庫存紀錄。
-  INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===cur.date));
-  applyInventorySales(cur,-1);
+  // 銷售已在結算報表成功讀取時扣除；儲存日結只確認這筆扣庫存屬於正式日結。
   cur.inventoryApplied=true;
-  INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
-  INV.logs.push({
-    id:'sale-'+cur.date,
-    date:cur.date,
-    type:'sales',
-    note:'日結自動扣除商品銷售',
-    sales:{...cur.salesByProduct}
+  cur.inventoryPreviewApplied=false;
+
+  cur.unpaidDetails=JSON.parse(JSON.stringify(unpaidDetails));
+  cur.recoverDetails=JSON.parse(JSON.stringify(recoverDetails));
+
+  // 將被選為「今天收款」的舊未收款標記為已收。
+  recoverDetails.forEach(r=>{
+    const source=H.find(d=>d.date===r.sourceDate);
+    const u=source?.unpaidDetails?.find(x=>x.id===r.id);
+    if(u){u.paidDate=cur.date;u.paidAmount=n(r.amount)}
   });
 
   H=H.filter(x=>x.date!==cur.date);
@@ -508,7 +724,7 @@ $('saveDay').onclick=()=>{
   refreshCurrentPrepaidBalances();
   save();
   renderHist();renderSet();renderStock();renderRestock();
-  alert('已儲存 '+cur.date+' 日結，並自動扣除當日商品銷售庫存');
+  unpaidDetails=[];recoverDetails=[];renderUnpaidManager();alert('已儲存 '+cur.date+' 日結；商品銷售庫存已於結算報表成功讀取時扣除');
 }
 function escCSV(v){let s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}function makeCSV(R){return R.map(x=>x.map(escCSV).join(',')).join('\n')}function dl(name,t,type='text/csv;charset=utf-8'){let b=new Blob([t],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),300)}
 $('expDay').onclick=()=>{if(!cur)return;dl(`Analyzer-${cur.date}-日結.csv`,makeCSV([['項目','金額'],['POS',cur.pos],['應付便當店',cur.lunchPay],['福利社營業額',cur.store],['實際收到',cur.actual],['毛利',cur.gross],['毛利率',cur.margin.toFixed(2)+'%'],['淨收入',cur.net]]))}
@@ -516,11 +732,12 @@ $('expDay').onclick=()=>{if(!cur)return;dl(`Analyzer-${cur.date}-日結.csv`,mak
 function dayAdjustments(x){
   const rows=[];
 
-  // 未收款：包含 CSV 的未收款＋日結手動填入的未收款。
-  if(n(x.unp)>0) rows.push({label:'未收款',amount:n(x.unp)});
-
-  // 以前未收款今天收回。
-  if(n(x.rec)>0) rows.push({label:'以前未收款今天收回',amount:n(x.rec)});
+  (x.unpaidDetails||[]).forEach(u=>rows.push({label:`未收款｜收據 ${u.receipt}${u.note?'｜'+u.note:''}${u.paidDate?'｜已於 '+u.paidDate+' 收款':''}`,amount:n(u.amount)}));
+  const detailedUnpaid=(x.unpaidDetails||[]).reduce((a,u)=>a+n(u.amount),0),otherUnpaid=Math.max(0,n(x.unp)-detailedUnpaid);
+  if(otherUnpaid>0)rows.push({label:'其他／POS未收款',amount:otherUnpaid});
+  (x.recoverDetails||[]).forEach(r=>rows.push({label:`以前未收款收回｜${r.sourceDate}｜收據 ${r.receipt}`,amount:n(r.amount)}));
+  const detailedRecover=(x.recoverDetails||[]).reduce((a,r)=>a+n(r.amount),0),otherRecover=Math.max(0,n(x.rec)-detailedRecover);
+  if(otherRecover>0)rows.push({label:'以前未收款今天收回（舊紀錄）',amount:otherRecover});
 
   // 補登銷售：保留付款方式名稱與金額。
   if(n(x.extra?.es)>0){
@@ -546,6 +763,14 @@ function dayAdjustments(x){
     });
   }
 
+  // 盤點發現短少且判定為漏按銷售。
+  (x.stockSaleAdjustments||[]).forEach(a=>{
+    rows.push({
+      label:`盤點補登漏按銷售｜${a.product} ×${n(a.qty)}｜${a.paymentName||''}｜成本 ${f(a.cost)}`,
+      amount:n(a.amount)
+    });
+  });
+
   // 新增預付款明細仍保留。
   (x.topups||[]).forEach(t=>{
     rows.push({label:'新增預付 '+t.name,amount:n(t.amount)});
@@ -570,16 +795,19 @@ window.viewD=d=>{
       AHTML=adj.length?adj.map(a=>`<div class="list"><span>${e(a.label)}</span><b>${f(a.amount)}</b></div>`).join(''):'<div class="note">無</div>';
   openM(`<h3>${d} 日結</h3><div class="kpis"><div class="kpi"><small>POS</small><b>${f(x.pos)}</b></div><div class="kpi"><small>便當店</small><b>${f(x.lunchPay)}</b></div><div class="kpi"><small>實收</small><b>${f(x.actual)}</b></div><div class="kpi"><small>淨收入</small><b>${f(x.net)}</b></div></div><h4>特殊異動／補登／預付</h4>${AHTML}<h4>新增預付款</h4>${T||'<div class="note">無</div>'}`)
 }
-window.editD=d=>{let x=H.find(z=>z.date===d);adv=JSON.parse(JSON.stringify(x.adv||[]));topups=JSON.parse(JSON.stringify(x.topups||[]));A={cup:0,bag:0};$('park').value=x.park;$('recover').value=x.rec||0;$('unpaid').value=x.extra?.manualUnpaid||0;$('extraSale').value=x.extra?.es||0;$('extraCost').value=x.extra?.ec||0;renderAdv();renderTopups();sw('daily');$('editBanner').classList.remove('hide');$('editBanner').innerHTML=`正在修改 <b>${d}</b>：請重新上傳這一天最新 CSV，再結算並儲存。`}
+window.editD=d=>{let x=H.find(z=>z.date===d);adv=JSON.parse(JSON.stringify(x.adv||[]));topups=JSON.parse(JSON.stringify(x.topups||[]));unpaidDetails=JSON.parse(JSON.stringify(x.unpaidDetails||[]));recoverDetails=JSON.parse(JSON.stringify(x.recoverDetails||[]));A={cup:0,bag:0};$('park').value=x.park;$('recover').value=x.recoverDetails?.length?0:(x.rec||0);$('unpaid').value=x.unpaidDetails?.length?0:(x.extra?.manualUnpaid||0);renderUnpaidManager();$('extraSale').value=x.extra?.es||0;$('extraCost').value=x.extra?.ec||0;renderAdv();renderTopups();sw('daily');$('editBanner').classList.remove('hide');$('editBanner').innerHTML=`正在修改 <b>${d}</b>：請重新上傳這一天最新 CSV，再結算並儲存。`}
 window.delD=d=>{
   if(!confirm('確定刪除 '+d+'？\n\n若這筆日結曾扣除庫存，系統會自動把當天銷售數量加回。')) return;
   const day=H.find(x=>x.date===d);
   if(!day) return;
 
   // V2.24：刪除日結必須可逆。只有當初真的套用過庫存才加回，避免重複還原。
-  if(day.inventoryApplied) applyInventorySales(day,+1);
+  if(day.inventoryApplied){applyInventorySales(day,+1);restoreBetelUsage(day);}
   INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===d));
   H=H.filter(x=>x.date!==d);
+  if(INV.varianceResolutions){
+    Object.keys(INV.varianceResolutions).filter(k=>k.startsWith(d+'|')).forEach(k=>delete INV.varianceResolutions[k]);
+  }
 
   // 重新找目前最後一個「確實有套用庫存」的日結日期。
   const appliedDates=H.filter(x=>x.inventoryApplied && (!INV.baseDate||x.date>INV.baseDate)).map(x=>x.date).sort();
@@ -593,7 +821,7 @@ function period(off){let now=new Date(),s,e;if(now.getDate()>=21){s=new Date(now
 function mrows(){let a=$('ms').value,b=$('me').value;return H.filter(x=>x.date>=a&&x.date<=b).sort((x,y)=>x.date.localeCompare(y.date))}
 function claims(R){$('claimList').innerHTML=S.pay.filter(x=>x.kind==='monthly').map(p=>{let c=client(p.name),M=R.map(x=>({d:x.date,a:n(x.pay?.[p.name])})).filter(x=>x.a),A=R.flatMap(x=>(x.adv||[]).filter(a=>a.client===c||a.client===p.name).map(a=>({d:x.date,...a}))),mt=M.reduce((a,x)=>a+x.a,0),at=A.reduce((a,x)=>a+n(x.amount),0);if(!mt&&!at)return'';return `<div class="card" style="margin-top:10px"><div class="top"><div><b>${e(c)}</b><div class="note">總計 ${f(mt+at)}</div></div><button class="alt sm" onclick="copyC('${p.id}')">複製請款</button></div><div class="note"><b>月結</b></div>${M.map(x=>`<div class="list"><span>${x.d}</span><b>${f(x.a)}</b></div>`).join('')||'<div class="note">無</div>'}<div class="note" style="margin-top:8px"><b>代墊</b></div>${A.map(x=>`<div class="list"><span>${x.d}　${e(x.item)}</span><b>${f(x.amount)}</b></div>`).join('')||'<div class="note">無</div>'}</div>`}).join('')||'<div class="note">區間內無月結</div>'}
 window.copyC=async id=>{let p=S.pay.find(x=>x.id===id),c=client(p.name),R=monthRows,M=R.map(x=>({d:x.date,a:n(x.pay?.[p.name])})).filter(x=>x.a),A=R.flatMap(x=>(x.adv||[]).filter(a=>a.client===c||a.client===p.name).map(a=>({d:x.date,...a}))),mt=M.reduce((a,x)=>a+x.a,0),at=A.reduce((a,x)=>a+n(x.amount),0),L=[`${c} 請款`,`區間：${$('ms').value}～${$('me').value}`,'','【月結】',...M.map(x=>`${x.d}　${f(x.a)}`),'','【代墊】',...A.map(x=>`${x.d}　${x.item}　${f(x.amount)}`),'',`月結小計　${f(mt)}`,`代墊小計　${f(at)}`,`請款總計　${f(mt+at)}`];try{await navigator.clipboard.writeText(L.join('\n'));alert('已複製')}catch(e){alert(L.join('\n'))}}
-$('makeMonth').onclick=()=>{let R=mrows();monthRows=R;if(!R.length)return alert('此區間無日結');let sum=k=>R.reduce((a,x)=>a+n(x[k]),0),p=sum('pos'),g=sum('gross');['mSum','mDays','claims'].forEach(i=>$(i).classList.remove('hide'));$('mr').textContent=`${$('ms').value} ～ ${$('me').value}｜${R.length} 個日結`;$('mp').textContent=f(p);$('ml').textContent=f(sum('lunchPay'));$('mst').textContent=f(sum('store'));$('ma').textContent=f(sum('actual'));$('mg').textContent=f(g);$('mm').textContent=(p?g/p*100:0).toFixed(2)+'%';$('mpark').textContent=f(sum('park'));$('mn').textContent=f(sum('net'));$('mRows').innerHTML=R.map(x=>`<tr><td>${x.date}</td><td class="num">${f(x.pos)}</td><td class="num">${f(x.lunchPay)}</td><td class="num">${f(x.actual)}</td><td class="num">${f(x.gross)}</td><td class="num">${f(x.net)}</td></tr>`).join('');claims(R)}
+$('makeMonth').onclick=()=>{let R=mrows();monthRows=R;if(!R.length)return alert('此區間無日結');let sum=k=>R.reduce((a,x)=>a+n(x[k]),0),p=sum('pos'),g=sum('gross'),PL=purchaseLogsBetween($('ms').value,$('me').value),pt=PL.reduce((a,x)=>a+n(x.purchaseAmount),0);['mSum','mDays','claims','mPurchase'].forEach(i=>$(i).classList.remove('hide'));$('mPurchaseTotal').textContent=f(pt);$('mPurchaseCount').textContent=PL.length+' 筆';$('mPurchaseRows').innerHTML=PL.length?PL.map(x=>`<div class="list"><div><b>${x.date}｜${e(x.product)}</b><div class="note">${n(x.packQty)||''}${e(x.packUnit||'')} ${n(x.purchaseUnitPrice)>0?'× '+f(x.purchaseUnitPrice):''}</div></div><b>${f(x.purchaseAmount)}</b></div>`).join(''):'<div class="note">此區間無進貨金額紀錄</div>';$('mr').textContent=`${$('ms').value} ～ ${$('me').value}｜${R.length} 個日結`;$('mp').textContent=f(p);$('ml').textContent=f(sum('lunchPay'));$('mst').textContent=f(sum('store'));$('ma').textContent=f(sum('actual'));$('mg').textContent=f(g);$('mm').textContent=(p?g/p*100:0).toFixed(2)+'%';$('mpark').textContent=f(sum('park'));$('mn').textContent=f(sum('net'));$('mRows').innerHTML=R.map(x=>`<tr><td>${x.date}</td><td class="num">${f(x.pos)}</td><td class="num">${f(x.lunchPay)}</td><td class="num">${f(x.actual)}</td><td class="num">${f(x.gross)}</td><td class="num">${f(x.net)}</td></tr>`).join('');claims(R)}
 $('expMonth').onclick=()=>{let R=monthRows.length?monthRows:mrows();if(!R.length)return alert('先產生月報');dl(`Analyzer-${$('ms').value}-${$('me').value}-月報.csv`,makeCSV([['日期','POS','便當店','福利社營業額','實際收到','毛利','毛利率','淨收入'],...R.map(x=>[x.date,x.pos,x.lunchPay,x.store,x.actual,x.gross,x.margin.toFixed(2)+'%',x.net])]))}
 
 $('copyLoyversePending').onclick=async()=>{
@@ -622,9 +850,24 @@ const STOCK_RULES={
   '大水':{base:'瓶',pack:'箱',size:12},
   '科學麵':{base:'包',pack:'箱',size:40}
 };
+
+const DEFAULT_PURCHASE_PRICES={
+  '七星(中淡)':1200,'七星(濃)':1200,'峰(金)':1490,'藍M':1030,'Peace 6號':950,
+  '大保':890,'小保':940,'金牌':620,'Bar':550,'海尼根':770,'健酪':450,
+  '麥香紅茶':410,'麥香奶茶':450,'茶裏王':330,'白毫烏龍':330,'Fin':430,
+  '沙士':490,'水蠻牛':420,'伯朗咖啡':430,'藍山咖啡':430,'冬瓜茶':370,
+  '青草茶':370,'咖啡廣場(白)':450,'咖啡廣場(藍)':450,'蠻牛':410,
+  '礦泉水(小)':70,'大水':60,'維大力':460,'科學麵':330,'可口可樂':500,
+  '阿咧':380
+};
+function defaultPurchasePrice(product){return n(DEFAULT_PURCHASE_PRICES[canonicalStockName(product)])}
+function purchaseLogsBetween(start,end){
+  return (INV.logs||[]).filter(x=>x.type==='in'&&x.date>=start&&x.date<=end&&n(x.purchaseAmount)>0);
+}
+
 const STOCK_ALIASES={
   '伯朗':'伯朗咖啡','藍山':'藍山咖啡','peace 6號':'Peace 6號','peace6號':'Peace 6號',
-  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)','查理王白毫烏龍':'白毫烏龍','查理王無糖綠':'日式無糖綠茶'
+  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)','可樂':'可口可樂','bar':'Bar','peaces':'Peace 6號','fin':'Fin','金峰':'峰(金)','查理王白毫烏龍':'白毫烏龍','查理王無糖綠':'日式無糖綠茶'
 };
 let pendingStockOrder=[];
 
@@ -721,6 +964,138 @@ function parseStockText(t){
   return out;
 }
 
+
+function stockMissedSaleTarget(date){
+  const saved=H.find(x=>x.date===date);
+  if(saved) return saved;
+  if(cur?.date===date) return cur;
+  return null;
+}
+
+function applyStockMissedSaleFinancial(day,adj,sign=1){
+  const amount=n(adj.amount), cost=n(adj.cost), pay=S.pay.find(x=>x.id===adj.paymentId);
+  const payName=adj.paymentName || pay?.name || 'Cash';
+  const kind=adj.paymentKind || pay?.kind || 'cash';
+
+  day.pay=day.pay||{};
+  day.pay[payName]=n(day.pay[payName])+sign*amount;
+
+  day.pos=n(day.pos)+sign*amount;
+  day.store=n(day.store)+sign*amount;
+  day.base=n(day.base)+sign*cost;
+  day.cost=n(day.cost)+sign*cost;
+  day.gross=n(day.gross)+sign*(amount-cost);
+  day.margin=day.pos ? day.gross/day.pos*100 : 0;
+
+  if(kind==='cash' || kind==='transfer'){
+    day.actual=n(day.actual)+sign*amount;
+  }else if(kind==='unpaid'){
+    day.unp=n(day.unp)+sign*amount;
+  }else if(kind==='prepaid'){
+    day.pre=day.pre||{};
+    const p=day.pre[payName] || {id:adj.paymentId,open:0,use:0,add:0,close:0};
+    p.use=n(p.use)+sign*amount;
+    p.close=n(p.close)-sign*amount;
+    day.pre[payName]=p;
+  }
+
+  day.net=n(day.gross)-n(day.park)-n(day.betelCashOut);
+}
+
+function stockVarianceKey(date,product){return date+'|'+product}
+
+window.markStockLoss=encodedProduct=>{
+  if(!currentCompare)return alert('請先比對庫存');
+  const product=decodeURIComponent(encodedProduct);
+  const row=currentCompare.rows.find(x=>x.name===product);
+  if(!row || row.diff>=0)return;
+
+  INV.varianceResolutions=INV.varianceResolutions||{};
+  INV.varianceResolutions[stockVarianceKey(currentCompare.date,product)]={
+    type:'loss',qty:Math.abs(n(row.diff)),updatedAt:new Date().toISOString()
+  };
+  save();
+  renderCompare(currentCompare.rows);
+};
+
+window.openStockMissedSale=encodedProduct=>{
+  if(!currentCompare)return alert('請先比對庫存');
+
+  const product=decodeURIComponent(encodedProduct);
+  const row=currentCompare.rows.find(x=>x.name===product);
+  if(!row || row.diff>=0)return;
+
+  const date=currentCompare.date;
+  const day=stockMissedSaleTarget(date);
+  if(!day)return alert('這一天還沒有結算資料。請先完成當天結算，再做「漏按銷售」補登。');
+
+  const qty=Math.abs(n(row.diff));
+  const d=S.stockSaleDefaults?.[product]||{};
+  const old=(day.stockSaleAdjustments||[]).find(x=>x.product===product);
+  const unitSale=old?n(old.unitSale):n(d.unitSale);
+  const unitCost=old?n(old.unitCost):(product==='檳榔'?n(S.cost.betel):n(d.unitCost));
+  const paymentId=old?.paymentId || (S.pay.find(x=>x.kind==='cash')?.id||S.pay[0]?.id||'');
+
+  openM(`<h3>盤點補登漏按銷售</h3>
+    <div class="banner"><b>${e(product)}</b>｜盤差 ${row.diff}｜判定漏按 ${qty} 個</div>
+    <label>補登數量</label><input id="svQty" type="number" step="1" min="0" value="${qty}">
+    <label>單位售價</label><input id="svSale" type="number" step=".01" min="0" value="${unitSale}">
+    <label>單位成本</label><input id="svCost" type="number" step=".01" min="0" value="${unitCost}">
+    <label>付款方式</label>
+    <select id="svPay">${S.pay.map(p=>`<option value="${p.id}" ${p.id===paymentId?'selected':''}>${e(p.name)}｜${kl(p.kind)}</option>`).join('')}</select>
+    <div class="note">售價／成本會用最近一次日報表預填；妳可以直接修改。此功能只補營業額與成本，不會再重複扣庫存；庫存仍以實際盤點為準。</div>
+    <div class="actions"><button id="svSave">確認補登</button>${old?'<button class="danger" id="svDelete">取消這筆補登</button>':''}</div>`);
+
+  $('svSave').onclick=()=>{
+    const qv=n($('svQty').value), sale=n($('svSale').value), cost=n($('svCost').value);
+    const p=S.pay.find(x=>x.id===$('svPay').value);
+    if(qv<=0 || sale<=0 || !p)return alert('請確認數量、售價、付款方式');
+
+    day.stockSaleAdjustments=day.stockSaleAdjustments||[];
+
+    const existing=day.stockSaleAdjustments.find(x=>x.product===product);
+    if(existing) applyStockMissedSaleFinancial(day,existing,-1);
+
+    const adj={
+      id:existing?.id||uid(),
+      product,qty:qv,unitSale:sale,unitCost:cost,
+      amount:qv*sale,cost:qv*cost,
+      paymentId:p.id,paymentName:p.name,paymentKind:p.kind,
+      source:'inventory_shortage',date
+    };
+
+    day.stockSaleAdjustments=day.stockSaleAdjustments.filter(x=>x.product!==product);
+    day.stockSaleAdjustments.push(adj);
+    applyStockMissedSaleFinancial(day,adj,+1);
+
+    INV.varianceResolutions=INV.varianceResolutions||{};
+    INV.varianceResolutions[stockVarianceKey(date,product)]={type:'missed_sale',qty:qv,amount:adj.amount,updatedAt:new Date().toISOString()};
+
+    refreshCurrentPrepaidBalances();
+    save();
+    if(cur?.date===date && day===cur)renderCalc();
+    renderHist();
+    renderCompare(currentCompare.rows);
+    closeM();
+    alert(`已補登 ${product} ×${qv}｜營業額 +${f(adj.amount)}｜成本 +${f(adj.cost)}`);
+  };
+
+  if(old){
+    $('svDelete').onclick=()=>{
+      if(!confirm('確定取消這筆盤點補登漏按銷售？'))return;
+      applyStockMissedSaleFinancial(day,old,-1);
+      day.stockSaleAdjustments=(day.stockSaleAdjustments||[]).filter(x=>x.id!==old.id);
+      if(INV.varianceResolutions)delete INV.varianceResolutions[stockVarianceKey(date,product)];
+      refreshCurrentPrepaidBalances();
+      save();
+      if(cur?.date===date && day===cur)renderCalc();
+      renderHist();
+      renderCompare(currentCompare.rows);
+      closeM();
+    };
+  }
+};
+
 function compareInventory(actual){
   const names=[...new Set([...Object.keys(INV.items||{}),...Object.keys(INV.loyverseStock||{}),...Object.keys(actual||{})])].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
   return names.map(name=>{
@@ -735,15 +1110,44 @@ function compareInventory(actual){
 }
 function renderCompare(rows){
   if(!rows||!rows.length){$('compareResult').innerHTML='<div class="note">尚無比對結果。</div>';return}
-  $('compareResult').innerHTML=`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th class="num">Analyzer理論</th><th class="num">Loyverse目前</th><th class="num">實際盤點</th><th class="num">盤差</th><th class="num">Loyverse應改</th></tr></thead><tbody>${
+  const date=currentCompare?.date||'';
+  INV.varianceResolutions=INV.varianceResolutions||{};
+
+  $('compareResult').innerHTML=`<div style="overflow:auto;margin-top:10px"><table>
+    <thead><tr>
+      <th>商品</th><th class="num">Analyzer理論</th><th class="num">Loyverse目前</th>
+      <th class="num">實際盤點</th><th class="num">盤差</th><th class="num">Loyverse應改</th><th>盤差處理</th>
+    </tr></thead><tbody>${
     rows.filter(x=>x.actual!==null).map(x=>{
       const lv=x.loyverse===null?'—':x.loyverse;
       const need=x.loyverse===null?'—':(x.loyverse===x.actual?'✓':x.actual);
-      return `<tr><td>${e(x.name)}</td><td class="num">${x.system}</td><td class="num">${lv}</td><td class="num">${x.actual}</td><td class="num"><b style="color:${x.diff===0?'#315f4c':(x.diff<0?'#a33':'#8a6500')}">${x.diff>0?'+':''}${x.diff}</b></td><td class="num"><b>${need}</b></td></tr>`
+      const resolved=INV.varianceResolutions[stockVarianceKey(date,x.name)];
+      let action='—';
+
+      if(x.diff<0){
+        if(resolved?.type==='missed_sale'){
+          action=`<span class="pill" style="background:#e8f4ec;color:#23543f">已補登漏按銷售</span>
+          <button class="alt sm" onclick="openStockMissedSale('${encodeURIComponent(x.name)}')">修改</button>`;
+        }else if(resolved?.type==='loss'){
+          action=`<span class="pill">其他損耗</span>
+          <button class="alt sm" onclick="openStockMissedSale('${encodeURIComponent(x.name)}')">改成漏按銷售</button>`;
+        }else{
+          action=`<div class="actions" style="margin:0">
+            <button class="sm" onclick="openStockMissedSale('${encodeURIComponent(x.name)}')">漏按銷售</button>
+            <button class="alt sm" onclick="markStockLoss('${encodeURIComponent(x.name)}')">其他損耗</button>
+          </div>`;
+        }
+      }
+
+      return `<tr>
+        <td>${e(x.name)}</td><td class="num">${x.system}</td><td class="num">${lv}</td>
+        <td class="num">${x.actual}</td>
+        <td class="num"><b style="color:${x.diff===0?'#315f4c':(x.diff<0?'#a33':'#8a6500')}">${x.diff>0?'+':''}${x.diff}</b></td>
+        <td class="num"><b>${need}</b></td><td>${action}</td>
+      </tr>`
     }).join('')
   }</tbody></table></div>`;
 }
-
 
 function addLoyversePending(product,value,reason){
   INV.pending=INV.pending||{};
@@ -751,12 +1155,41 @@ function addLoyversePending(product,value,reason){
 }
 function renderLoyversePending(){
   INV.pending=INV.pending||{};
-  const rows=Object.entries(INV.pending)
+
+  const all=Object.entries(INV.pending);
+  const stockInRows=all
+    .filter(([product,x])=>/^進貨/.test(q(x.reason)))
+    .sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
+
+  const countRows=all
     .filter(([product,x])=>/^Loyverse |^盤點/.test(q(x.reason)))
     .sort((a,b)=>a[0].localeCompare(b[0],'zh-Hant'));
-  $('loyversePendingList').innerHTML=rows.length
-    ? `<div class="banner" style="margin-bottom:10px"><b>只顯示有盤差、需要修改 Loyverse 的商品：${rows.length} 項</b></div>`+
-      rows.map(([product,x])=>{
+
+  const stockInHtml=stockInRows.length
+    ? `<div class="banner" style="margin-bottom:8px;background:#eef7ff;border-color:#bfdaf0">
+         <b>📦 進貨後請同步 Loyverse：${stockInRows.length} 項</b>
+       </div>`+
+      stockInRows.map(([product,x])=>`
+        <div class="list" style="background:#eef7ff;border-radius:10px;padding:10px;margin:6px 0">
+          <div class="grow">
+            <b>${e(product)}</b>
+            <div class="note">${e(x.reason||'進貨')}</div>
+          </div>
+          <div class="right" style="min-width:100px">
+            <div style="font-size:19px"><b>${n(x.value)}</b></div>
+            <div class="note">進貨後總庫存</div>
+          </div>
+          <div class="right" style="min-width:86px">
+            <div style="font-size:19px"><b>${n(x.value)}</b></div>
+            <div class="note">Loyverse 改成</div>
+          </div>
+          <button class="danger sm" onclick="removePending('${encodeURIComponent(product)}')">完成</button>
+        </div>`).join('')
+    : '';
+
+  const countHtml=countRows.length
+    ? `<div class="banner" style="margin:12px 0 8px"><b>📋 盤點差異需要修改 Loyverse：${countRows.length} 項</b></div>`+
+      countRows.map(([product,x])=>{
         const m=q(x.reason).match(/Loyverse\s*(-?\d+(?:\.\d+)?)\s*→\s*實盤\s*(-?\d+(?:\.\d+)?).*?盤差\s*([+-]?\d+(?:\.\d+)?)/);
         const lv=m?n(m[1]):null, actual=m?n(m[2]):n(x.value), diff=m?n(m[3]):(lv===null?null:actual-lv);
         const diffText=diff===null?'':`${diff>0?'+':''}${diff}`;
@@ -765,11 +1198,15 @@ function renderLoyversePending(){
         return `<div class="list" style="background:${bg};border-radius:10px;padding:10px;margin:6px 0">
           <div class="grow"><b>${e(product)}</b><div class="note">${lv===null?e(x.reason||'盤點差異'):`Loyverse ${lv} → 實盤 ${actual}`}</div></div>
           <div class="right" style="min-width:76px"><div style="font-size:18px;color:${fg}"><b>${diffText}</b></div><div class="note">盤差</div></div>
-          <div class="right" style="min-width:86px"><div style="font-size:18px"><b>${x.value}</b></div><div class="note">改成</div></div>
+          <div class="right" style="min-width:86px"><div style="font-size:18px"><b>${n(x.value)}</b></div><div class="note">Loyverse 改成</div></div>
           <button class="danger sm" onclick="removePending('${encodeURIComponent(product)}')">完成</button>
         </div>`;
       }).join('')
-    : '<div class="banner"><b>✓ 目前沒有盤差需要修改 Loyverse。</b></div>';
+    : '';
+
+  $('loyversePendingList').innerHTML=
+    stockInHtml+countHtml ||
+    '<div class="banner"><b>✓ 目前沒有需要修改 Loyverse 的商品。</b></div>';
 }
 window.removePending=product=>{
   product=decodeURIComponent(product);
@@ -842,7 +1279,7 @@ function renderRestock(){
   initMinStock();
   const state=inventoryForRestock(),items=state.items;
   let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(items,p)&&n(items[p])<=n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
-  const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 預估庫存</b>：已先扣除 ${e(cur.date)} 這次上傳報表的淨銷售；按「儲存日結」後才會正式寫入庫存。</div>`:'';
+  const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 即時庫存</b>：已在這次結帳報表成功讀取後直接扣除 ${e(cur.date)} 的淨銷售。</div>`:'';
   $('restockList').innerHTML=head+(rs.length?rs.map(p=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}</b></div><div class="right"><b>${n(items[p])} ${minStockUnit(p)}</b><div class="note">${state.preview?'預估':'目前'}</div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}</b><div class="note">最低</div></div></div>`).join(''):'<div class="banner"><b>✓ 目前沒有需要補貨的商品。</b></div>');
 }
 
@@ -867,7 +1304,7 @@ function renderStock(){
   $('stockLog').innerHTML=logs.length?logs.map(x=>{
     if(x.type==='snapshot') return `<div class="list"><div class="grow"><b>${x.date} 實際盤點</b><div class="note">${e(x.note||'盤點基準')}</div></div><span class="pill">盤點</span></div>`;
     if(x.type==='sales') return `<div class="list"><div class="grow"><b>${x.date} 日結銷售扣庫存</b><div class="note">${Object.entries(x.sales||{}).filter(([p])=>Object.prototype.hasOwnProperty.call(INV.items,p)).map(([p,qv])=>`${e(p)} -${qv}`).join('、')||'無可對應庫存商品'}</div></div><span class="pill">銷售</span></div>`;
-    return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜入庫前 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}</div></div><span class="pill">+${x.qty}</span><button class="danger sm" onclick="deleteStockIn('${encodeURIComponent(x.id)}')">刪除</button></div>`;
+    return `<div class="list"><div class="grow"><b>${x.date}｜${e(x.product)}</b><div class="note">${e(x.note||'')}｜入庫前 ${x.before} ＋ ${x.qty} ＝ 入庫後 ${x.after}${n(x.purchaseAmount)>0?`｜進貨 ${f(x.purchaseAmount)}`:''}</div></div><span class="pill">+${x.qty}</span><button class="danger sm" onclick="deleteStockIn('${encodeURIComponent(x.id)}')">刪除</button></div>`;
   }).join(''):'<div class="note">尚無紀錄</div>';
 }
 
@@ -883,6 +1320,18 @@ window.deleteStockIn=encodedId=>{
 
   INV.items[product]=after;
   INV.logs=(INV.logs||[]).filter(x=>x.id!==id);
+  if(product==='檳榔'){
+    initBetelBatches();
+    // Prefer batch linked by stock log id; fallback to same date/qty most recent unmatched batch.
+    let idx=INV.betelBatches.findIndex(b=>b.stockLogId===id);
+    if(idx<0){
+      for(let i=INV.betelBatches.length-1;i>=0;i--){
+        const b=INV.betelBatches[i];
+        if(b.date===log.date && n(b.qty)===qty){idx=i;break}
+      }
+    }
+    if(idx>=0)INV.betelBatches.splice(idx,1);
+  }
 
   if(INV.pending?.[product]){
     INV.pending[product].value=after;
@@ -901,30 +1350,54 @@ $('saveStockSnapshot').onclick=()=>{
   const d=$('stockDate').value||new Date().toISOString().slice(0,10);
   INV.items=x;INV.baseDate=d;INV.logs.push({id:uid(),date:d,type:'snapshot',note:'手動實際盤點',items:{...x}});save();renderStock();alert('已儲存盤點基準');
 };
+
+function renderStockOrderPreview(errors=[]){
+  const rows=pendingStockOrder.map((x,i)=>{
+    const before=n(INV.items[x.product]),after=before+x.qty;
+    return `<tr>
+      <td><select class="poProduct" data-i="${i}">${[...new Set([...STOCK_CATALOG,x.product])].sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(p=>`<option value="${e(p)}"${p===x.product?' selected':''}>${e(p)}</option>`).join('')}</select></td>
+      <td><input class="poPacks" data-i="${i}" type="number" min="0" step="1" value="${x.packs}" style="min-width:85px"> ${e(x.packUnit)}</td>
+      <td class="num">+${x.qty}${e(x.baseUnit)}</td>
+      <td><input class="poPrice" data-i="${i}" type="number" min="0" step="1" value="${n(x.unitPrice)}" style="min-width:100px"></td>
+      <td class="num"><b>${f(x.amount)}</b></td>
+      <td class="num">${before} → <b>${after}</b></td>
+      <td><button class="danger sm" onclick="removeStockOrderRow(${i})">刪除</button></td>
+    </tr>`;
+  }).join('');
+  const total=pendingStockOrder.reduce((a,x)=>a+n(x.amount),0);
+  $('stockOrderPreview').innerHTML=
+    (errors.length?`<div class="banner" style="color:#a33">${errors.map(e).join('<br>')}</div>`:'')+
+    (rows?`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th>叫貨</th><th class="num">換算入庫</th><th>每${pendingStockOrder[0]?.packUnit||'箱'}價格</th><th class="num">小計</th><th class="num">入庫後</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="banner" style="margin-top:10px"><b>📦 本張進貨單合計：${f(total)}</b></div>`:'');
+  $('confirmStockOrder').disabled=!pendingStockOrder.length || errors.length>0;
+  document.querySelectorAll('.poPrice').forEach(el=>el.oninput=()=>{const i=n(el.dataset.i);pendingStockOrder[i].unitPrice=n(el.value);pendingStockOrder[i].amount=pendingStockOrder[i].packs*pendingStockOrder[i].unitPrice;renderStockOrderPreview()});
+  document.querySelectorAll('.poPacks').forEach(el=>el.oninput=()=>{const i=n(el.dataset.i),x=pendingStockOrder[i],r=stockRule(x.product);x.packs=n(el.value);x.qty=x.packs*r.size;x.amount=x.packs*n(x.unitPrice);x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;renderStockOrderPreview()});
+  document.querySelectorAll('.poProduct').forEach(el=>el.onchange=()=>{const i=n(el.dataset.i),x=pendingStockOrder[i],p=canonicalStockName(el.value),r=stockRule(p);x.product=p;x.packUnit=r.pack;x.baseUnit=r.base;x.packSize=r.size;x.qty=x.packs*r.size;x.unitPrice=defaultPurchasePrice(p);x.amount=x.packs*x.unitPrice;x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;renderStockOrderPreview()});
+}
+window.removeStockOrderRow=i=>{pendingStockOrder.splice(i,1);renderStockOrderPreview()};
 $('parseStockOrder').onclick=()=>{
   const parsed=parseStockOrderText($('stockOrderPaste').value);
-  pendingStockOrder=parsed.result;
-  const rows=pendingStockOrder.map(x=>{
-    const before=n(INV.items[x.product]),after=before+x.qty;
-    return `<tr><td>${e(x.product)}</td><td>${x.packs}${x.packUnit}</td><td class="num">+${x.qty}${x.baseUnit}</td><td class="num">${before} → <b>${after}</b></td></tr>`;
-  }).join('');
-  $('stockOrderPreview').innerHTML=
-    (parsed.errors.length?`<div class="banner" style="color:#a33">${parsed.errors.map(e).join('<br>')}</div>`:'')+
-    (rows?`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th>叫貨</th><th class="num">換算入庫</th><th class="num">入庫後</th></tr></thead><tbody>${rows}</tbody></table></div>`:'');
-  $('confirmStockOrder').disabled=!pendingStockOrder.length || parsed.errors.length>0;
+  pendingStockOrder=parsed.result.map(x=>({...x,unitPrice:defaultPurchasePrice(x.product),amount:x.packs*defaultPurchasePrice(x.product)}));
+  renderStockOrderPreview(parsed.errors);
+};
+$('addStockOrderRow').onclick=()=>{
+  const p=STOCK_CATALOG[0],r=stockRule(p);
+  pendingStockOrder.push({product:p,packs:1,packUnit:r.pack,baseUnit:r.base,packSize:r.size,qty:r.size,note:`1${r.pack}×${r.size}${r.base}`,unitPrice:defaultPurchasePrice(p),amount:defaultPurchasePrice(p)});
+  renderStockOrderPreview();
 };
 $('confirmStockOrder').onclick=()=>{
   if(!pendingStockOrder.length)return alert('請先解析進貨');
   const date=$('stockDate').value||new Date().toISOString().slice(0,10);
-  pendingStockOrder.forEach((x,idx)=>{
+  const orderId=uid(),orderTotal=pendingStockOrder.reduce((a,x)=>a+n(x.amount),0);
+  pendingStockOrder.forEach(x=>{
     const before=n(INV.items[x.product]),after=before+x.qty;
     INV.items[x.product]=after;
     addLoyversePending(x.product,after,`進貨 ${x.packs}${x.packUnit}（+${x.qty}${x.baseUnit}）`);
-    INV.logs.push({id:uid(),date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit});
+    INV.logs.push({id:uid(),orderId,date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit,purchaseUnitPrice:n(x.unitPrice),purchaseAmount:n(x.amount),orderTotal});
   });
-  save();renderStock();
+  save();renderStock();renderLoyversePending();
   $('stockAfter').classList.remove('hide');
-  $('stockAfter').innerHTML=`已完成 ${pendingStockOrder.length} 項進貨，庫存已更新。`;
+  $('stockAfter').innerHTML=`已完成 ${pendingStockOrder.length} 項進貨，庫存已更新。<br><b>本張進貨單：${f(orderTotal)}</b>`;
   $('stockOrderPaste').value='';$('stockOrderPreview').innerHTML='';pendingStockOrder=[];$('confirmStockOrder').disabled=true;
 };
 $('addStockIn').onclick=()=>{
@@ -941,16 +1414,24 @@ $('addStockIn').onclick=()=>{
   }
 
   const before=n(INV.items[product]),after=before+qty;
+  const betelAmount=product==='檳榔'?n($('betelBatchAmount')?.value):0;
+  if(product==='檳榔' && betelAmount<=0)return alert('檳榔進貨請填「本批實付總額」');
   INV.items[product]=after;
+  if(product==='檳榔'){
+    initBetelBatches();
+    INV.betelBatches.push({id:uid(),date,qty,remaining:qty,amount:betelAmount,unitCost:betelAmount/qty});
+    displayNote=(displayNote?displayNote+'｜':'')+`實付 $${betelAmount}｜${qty}包｜單包 $${(betelAmount/qty).toFixed(2)}`;
+  }
   addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
-  INV.logs.push({id:uid(),date,type:'in',product,qty,before,after,note:displayNote});
+  const purchaseAmount=product==='檳榔'?betelAmount:(unit==='package'?rawQty*defaultPurchasePrice(product):0);
+  const stockLogId=uid();INV.logs.push({id:stockLogId,date,type:'in',product,qty,before,after,note:displayNote,purchaseUnitPrice:unit==='package'?defaultPurchasePrice(product):0,purchaseAmount});if(product==='檳榔'){const b=INV.betelBatches[INV.betelBatches.length-1];if(b)b.stockLogId=stockLogId;}
   save();renderStock();
 
   $('stockAfter').classList.remove('hide');
   const baseLabel=r?.base||'個';
   const unitText=unit==='package'&&r?`${rawQty}${r.pack}＝${qty}${r.base}`:`${rawQty}${baseLabel}`;
   $('stockAfter').innerHTML=`<b>${e(product)}</b>：原庫存 ${before}${baseLabel} ＋ 入庫 ${unitText} ＝ <b>入庫後 ${after}${baseLabel}</b>`;
-  $('stockQty').value=0;$('stockNote').value='';
+  $('stockQty').value=0;$('stockNote').value='';if($('betelBatchAmount'))$('betelBatchAmount').value=0;
 };
 $('exportStock').onclick=()=>{
   dl('Analyzer-目前理論庫存.csv',makeCSV([['商品','目前數量'],...Object.entries(INV.items||{})]));
@@ -985,7 +1466,7 @@ $('adoptSnapshotBtn').onclick=()=>{
 
 
 function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock')renderStock();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
-window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;if($('stockProduct'))$('stockProduct').onchange=refreshStockUnitSelect;
+window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;function refreshBetelBatchBox(){if(!$('betelBatchBox'))return;const isBetel=q($('stockProduct').value)==='檳榔';$('betelBatchBox').classList.toggle('hide',!isBetel)}if($('stockProduct'))$('stockProduct').onchange=()=>{refreshStockUnitSelect();refreshBetelBatchBox()};
 
 
 function dedupeInventorySalesLogsV215(){
@@ -1190,7 +1671,7 @@ function repairV2246GoldInLog(){
 }
 
 
-const STOCK_CATALOG=["健酪","麥香紅茶","伯朗咖啡","藍山咖啡","Fin","麥香奶茶","日式無糖綠茶","白毫烏龍","冬瓜茶","青草茶","阿咧","咖啡廣場(白)","咖啡廣場(藍)","蠻牛","沙士","水蠻牛","維大力","可口可樂","康貝特200P","金牌","Bar","海尼根","大保","小保","檳榔","科學麵","七星(濃)","七星(中淡)","Peace 6號","藍M","峰(金)"];
+const STOCK_CATALOG=["健酪","麥香紅茶","伯朗咖啡","藍山咖啡","Fin","麥香奶茶","日式無糖綠茶","白毫烏龍","冬瓜茶","青草茶","阿咧","咖啡廣場(白)","咖啡廣場(藍)","蠻牛","沙士","水蠻牛","維大力","可口可樂","康貝特200P","金牌","Bar","海尼根","大保","小保","檳榔","科學麵","七星(濃)","七星(中淡)","Peace 6號","藍M","峰(金)","礦泉水(小)","大水","茶裏王"];
 
 function inventoryUnit(p){
   return (p==='科學麵'||p==='檳榔'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p))?'包':'罐';
@@ -1231,7 +1712,7 @@ function recoverMissingInventoryV2247(){
   localStorage.setItem(key,'1');
 }
 
-function init(){initMinStock();repairV2244GoldStock();repairV2246GoldInLog();recoverMissingInventoryV2247();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10)}init();
+function init(){initMinStock();initBetelBatches();INV.varianceResolutions=INV.varianceResolutions||{};S.stockSaleDefaults=S.stockSaleDefaults||{};renderUnpaidManager();repairV2244GoldStock();repairV2246GoldInLog();recoverMissingInventoryV2247();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10);refreshBetelBatchBox()}init();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
@@ -1271,6 +1752,7 @@ const uploadBtn=$c("cloudUploadBtn"), downloadBtn=$c("cloudDownloadBtn");
 const panel=$c("cloudPanelStatus"), lastSync=$c("cloudLastSync");
 
 let currentUser=null, cloudExists=false, cloudWritable=false, syncTimer=null;
+window.getAnalyzerFirebaseToken=async()=>currentUser?await currentUser.getIdToken():null;
 
 function setStatus(text,kind="warn"){
   cloudStatus.textContent=text;
@@ -1347,7 +1829,7 @@ async function uploadNow(manual=false){
     panel.textContent="正在把本機資料備份到 Firestore…";
     await setDoc(doc(db,"analyzerSync",CLOUD_DOC),{
       ...state,
-      version:"V2.23",
+      version:"V2.27",
       updatedBy:currentUser.uid,
       updatedAt:serverTimestamp()
     });
