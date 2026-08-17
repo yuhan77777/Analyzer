@@ -1262,7 +1262,11 @@ function inventoryForRestock(){
   if(!cur?.date||!cur?.salesByProduct) return {items,preview:false};
   if(INV.baseDate && cur.date<=INV.baseDate) return {items,preview:false};
 
-  // 若同日期已經存過日結，INV.items 已扣過舊版本；預覽修正版時先把舊版加回，再扣新版。
+  // V2.27.2：calc() 會呼叫 applyCurrentSalesImmediately()，此時 INV.items 已經扣過本次銷售。
+  // 補貨頁直接使用目前 INV.items，不能再把 cur.salesByProduct 扣第二次。
+  if(cur.inventoryPreviewApplied) return {items,preview:true,alreadyApplied:true};
+
+  // 若同日期已有正式日結、但本輪尚未即時套用，預覽修正版時先把舊版加回，再扣新版。
   const old=H.find(x=>x.date===cur.date);
   if(old?.inventoryApplied && old.salesByProduct){
     Object.entries(old.salesByProduct).forEach(([p,qty])=>{
@@ -1279,7 +1283,7 @@ function renderRestock(){
   initMinStock();
   const state=inventoryForRestock(),items=state.items;
   let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(items,p)&&n(items[p])<=n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
-  const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 即時庫存</b>：已在這次結帳報表成功讀取後直接扣除 ${e(cur.date)} 的淨銷售。</div>`:'';
+  const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 即時庫存</b>：${state.alreadyApplied?'已套用':'預估扣除'} ${e(cur.date)} 的淨銷售（同一天只扣一次）。</div>`:'';
   $('restockList').innerHTML=head+(rs.length?rs.map(p=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}</b></div><div class="right"><b>${n(items[p])} ${minStockUnit(p)}</b><div class="note">${state.preview?'預估':'目前'}</div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}</b><div class="note">最低</div></div></div>`).join(''):'<div class="banner"><b>✓ 目前沒有需要補貨的商品。</b></div>');
 }
 
