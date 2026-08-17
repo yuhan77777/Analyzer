@@ -554,38 +554,35 @@ function refreshCurrentPrepaidBalances(){
 
 function currentReceiptChoices(){
   const rows=(API_R||[]);
-  const seen=new Set(), out=[];
+  const byReceipt=new Map();
   rows.forEach(r=>{
-    const receipt=q(r.receipt_number||r['收據流水號']||r['收據號碼']||r.receipt||'');
-    if(!receipt||seen.has(receipt))return;
-    seen.add(receipt);
+    const receipt=q(r['收據流水號']||r['收據號碼']||r['Receipt number']||r.receipt_number||r.receipt||'');
+    if(!receipt)return;
 
-    // Loyverse /v1.0/receipts 的整張收據金額是 total_money。
-    // 若資料曾被 Analyzer 正規化，也保留其他欄位名稱作 fallback。
-    let amount=n(
-      r.total_money ??
-      r.total ??
-      r.amount ??
-      r['總額'] ??
+    // API_R 是 analyzerApi 已整理過的 receiptRows，不是 Loyverse 原始 JSON。
+    // 每個商品列都有同一張收據的流水號；以 Analyzer 實際使用的銷售欄位加總商品列。
+    let line=n(
+      r['淨銷售額'] ??
       r['銷售額'] ??
+      r['金額'] ??
+      r['小計'] ??
+      r['總額'] ??
+      r['Total'] ??
+      r.total_money ??
+      r.amount ??
       0
     );
 
-    // 極端 fallback：若上層沒有總額，才由 line_items 加總。
-    if(!amount && Array.isArray(r.line_items)){
-      amount=r.line_items.reduce((sum,it)=>{
-        const lineTotal=n(
-          it.total_money ??
-          it.gross_total_money ??
-          (n(it.price)*n(it.quantity))
-        );
-        return sum+lineTotal;
-      },0);
+    // 若 receiptRows 有「數量、售價」但沒有小計，改由數量×售價。
+    if(!line){
+      const qty=n(r['數量'] ?? r['Quantity'] ?? r.quantity ?? 0);
+      const price=n(r['售價'] ?? r['價格'] ?? r['Price'] ?? r.price ?? 0);
+      if(qty && price) line=qty*price;
     }
 
-    out.push({receipt,amount});
+    byReceipt.set(receipt,(byReceipt.get(receipt)||0)+line);
   });
-  return out;
+  return [...byReceipt].map(([receipt,amount])=>({receipt,amount}));
 }
 function renderTodayReceiptChoices(){
   const sel=$('unpaidReceipt'); if(!sel)return;
