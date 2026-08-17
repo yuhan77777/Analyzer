@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.7</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.11</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.27.1</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.11</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -721,39 +721,11 @@ function commitBetelUsage(day){
 function applyCurrentSalesImmediately(){
   if(!cur?.date || !cur?.salesByProduct) return;
 
-  // 若同一天已有正式日結，先還原舊版銷售扣庫存，再套用這次最新報表，
-  // 確保重新上傳/重算同一天不會重複扣。
-  const old=H.find(x=>x.date===cur.date);
-  if(old?.inventoryApplied){
-    applyInventorySales(old,+1);
-    restoreBetelUsage(old);
-    restoreFifoUsage(old);
-    old.inventoryApplied=false;
-  }
-
-  // 若這一輪計算已經扣過，就不要再扣一次。
-  if(cur.inventoryPreviewApplied) return;
-
-  // 同日期銷售 log 只保留一筆最新結果。
-  INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===cur.date));
-
-  applyInventorySales(cur,-1);
-  commitBetelUsage(cur);
-  commitFifoUsage(cur);
-  cur.inventoryPreviewApplied=true;
-  INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
-
-  INV.logs.push({
-    id:'sale-'+cur.date,
-    date:cur.date,
-    type:'sales',
-    note:'結帳報表上傳後立即扣除商品銷售',
-    sales:{...cur.salesByProduct}
-  });
-
-  save();
-  renderStock();
-  renderRestock();
+  // V2.28.11：
+  // 讀取／重算 POS 本身絕對不直接改 INV.items。
+  // 庫存只在「儲存日結」時正式套用；因此同一天 POS 讀 100 次也不會多扣。
+  // 此處只清掉本輪預覽旗標，讓補貨提醒用 inventoryForRestock() 做純預覽。
+  cur.inventoryPreviewApplied=false;
 }
 
 function renderCalc(){$('empty').classList.add('hide');$('result').classList.remove('hide');['payCard','preCard','costCard','saveCard'].forEach(i=>$(i).classList.remove('hide'));$('pos').textContent=f(cur.pos);$('lp').textContent=f(cur.lunchPay);$('actual').textContent=f(cur.actual);$('net').textContent=f(cur.net);$('store').textContent=f(cur.store);$('gross').textContent=f(cur.gross);$('margin').textContent=cur.margin.toFixed(2)+'%';let R=$('lunchText').textContent.match(/總計：(\d+(?:\.\d+)?)/);$('lc').textContent=(R?R[1]:'—')+' 份';$('payRows').innerHTML=Object.entries(cur.pay).map(([a,b])=>`<tr><td>${e(a)} <span class="pill">${kl(pmap()[a].kind)}</span></td><td class="num">${f(b)}</td></tr>`).join('')+`<tr><td>今日新增預付款</td><td class="num">${f(cur.topupTotal)}</td></tr><tr><td>以前未收款今日收回</td><td class="num">${f(cur.rec)}</td></tr><tr><td><b>實際收到</b></td><td class="num"><b>${f(cur.actual)}</b></td></tr>`;$('preRows').innerHTML=Object.entries(cur.pre).map(([a,x])=>`<div class="list"><div><b>${e(a)}</b><div class="note">前次 ${f(x.open)}｜今日使用 ${f(x.use)}｜今日新增 ${f(x.add)}</div></div><b>${f(x.close)}</b></div>`).join('')||'<div class="note">無預付</div>';$('costRows').innerHTML=[['CSV成本＋補登',cur.base],['免洗杯補正',cur.cons.cc],['漏按黑袋補正',cur.cons.bc],['檳榔銷售成本（批次）',cur.cons.btc],['修正後總成本',cur.cost],['停車費',cur.park],['檳榔今日進貨現金支出',cur.betelCashOut||0],['淨收入／現金流',cur.net]].map(x=>`<tr><td>${x[0]}</td><td class="num">${f(x[1])}</td></tr>`).join('');$('cupInfo').textContent=`POS ${cur.cons.cp}＋自動補 ${cur.cons.ca}＋手動 ${A.cup>=0?'+':''}${A.cup}＝${cur.cons.cup} 個`;$('bagInfo').textContent=`POS 已按 ${cur.cons.bp}；漏按補 ${cur.cons.ba}；手動 ${A.bag>=0?'+':''}${A.bag}`;if($('betelCostInfo'))$('betelCostInfo').textContent=cur.cons.betelParts?.length?`檳榔成本明細：${formatBetelParts(cur.cons.betelParts)}`:'本日無檳榔銷售'}
@@ -763,8 +735,26 @@ $('saveDay').onclick=()=>{
 
   const old=H.find(x=>x.date===cur.date);
 
-  // 銷售庫存在「開始結算」成功後已經立即處理。
-  // 儲存日結這裡不再重複加回／扣除，避免同一天被扣兩次。
+  // V2.28.11：庫存只在「儲存日結」時套用，而且同日期採「先還原舊版，再套新版」。
+  // 所以重讀 POS、重算、甚至同一天重存，都不會累加扣庫存。
+  if(old?.inventoryApplied){
+    applyInventorySales(old,+1);
+    restoreBetelUsage(old);
+    restoreFifoUsage(old);
+  }
+
+  INV.logs=(INV.logs||[]).filter(log=>!(log.type==='sales' && log.date===cur.date));
+  applyInventorySales(cur,-1);
+  commitBetelUsage(cur);
+  commitFifoUsage(cur);
+  INV.logs.push({
+    id:'sale-'+cur.date,
+    date:cur.date,
+    type:'sales',
+    note:'儲存日結後套用商品淨銷售（同日期覆蓋，不重複扣）',
+    sales:{...cur.salesByProduct}
+  });
+  INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
 
   // 預付：期初一律取「前一個已儲存日結」的期末，不直接用目前餘額。
   // 因此重新跑 8/13 時會正確得到 8/12 期末 392，再扣 8/13 使用 300 = 92。
@@ -779,7 +769,7 @@ $('saveDay').onclick=()=>{
   cur.topups=JSON.parse(JSON.stringify(topups));
   cur.topupTotal=topups.reduce((a,x)=>a+n(x.amount),0);
 
-  // 銷售已在結算報表成功讀取時扣除；儲存日結只確認這筆扣庫存屬於正式日結。
+  // 本次最新銷售已在上方正式套用一次。
   cur.inventoryApplied=true;
   cur.inventoryPreviewApplied=false;
 
@@ -799,7 +789,7 @@ $('saveDay').onclick=()=>{
   refreshCurrentPrepaidBalances();
   save();
   renderHist();renderSet();renderStock();renderRestock();
-  unpaidDetails=[];recoverDetails=[];renderUnpaidManager();alert('已儲存 '+cur.date+' 日結；商品銷售庫存已於結算報表成功讀取時扣除');
+  unpaidDetails=[];recoverDetails=[];renderUnpaidManager();alert('已儲存 '+cur.date+' 日結；商品銷售庫存已正式套用一次（重讀 POS 不會重複扣）');
 }
 function escCSV(v){let s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}function makeCSV(R){return R.map(x=>x.map(escCSV).join(',')).join('\n')}function dl(name,t,type='text/csv;charset=utf-8'){let b=new Blob([t],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),300)}
 $('expDay').onclick=()=>{if(!cur)return;dl(`Analyzer-${cur.date}-日結.csv`,makeCSV([['項目','金額'],['POS',cur.pos],['應付便當店',cur.lunchPay],['福利社營業額',cur.store],['實際收到',cur.actual],['毛利',cur.gross],['毛利率',cur.margin.toFixed(2)+'%'],['淨收入',cur.net]]))}
