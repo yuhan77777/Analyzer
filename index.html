@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.27.1</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.2</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -83,9 +83,9 @@ body.readonly .write-only{display:none!important}
 
 <label>快速貼上叫貨明細</label>
 <textarea id="stockOrderPaste" rows="7" placeholder="大保*2&#10;伯朗*1&#10;藍山*1&#10;Peace 6號*2&#10;七星(濃)*1&#10;阿咧*1"></textarea>
-<div class="note">叫貨規則：香菸 *1＝1條＝10包；大保、大水 *1＝12；科學麵 *1＝40包；其餘商品 *1＝1箱＝24。</div>
-<div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="addStockOrderRow">＋新增品項</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
-<div class="note">解析後會自動帶入預設箱／條價格；本次價格不同可直接修改。修改只影響這張進貨單，不會改掉預設價格。</div>
+<div class="note">叫貨規則：香菸＝條／包；飲料、酒類＝箱／罐。香菸 *1＝1條＝10包；大保、大水 *1＝1箱＝12罐；科學麵 *1＝1箱＝40包；其餘飲料、酒類 *1＝1箱＝24罐。</div>
+<div class="actions"><button id="parseStockOrder">解析進貨</button><button class="alt" id="addStockOrderRow">＋新增品項</button><button class="alt" id="editPurchasePrices">💰 修改進貨金額</button><button class="alt" id="confirmStockOrder" disabled>正式入庫</button></div>
+<div class="note">主畫面優先顯示商品名稱、叫貨數量、換算入庫與小計。「💰 修改進貨金額」可獨立選商品並修改預設進貨價，不需要先解析進貨。</div>
 <div id="stockOrderPreview"></div>
 
 <div style="height:1px;background:var(--b);margin:14px 0"></div>
@@ -654,6 +654,7 @@ function applyCurrentSalesImmediately(){
   if(old?.inventoryApplied){
     applyInventorySales(old,+1);
     restoreBetelUsage(old);
+    restoreFifoUsage(old);
     old.inventoryApplied=false;
   }
 
@@ -665,6 +666,7 @@ function applyCurrentSalesImmediately(){
 
   applyInventorySales(cur,-1);
   commitBetelUsage(cur);
+  commitFifoUsage(cur);
   cur.inventoryPreviewApplied=true;
   INV.lastSalesDate = !INV.lastSalesDate || cur.date>INV.lastSalesDate ? cur.date : INV.lastSalesDate;
 
@@ -846,8 +848,8 @@ const STOCK_RULES={
   '七星(中淡)':{base:'包',pack:'條',size:10,cig:true},
   '藍M':{base:'包',pack:'條',size:10,cig:true},
   '峰(金)':{base:'包',pack:'條',size:10,cig:true},
-  '大保':{base:'瓶',pack:'箱',size:12},
-  '大水':{base:'瓶',pack:'箱',size:12},
+  '大保':{base:'罐',pack:'箱',size:12},
+  '大水':{base:'罐',pack:'箱',size:12},
   '科學麵':{base:'包',pack:'箱',size:40}
 };
 
@@ -860,9 +862,91 @@ const DEFAULT_PURCHASE_PRICES={
   '礦泉水(小)':70,'大水':60,'維大力':460,'科學麵':330,'可口可樂':500,
   '阿咧':380
 };
-function defaultPurchasePrice(product){return n(DEFAULT_PURCHASE_PRICES[canonicalStockName(product)])}
+function defaultPurchasePrice(product){
+  const p=canonicalStockName(product);
+  return n(INV?.purchasePrices?.[p] ?? DEFAULT_PURCHASE_PRICES[p]);
+}
 function purchaseLogsBetween(start,end){
   return (INV.logs||[]).filter(x=>x.type==='in'&&x.date>=start&&x.date<=end&&n(x.purchaseAmount)>0);
+}
+
+function initCostBatches(){
+  INV.costBatches=INV.costBatches&&typeof INV.costBatches==='object'?INV.costBatches:{};
+}
+function ensureLegacyCostBatch(product){
+  initCostBatches();
+  const p=canonicalStockName(product);
+  INV.costBatches[p]=Array.isArray(INV.costBatches[p])?INV.costBatches[p]:[];
+  if(INV.costBatches[p].length) return;
+  const qty=Math.max(0,n(INV.items?.[p]));
+  if(qty<=0) return;
+  // 現有庫存先建立為 legacy 批次；不會被之後的新進貨成本覆蓋。
+  // 若無法從歷史資料精確還原成本，就沿用目前既有成本設定作為舊批次成本。
+  const rule=stockRule(p);
+  const packPrice=defaultPurchasePrice(p);
+  const unitCost=rule?.size ? packPrice/rule.size : 0;
+  INV.costBatches[p].push({
+    id:'legacy-'+p,
+    date:INV.baseDate||'0000-00-00',
+    qty,remaining:qty,unitCost,
+    source:'legacy'
+  });
+}
+function addCostBatch(product,qty,totalAmount,date,stockLogId){
+  const p=canonicalStockName(product);
+  ensureLegacyCostBatch(p);
+  const qv=Math.max(0,n(qty)), amt=Math.max(0,n(totalAmount));
+  if(qv<=0)return;
+  INV.costBatches[p].push({
+    id:uid(),date:date||new Date().toISOString().slice(0,10),
+    qty:qv,remaining:qv,unitCost:qv?amt/qv:0,amount:amt,
+    stockLogId:stockLogId||'',source:'purchase'
+  });
+}
+function fifoCostForSale(product,qty,commit=false){
+  const p=canonicalStockName(product);
+  ensureLegacyCostBatch(p);
+  let left=Math.max(0,n(qty)),total=0,parts=[];
+  for(const b of (INV.costBatches[p]||[])){
+    if(left<=0)break;
+    const avail=Math.max(0,n(b.remaining));
+    if(avail<=0)continue;
+    const take=Math.min(left,avail),unit=n(b.unitCost);
+    total+=take*unit;
+    parts.push({batchId:b.id,qty:take,unitCost:unit,amount:take*unit});
+    if(commit)b.remaining=avail-take;
+    left-=take;
+  }
+  // 只有資料不足的歷史缺口才使用目前設定成本補值，不改任何既有批次。
+  if(left>0){
+    const r=stockRule(p),unit=r?.size?defaultPurchasePrice(p)/r.size:0;
+    total+=left*unit;
+    parts.push({batchId:'fallback',qty:left,unitCost:unit,amount:left*unit});
+  }
+  return {total,parts};
+}
+function restoreFifoUsage(day){
+  initCostBatches();
+  Object.entries(day?.fifoUsage||{}).forEach(([product,parts])=>{
+    (parts||[]).forEach(u=>{
+      if(u.batchId==='fallback')return;
+      const b=(INV.costBatches[canonicalStockName(product)]||[]).find(x=>x.id===u.batchId);
+      if(b)b.remaining=n(b.remaining)+n(u.qty);
+    });
+  });
+}
+function commitFifoUsage(day){
+  if(!day?.salesByProduct)return 0;
+  day.fifoUsage={};
+  let total=0;
+  Object.entries(day.salesByProduct).forEach(([product,qty])=>{
+    if(product==='檳榔')return; // 檳榔保留原本專用批次邏輯
+    const x=fifoCostForSale(product,Math.max(0,n(qty)),true);
+    day.fifoUsage[product]=x.parts;
+    total+=x.total;
+  });
+  day.fifoProductCost=total;
+  return total;
 }
 
 const STOCK_ALIASES={
@@ -1324,6 +1408,10 @@ window.deleteStockIn=encodedId=>{
 
   INV.items[product]=after;
   INV.logs=(INV.logs||[]).filter(x=>x.id!==id);
+  if(product!=='檳榔'){
+    initCostBatches();
+    INV.costBatches[product]=(INV.costBatches[product]||[]).filter(b=>b.stockLogId!==id);
+  }
   if(product==='檳榔'){
     initBetelBatches();
     // Prefer batch linked by stock log id; fallback to same date/qty most recent unmatched batch.
@@ -1356,37 +1444,199 @@ $('saveStockSnapshot').onclick=()=>{
 };
 
 function renderStockOrderPreview(errors=[]){
+  const total=pendingStockOrder.reduce((a,x)=>a+n(x.amount),0);
   const rows=pendingStockOrder.map((x,i)=>{
     const before=n(INV.items[x.product]),after=before+x.qty;
-    return `<tr>
-      <td><select class="poProduct" data-i="${i}">${[...new Set([...STOCK_CATALOG,x.product])].sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(p=>`<option value="${e(p)}"${p===x.product?' selected':''}>${e(p)}</option>`).join('')}</select></td>
-      <td><input class="poPacks" data-i="${i}" type="number" min="0" step="1" value="${x.packs}" style="min-width:85px"> ${e(x.packUnit)}</td>
-      <td class="num">+${x.qty}${e(x.baseUnit)}</td>
-      <td><input class="poPrice" data-i="${i}" type="number" min="0" step="1" value="${n(x.unitPrice)}" style="min-width:100px"></td>
-      <td class="num"><b>${f(x.amount)}</b></td>
-      <td class="num">${before} → <b>${after}</b></td>
-      <td><button class="danger sm" onclick="removeStockOrderRow(${i})">刪除</button></td>
-    </tr>`;
+    return `<div class="list" style="align-items:flex-start;padding:12px 0">
+      <div class="grow" style="min-width:0">
+        ${x.isNewManual
+  ? `<div>
+      <input class="poNewProduct" data-i="${i}" value="${e(x.product||'')}" placeholder="輸入新商品名稱" aria-label="新商品名稱">
+      <div class="row" style="margin-top:8px;align-items:flex-end">
+        <div class="grow">
+          <div class="note">進貨單位</div>
+          <select class="poNewPackUnit" data-i="${i}">
+            ${["箱","條","包","個","盒","袋","瓶","罐"].map(u=>`<option value="${u}"${u===x.packUnit?' selected':''}>${u}</option>`).join("")}
+          </select>
+        </div>
+        <div class="grow">
+          <div class="note">庫存單位</div>
+          <select class="poNewBaseUnit" data-i="${i}">
+            ${["罐","包","瓶","個","盒","袋","條"].map(u=>`<option value="${u}"${u===x.baseUnit?' selected':''}>${u}</option>`).join("")}
+          </select>
+        </div>
+        <div class="grow">
+          <div class="note">每${e(x.packUnit||"箱")}數量</div>
+          <input class="poNewPackSize" data-i="${i}" type="number" min="1" step="1" value="${x.packSize||1}">
+        </div>
+        <div class="grow">
+          <div class="note">每${e(x.packUnit||"箱")}進貨金額</div>
+          <input class="poNewPrice" data-i="${i}" type="number" min="0" step="1" value="${x.unitPrice||""}" placeholder="輸入成本">
+        </div>
+      </div>
+    </div>`
+  : `<select class="poProduct" data-i="${i}" aria-label="商品">${[...new Set([...STOCK_CATALOG,x.product])].sort((a,b)=>a.localeCompare(b,'zh-Hant')).map(p=>`<option value="${e(p)}"${p===x.product?' selected':''}>${e(p)}</option>`).join('')}</select>`}
+        <div class="row" style="margin-top:8px;align-items:flex-end">
+          <div style="width:105px">
+            <div class="note">叫貨</div>
+            <div class="row"><input class="poPacks" data-i="${i}" type="number" min="0" step="1" value="${x.packs}" style="min-width:0"> <span>${e(x.packUnit)}</span></div>
+          </div>
+          <div class="grow">
+            <div class="note">換算入庫</div>
+            <b>+${x.qty}${e(x.baseUnit)}</b>
+          </div>
+          <div class="right">
+            <div class="note">小計</div>
+            <b>${f(x.amount)}</b>
+          </div>
+        </div>
+        <div class="note" style="margin-top:7px">入庫前 ${before} → 入庫後 <b>${after}</b>｜本次單價 ${f(x.unitPrice)}/${e(x.packUnit)}</div>
+      </div>
+      <button class="danger sm" onclick="removeStockOrderRow(${i})">刪除</button>
+    </div>`;
   }).join('');
-  const total=pendingStockOrder.reduce((a,x)=>a+n(x.amount),0);
+
   $('stockOrderPreview').innerHTML=
     (errors.length?`<div class="banner" style="color:#a33">${errors.map(e).join('<br>')}</div>`:'')+
-    (rows?`<div style="overflow:auto;margin-top:10px"><table><thead><tr><th>商品</th><th>叫貨</th><th class="num">換算入庫</th><th>每${pendingStockOrder[0]?.packUnit||'箱'}價格</th><th class="num">小計</th><th class="num">入庫後</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    (rows?`<div style="margin-top:10px">${rows}</div>
     <div class="banner" style="margin-top:10px"><b>📦 本張進貨單合計：${f(total)}</b></div>`:'');
+
   $('confirmStockOrder').disabled=!pendingStockOrder.length || errors.length>0;
-  document.querySelectorAll('.poPrice').forEach(el=>el.oninput=()=>{const i=n(el.dataset.i);pendingStockOrder[i].unitPrice=n(el.value);pendingStockOrder[i].amount=pendingStockOrder[i].packs*pendingStockOrder[i].unitPrice;renderStockOrderPreview()});
-  document.querySelectorAll('.poPacks').forEach(el=>el.oninput=()=>{const i=n(el.dataset.i),x=pendingStockOrder[i],r=stockRule(x.product);x.packs=n(el.value);x.qty=x.packs*r.size;x.amount=x.packs*n(x.unitPrice);x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;renderStockOrderPreview()});
-  document.querySelectorAll('.poProduct').forEach(el=>el.onchange=()=>{const i=n(el.dataset.i),x=pendingStockOrder[i],p=canonicalStockName(el.value),r=stockRule(p);x.product=p;x.packUnit=r.pack;x.baseUnit=r.base;x.packSize=r.size;x.qty=x.packs*r.size;x.unitPrice=defaultPurchasePrice(p);x.amount=x.packs*x.unitPrice;x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;renderStockOrderPreview()});
+  $('editPurchasePrices').disabled=false;
+
+  document.querySelectorAll('.poNewProduct').forEach(el=>el.oninput=()=>{
+    const i=n(el.dataset.i);
+    if(pendingStockOrder[i]) pendingStockOrder[i].product=el.value.trim();
+  });
+  document.querySelectorAll('.poNewPackUnit').forEach(el=>el.onchange=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i]; if(!x)return;
+    x.packUnit=el.value; x.note=`${x.packs}${x.packUnit}×${x.packSize}${x.baseUnit}`; renderStockOrderPreview();
+  });
+  document.querySelectorAll('.poNewBaseUnit').forEach(el=>el.onchange=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i]; if(!x)return;
+    x.baseUnit=el.value; x.note=`${x.packs}${x.packUnit}×${x.packSize}${x.baseUnit}`; renderStockOrderPreview();
+  });
+  document.querySelectorAll('.poNewPackSize').forEach(el=>el.oninput=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i]; if(!x)return;
+    x.packSize=Math.max(1,n(el.value)); x.qty=n(x.packs)*x.packSize;
+    x.note=`${x.packs}${x.packUnit}×${x.packSize}${x.baseUnit}`; x.amount=n(x.packs)*n(x.unitPrice);
+    renderStockOrderPreview();
+  });
+  document.querySelectorAll('.poNewPrice').forEach(el=>el.oninput=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i]; if(!x)return;
+    x.unitPrice=Math.max(0,n(el.value)); x.amount=n(x.packs)*x.unitPrice;
+    renderStockOrderPreview();
+  });
+  document.querySelectorAll('.poPacks').forEach(el=>el.oninput=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i]; if(!x)return;
+    x.packs=Math.max(0,n(el.value));
+    if(x.isNewManual){
+      x.qty=x.packs*Math.max(1,n(x.packSize));
+      x.amount=x.packs*n(x.unitPrice);
+      x.note=`${x.packs}${x.packUnit}×${x.packSize}${x.baseUnit}`;
+    }else{
+      const r=stockRule(x.product);
+      x.packUnit=r.pack; x.baseUnit=r.base; x.packSize=r.size;
+      x.qty=x.packs*r.size; x.amount=x.packs*n(x.unitPrice);
+      x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;
+    }
+    renderStockOrderPreview();
+  });
+
+  document.querySelectorAll('.poProduct').forEach(el=>el.onchange=()=>{
+    const i=n(el.dataset.i),x=pendingStockOrder[i],p=canonicalStockName(el.value),r=stockRule(p);
+    x.product=p;x.packUnit=r.pack;x.baseUnit=r.base;x.packSize=r.size;x.qty=x.packs*r.size;
+    x.unitPrice=defaultPurchasePrice(p);x.amount=x.packs*x.unitPrice;
+    x.note=`${x.packs}${r.pack}×${r.size}${r.base}`;
+    renderStockOrderPreview();
+  });
 }
+
+window.openPurchasePriceEditor=()=>{
+  const products=[...STOCK_CATALOG].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+  const defaultProduct=products[0]||"";
+
+  function unitsFor(p){
+    const r=stockRule(p);
+    return {pack:r.pack, base:r.base};
+  }
+  function showPrice(p){
+    const v=defaultPurchasePrice(p);
+    const u=unitsFor(p);
+    const packText=u.pack==="條" ? "每條進貨金額" : `每${u.pack}進貨金額`;
+    $('purchasePriceLabel').textContent=packText;
+    $('purchasePriceValue').value=v||"";
+    $('purchasePriceName').textContent=p;
+    $('purchasePriceCurrent').textContent=`下一批進貨價：${f(v)} / ${u.pack}`;
+  }
+
+  $('mb').innerHTML=`<h3 style="margin-top:0">💰 修改進貨金額</h3>
+    <div class="note">這裡獨立設定「下一批進貨」的價格，和解析進貨無關。舊庫存成本不會被修改；新貨正式入庫後會建立新的 FIFO 成本批次。</div>
+    <div style="margin-top:14px">
+      <label>商品</label>
+      <select id="purchasePriceProduct">${products.map(p=>`<option value="${e(p)}">${e(p)}</option>`).join('')}</select>
+    </div>
+    <div style="margin-top:12px">
+      <label id="purchasePriceLabel">進貨金額</label>
+      <input id="purchasePriceValue" type="number" min="0" step="1">
+    </div>
+    <div class="banner" style="margin-top:12px">
+      <b id="purchasePriceName"></b>
+      <div class="note" id="purchasePriceCurrent"></div>
+    </div>
+    <div class="actions">
+      <button id="savePurchaseDefaultPrice">儲存進貨金額</button>
+      <button class="secondary" id="cancelPurchasePrice">取消</button>
+    </div>
+    <div class="actions" style="margin-top:6px">
+      <button class="secondary" id="closePurchasePrice">關閉</button>
+    </div>`;
+
+  $('purchasePriceProduct').onchange=()=>showPrice($('purchasePriceProduct').value);
+  $('savePurchaseDefaultPrice').onclick=()=>{
+    const p=$('purchasePriceProduct').value;
+    const price=Math.max(0,n($('purchasePriceValue').value));
+    if(!p) return alert("請選擇商品");
+    if(!price) return alert("請輸入進貨金額");
+    INV.purchasePrices=INV.purchasePrices||{};
+    INV.purchasePrices[p]=price;
+    save();
+    showPrice(p);
+    alert(`已儲存 ${p} 的下一批進貨價：${f(price)} / ${unitsFor(p).pack}`);
+  };
+  $('cancelPurchasePrice').onclick=()=>showPrice($('purchasePriceProduct').value);
+  $('closePurchasePrice').onclick=()=>closeModal();
+  showPrice(defaultProduct);
+  openModal();
+};
+
 window.removeStockOrderRow=i=>{pendingStockOrder.splice(i,1);renderStockOrderPreview()};
+{
+  const btn=$('editPurchasePrices');
+  btn.disabled=false;
+  btn.onclick=function(ev){
+    ev.preventDefault();
+    window.openPurchasePriceEditor();
+  };
+}
 $('parseStockOrder').onclick=()=>{
   const parsed=parseStockOrderText($('stockOrderPaste').value);
   pendingStockOrder=parsed.result.map(x=>({...x,unitPrice:defaultPurchasePrice(x.product),amount:x.packs*defaultPurchasePrice(x.product)}));
   renderStockOrderPreview(parsed.errors);
 };
 $('addStockOrderRow').onclick=()=>{
-  const p=STOCK_CATALOG[0],r=stockRule(p);
-  pendingStockOrder.push({product:p,packs:1,packUnit:r.pack,baseUnit:r.base,packSize:r.size,qty:r.size,note:`1${r.pack}×${r.size}${r.base}`,unitPrice:defaultPurchasePrice(p),amount:defaultPurchasePrice(p)});
+  pendingStockOrder.push({
+    product:"",
+    packs:0,
+    packUnit:"箱",
+    baseUnit:"罐",
+    packSize:24,
+    qty:0,
+    unitPrice:0,
+    amount:0,
+    note:"",
+    isNewManual:true
+  });
   renderStockOrderPreview();
 };
 $('confirmStockOrder').onclick=()=>{
@@ -1397,7 +1647,9 @@ $('confirmStockOrder').onclick=()=>{
     const before=n(INV.items[x.product]),after=before+x.qty;
     INV.items[x.product]=after;
     addLoyversePending(x.product,after,`進貨 ${x.packs}${x.packUnit}（+${x.qty}${x.baseUnit}）`);
-    INV.logs.push({id:uid(),orderId,date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit,purchaseUnitPrice:n(x.unitPrice),purchaseAmount:n(x.amount),orderTotal});
+    const stockLogId=uid();
+    INV.logs.push({id:stockLogId,orderId,date,type:'in',product:x.product,qty:x.qty,before,after,note:x.note,packQty:x.packs,packUnit:x.packUnit,purchaseUnitPrice:n(x.unitPrice),purchaseAmount:n(x.amount),orderTotal});
+    if(x.product!=='檳榔') addCostBatch(x.product,x.qty,x.amount,date,stockLogId);
   });
   save();renderStock();renderLoyversePending();
   $('stockAfter').classList.remove('hide');
@@ -1428,7 +1680,13 @@ $('addStockIn').onclick=()=>{
   }
   addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
   const purchaseAmount=product==='檳榔'?betelAmount:(unit==='package'?rawQty*defaultPurchasePrice(product):0);
-  const stockLogId=uid();INV.logs.push({id:stockLogId,date,type:'in',product,qty,before,after,note:displayNote,purchaseUnitPrice:unit==='package'?defaultPurchasePrice(product):0,purchaseAmount});if(product==='檳榔'){const b=INV.betelBatches[INV.betelBatches.length-1];if(b)b.stockLogId=stockLogId;}
+  const stockLogId=uid();
+  INV.logs.push({id:stockLogId,date,type:'in',product,qty,before,after,note:displayNote,purchaseUnitPrice:unit==='package'?defaultPurchasePrice(product):0,purchaseAmount});
+  if(product==='檳榔'){
+    const b=INV.betelBatches[INV.betelBatches.length-1];if(b)b.stockLogId=stockLogId;
+  }else if(purchaseAmount>0){
+    addCostBatch(product,qty,purchaseAmount,date,stockLogId);
+  }
   save();renderStock();
 
   $('stockAfter').classList.remove('hide');
@@ -1785,11 +2043,14 @@ function setReadonlyMode(readonly){
   // 介面層防誤按；真正權限仍由 Firestore Rules 決定。
   const ids=[
     "saveDay","addAdv","addTopup","saveCosts","addPay",
-    "saveStockSnapshot","parseStockOrder","confirmStockOrder","addStockIn",
+    "saveStockSnapshot","confirmStockOrder","addStockIn",
     "compareStockBtn","adoptSnapshotBtn","clearLoyversePending","saveMinStock",
     "restore"
   ];
   ids.forEach(id=>{const el=$c(id);if(el)el.disabled=readonly});
+  ["parseStockOrder","addStockOrderRow","editPurchasePrices"].forEach(id=>{
+    const el=$c(id); if(el) el.disabled=false;
+  });
 }
 async function inspectCloud(){
   if(!currentUser)return;
