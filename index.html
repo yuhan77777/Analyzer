@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.22</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.23</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.22</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.23</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -506,33 +506,54 @@ function inventorySalesFromItems(I){
 
 
 function rebuildInventoryFromLatestSnapshot(){
+  const canon=(name)=>{
+    name=q(name).replace(/\s+/g,' ').trim();
+    const a={
+      '鋒(金)':'峰(金)','峰（金）':'峰(金)','鋒（金）':'峰(金)','金峰':'峰(金)',
+      '黑松沙士':'沙士',
+      '保利達(大)':'大保','保利達（大）':'大保',
+      '保利達(小)':'小保','保利達（小）':'小保',
+      '七星（中淡）':'七星(中淡)','七星中淡':'七星(中淡)',
+      '七星（濃）':'七星(濃)','七星濃':'七星(濃)',
+      'Peace6號':'Peace 6號','Peace６號':'Peace 6號',
+      '藍Ｍ':'藍M'
+    };
+    return a[name]||name;
+  };
+
   const logs=Array.isArray(INV.logs)?INV.logs:[];
   const snaps=logs.filter(x=>x.type==='snapshot' && x.items && typeof x.items==='object')
     .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   const snap=snaps[snaps.length-1];
   if(!snap) return false;
 
-  const items={...snap.items};
+  // 快照本身也先正規化；例如 鋒(金)/峰(金) 不可變成兩個不同庫存欄位。
+  const items={};
+  Object.entries(snap.items||{}).forEach(([product,qty])=>{
+    const p=canon(product);
+    items[p]=(items[p]||0)+n(qty);
+  });
   const baseDate=snap.date||INV.baseDate||'';
 
-  // 正式進貨：只依唯一 log id 計一次。
   const seenIn=new Set();
   logs.filter(x=>x.type==='in' && (x.date||'')>baseDate)
     .sort((a,b)=>(a.date||'').localeCompare(b.date||''))
     .forEach(x=>{
-      const key=x.id||`${x.date}|${x.product}|${x.qty}|${x.note||''}`;
+      const p=canon(x.product);
+      const key=x.id||`${x.date}|${p}|${x.qty}|${x.note||''}`;
       if(seenIn.has(key))return; seenIn.add(key);
-      if(!Object.prototype.hasOwnProperty.call(items,x.product)) items[x.product]=0;
-      items[x.product]=n(items[x.product])+n(x.qty);
+      if(!Object.prototype.hasOwnProperty.call(items,p)) items[p]=0;
+      items[p]=n(items[p])+n(x.qty);
     });
 
-  // 銷售：完全不相信舊的重複 sales logs，只依 H 每日期「最後一份正式日結」計一次。
+  // 每日日結銷售同樣正規化名稱後才扣庫存。
   const byDate=new Map();
   H.filter(d=>d?.date && d.date>baseDate && d.salesByProduct).forEach(d=>byDate.set(d.date,d));
   [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date)).forEach(day=>{
     Object.entries(day.salesByProduct||{}).forEach(([product,qty])=>{
-      if(!Object.prototype.hasOwnProperty.call(items,product)) items[product]=0;
-      items[product]=n(items[product])-n(qty);
+      const p=canon(product);
+      if(!Object.prototype.hasOwnProperty.call(items,p)) items[p]=0;
+      items[p]=n(items[p])-n(qty);
     });
   });
 
@@ -541,11 +562,16 @@ function rebuildInventoryFromLatestSnapshot(){
   const dates=[...byDate.keys()].sort();
   INV.lastSalesDate=dates.length?dates[dates.length-1]:baseDate;
 
-  // sales log 也重建成每日期唯一一筆，避免舊污染繼續存在。
   INV.logs=logs.filter(x=>x.type!=='sales' || (x.date||'')<=baseDate);
   [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date)).forEach(day=>{
+    const normalizedSales={};
+    Object.entries(day.salesByProduct||{}).forEach(([product,qty])=>{
+      const p=canon(product);
+      normalizedSales[p]=(normalizedSales[p]||0)+n(qty);
+    });
+    day.salesByProduct=normalizedSales;
     INV.logs.push({id:'sale-'+day.date,date:day.date,type:'sales',
-      note:'由正式日結重建（每日期唯一一次）',sales:{...day.salesByProduct}});
+      note:'由正式日結重建（商品名稱統一；每日期唯一一次）',sales:{...normalizedSales}});
     day.inventoryApplied=true;
   });
   return true;
@@ -2569,6 +2595,18 @@ renderSyncTime();
  localStorage.setItem(K.i,JSON.stringify(INV));
  localStorage.setItem(K.s,JSON.stringify(S));
  localStorage.setItem(FLAG,'1');
+})();
+
+/* V2.28.23：升版後強制以最新實際盤點重建一次，修復峰(金)被當成另一商品而從0扣除。 */
+(function(){
+ const flag='analyzer_v22823_canonical_inventory_rebuild';
+ if(localStorage.getItem(flag)!=='1'){
+   try{
+     rebuildInventoryFromLatestSnapshot();
+     save();
+     localStorage.setItem(flag,'1');
+   }catch(err){ console.error('V2.28.23 rebuild failed',err); }
+ }
 })();
 </script>
 
