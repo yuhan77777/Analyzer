@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.35</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.36</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.35</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.36</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -1504,21 +1504,48 @@ function initMinStock(){S.minStock=S.minStock||{};S.minStockEnabled=S.minStockEn
 function minStockUnit(p){return p==='科學麵'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p)?'包':'罐'}
 function renderMinStockSettings(){if(!$('minStockSettings'))return;initMinStock();let k=q($('minStockSearch')?.value).toLowerCase();let ns=Object.keys(S.minStock).filter(p=>!k||p.toLowerCase().includes(k)).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('minStockSettings').innerHTML=ns.map(p=>`<div class="list"><div class="grow"><b>${e(p)}</b><div class="note">${minStockUnit(p)}</div></div><label><input class="minEnable" data-p="${encodeURIComponent(p)}" type="checkbox" ${S.minStockEnabled[p]!==false?'checked':''}> 提醒</label><input class="minVal" data-p="${encodeURIComponent(p)}" type="number" min="0" value="${n(S.minStock[p])}" style="width:80px"></div>`).join('')}
 function inventoryForRestock(){
-  // 補貨提醒永遠以「目前 Analyzer 庫存」為準。
-  // calc() 已經會把當日銷售即時套用到 INV.items；進貨也會直接更新 INV.items。
-  // 因此這裡不能因為 cur 還留著上一輪結算資料，就再拿舊 salesByProduct 重算，
-  // 否則只要進一筆檳榔，白毫烏龍／金牌／康貝特等無關提醒就可能一起消失。
-  const items={...(INV.items||{})};
-  const preview=!!(cur?.date&&cur?.salesByProduct);
-  return {items,preview,alreadyApplied:preview};
+  // 唯一資料來源：下方「目前理論庫存」同一份 INV.items
+  const items={};
+  Object.entries(INV.items||{}).forEach(([name,qty])=>{
+    const k=canonicalProductName ? canonicalProductName(name) : q(name);
+    if(['大水','小水','礦泉水(大)','礦泉水(小)'].includes(k)) return;
+    items[k]=n(qty);
+  });
+  return {items,theory:true};
 }
 function renderRestock(){
-  if(!$('restockList'))return;
+  const el=$('restockList');
+  if(!el)return;
   initMinStock();
-  const state=inventoryForRestock(),items=state.items;
-  let rs=Object.keys(S.minStock).filter(p=>S.minStockEnabled[p]!==false&&Object.prototype.hasOwnProperty.call(items,p)&&n(items[p])<=n(S.minStock[p])).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
-  const head=state.preview?`<div class="banner" style="margin-bottom:8px"><b>📊 即時庫存</b>：${state.alreadyApplied?'已套用':'預估扣除'} ${e(cur.date)} 的淨銷售（同一天只扣一次）。</div>`:'';
-  $('restockList').innerHTML=head+(rs.length?rs.map(p=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0"><div class="grow"><b>⚠️ ${e(p)}</b></div><div class="right"><b>${n(items[p])} ${minStockUnit(p)}</b><div class="note">${state.preview?'預估':'目前'}</div></div><div class="right"><b>${n(S.minStock[p])} ${minStockUnit(p)}</b><div class="note">最低</div></div></div>`).join(''):'<div class="banner"><b>✓ 目前沒有需要補貨的商品。</b></div>');
+
+  const stock=inventoryForRestock().items;
+  const rows=[];
+
+  Object.keys(S.minStock||{}).forEach(product=>{
+    const k=(typeof canonicalProductName==='function')?canonicalProductName(product):product;
+    const enabled=S.minStockEnabled?.[product]!==false;
+    if(!enabled)return;
+    if(!Object.prototype.hasOwnProperty.call(stock,k))return;
+
+    const current=n(stock[k]);
+    const minimum=n(S.minStock[product]);
+    if(current<=minimum) rows.push({product:k,current,minimum});
+  });
+
+  rows.sort((a,b)=>a.product.localeCompare(b.product,'zh-Hant'));
+
+  el.innerHTML=
+    `<div class="banner" style="margin-bottom:8px;background:#eef7ff;border-color:#b9d8ef">
+      <b>👻 補貨提醒核心 V2.28.36 已執行</b>
+      <div class="note">理論庫存 ${Object.keys(stock).length} 項｜最低門檻 ${Object.keys(S.minStock||{}).length} 項｜符合提醒 ${rows.length} 項</div>
+    </div>`+
+    (rows.length
+      ? rows.map(x=>`<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0">
+          <div class="grow"><b>⚠️ ${e(x.product)}</b></div>
+          <div class="right"><b>${x.current} ${e(minStockUnit(x.product))}</b><div class="note">目前</div></div>
+          <div class="right"><b>${x.minimum} ${e(minStockUnit(x.product))}</b><div class="note">最低</div></div>
+        </div>`).join('')
+      : '<div class="note">目前沒有低於或等於最低庫存的商品。</div>');
 }
 
 function renderStock(){
@@ -1855,7 +1882,7 @@ $('addStockIn').onclick=()=>{
   }else if(purchaseAmount>0){
     addCostBatch(product,qty,purchaseAmount,date,stockLogId);
   }
-  save();renderStock();
+  save();renderStock();renderRestock();
 
   $('stockAfter').classList.remove('hide');
   const baseLabel=r?.base||'個';
@@ -1895,7 +1922,7 @@ $('adoptSnapshotBtn').onclick=()=>{
 };
 
 
-function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock')renderStock();if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
+function sw(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tb').forEach(x=>x.classList.remove('on'));$(t).classList.add('on');document.querySelector(`.tb[data-t="${t}"]`).classList.add('on');if(t==='hist')renderHist();if(t==='set')renderSet();if(t==='stock'){renderStock();renderRestock();}if(t==='month'&&!$('ms').value)period(0)}document.querySelectorAll('.tb').forEach(x=>x.onclick=()=>sw(x.dataset.t))
 window.clearF=(id,nm)=>{$(id).value='';$(nm).textContent='尚未選擇';cur=null};function fl(){$('rn').textContent=$('rf').files[0]?'目前：'+$('rf').files[0].name:'尚未選擇';$('in').textContent=$('if').files[0]?'目前：'+$('if').files[0].name:'尚未選擇'}$('rf').onchange=fl;$('if').onchange=fl;function refreshBetelBatchBox(){if(!$('betelBatchBox'))return;const isBetel=q($('stockProduct').value)==='檳榔';$('betelBatchBox').classList.toggle('hide',!isBetel)}if($('stockProduct'))$('stockProduct').onchange=()=>{refreshStockUnitSelect();refreshBetelBatchBox()};
 
 
@@ -2765,195 +2792,6 @@ renderSyncTime();
 </script>
 
 
-<script>
-/* V2.28.33 FINAL RESTOCK PATCH
-   必須放在所有舊版 patch 之後，避免後面的 V2.28.20/其他 patch 再把 renderRestock 蓋回去。 */
-(function(){
-  function key(x){
-    x=String(x??'').replace(/\s+/g,' ').trim();
-    const m={
-      '鋒(金)':'峰(金)','峰（金）':'峰(金)','鋒（金）':'峰(金)',
-      '七星（中淡）':'七星(中淡)','七星（濃）':'七星(濃)',
-      'Peace6號':'Peace 6號','Peace６號':'Peace 6號','藍Ｍ':'藍M',
-      '茶裏王白毫烏龍':'白毫烏龍','查理王白毫烏龍':'白毫烏龍',
-      '茶裏王無糖綠':'日式無糖綠茶','查理王無糖綠':'日式無糖綠茶',
-      '保利達(大)':'大保','保利達（大）':'大保',
-      '保利達(小)':'小保','保利達（小）':'小保',
-      '黑松沙士':'沙士'
-    };
-    return m[x]||x;
-  }
 
-  window.inventoryForRestock=function(){
-    const items={};
-    Object.entries((INV&&INV.items)||{}).forEach(([k,v])=>{
-      const ck=key(k);
-      if(ck==='礦泉水(大)'||ck==='礦泉水(小)'||ck==='大水'||ck==='小水') return;
-      items[ck]=Number(v)||0;
-    });
-    return {items,preview:false,loyverse:false,theory:true};
-  };
-
-  window.renderRestock=function(){
-    const el=document.getElementById('restockList');
-    if(!el) return;
-    if(typeof initMinStock==='function') initMinStock();
-
-    const stock=window.inventoryForRestock().items;
-    const mins={}, enabled={};
-    Object.entries((S&&S.minStock)||{}).forEach(([k,v])=>mins[key(k)]=Number(v)||0);
-    Object.entries((S&&S.minStockEnabled)||{}).forEach(([k,v])=>enabled[key(k)]=v);
-
-    const rows=Object.keys(mins).filter(k =>
-      enabled[k]!==false &&
-      Object.prototype.hasOwnProperty.call(stock,k) &&
-      stock[k] <= mins[k]
-    ).sort((a,b)=>a.localeCompare(b,'zh-Hant'));
-
-    const unit=(p)=>{
-      try{return typeof minStockUnit==='function'?minStockUnit(p):''}catch(_){return ''}
-    };
-    const esc=(s)=>{
-      try{return typeof e==='function'?e(s):String(s)}catch(_){return String(s)}
-    };
-
-    el.innerHTML=
-      '<div class="banner" style="margin-bottom:8px"><b>📦 目前庫存來源：Analyzer 目前理論庫存</b>'+
-      '<br><span class="note">提醒規則：目前庫存 ≤ 最低庫存。｜已讀取 '+Object.keys(stock).length+' 項庫存／'+Object.keys(mins).length+' 項門檻</span></div>'+
-      (rows.length ? rows.map(k=>
-        '<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0">'+
-        '<div class="grow"><b>⚠️ '+esc(k)+'</b></div>'+
-        '<div class="right"><b>'+stock[k]+' '+esc(unit(k))+'</b><div class="note">目前</div></div>'+
-        '<div class="right"><b>'+mins[k]+' '+esc(unit(k))+'</b><div class="note">最低</div></div>'+
-        '</div>'
-      ).join('') : '<div class="note">目前沒有低於或等於最低庫存的商品。</div>');
-  };
-
-  // 每次庫存資料可能被進貨/銷售/save 改動後，都重新用同一份 INV.items 畫提醒。
-  const oldSave=window.save;
-  if(typeof oldSave==='function'){
-    window.save=function(){
-      const r=oldSave.apply(this,arguments);
-      setTimeout(()=>{try{window.renderRestock()}catch(err){console.error(err)}},0);
-      return r;
-    };
-  }
-
-  document.addEventListener('click',function(){
-    setTimeout(()=>{try{window.renderRestock()}catch(err){}},50);
-  });
-
-  setTimeout(()=>window.renderRestock(),0);
-  setTimeout(()=>window.renderRestock(),500);
-})();
-</script>
-
-
-<script>
-/* V2.28.35：補貨提醒最終修正
-   原因：舊版檔案內有多組 renderRestock / inventoryForRestock 覆寫。
-   本段放在檔案最後，統一只讀「目前理論庫存 INV.items」與最低庫存 S.minStock。
-*/
-(function(){
-  function restockCanon(name){
-    name=String(name??'').trim().replace(/\s+/g,' ');
-    const map={
-      '鋒(金)':'峰(金)','峰（金）':'峰(金)','鋒（金）':'峰(金)','金峰':'峰(金)',
-      '黑松沙士':'沙士',
-      '保利達(大)':'大保','保利達（大）':'大保',
-      '保利達(小)':'小保','保利達（小）':'小保',
-      '七星（中淡）':'七星(中淡)','七星中淡':'七星(中淡)',
-      '七星（濃）':'七星(濃)','七星濃':'七星(濃)',
-      'Peace6號':'Peace 6號','Peace６號':'Peace 6號',
-      '藍Ｍ':'藍M',
-      '茶裏王白毫烏龍':'白毫烏龍','查理王白毫烏龍':'白毫烏龍',
-      '茶裏王無糖綠':'日式無糖綠茶','查理王無糖綠':'日式無糖綠茶'
-    };
-    return map[name]||name;
-  }
-
-  function getTheoryStockForRestock(){
-    const out={};
-    Object.entries((window.INV || (typeof INV!=='undefined' ? INV : null))?.items || {}).forEach(([name,qty])=>{
-      const k=restockCanon(name);
-      // 礦泉水已設定為不追庫存
-      if(['大水','小水','礦泉水(大)','礦泉水(小)'].includes(k)) return;
-      out[k]=Number(qty)||0;
-    });
-    return out;
-  }
-
-  window.inventoryForRestock=function(){
-    return {items:getTheoryStockForRestock(), preview:false, loyverse:false, theory:true};
-  };
-
-  window.renderRestock=function(){
-    const el=document.getElementById('restockList');
-    if(!el) return;
-
-    if(typeof initMinStock==='function') initMinStock();
-
-    const stock=getTheoryStockForRestock();
-    const mins={}, enabled={};
-
-    Object.entries((typeof S!=='undefined' && S.minStock) ? S.minStock : {}).forEach(([name,val])=>{
-      mins[restockCanon(name)]=Number(val)||0;
-    });
-    Object.entries((typeof S!=='undefined' && S.minStockEnabled) ? S.minStockEnabled : {}).forEach(([name,val])=>{
-      enabled[restockCanon(name)]=val;
-    });
-
-    const rows=Object.keys(mins)
-      .filter(name =>
-        enabled[name] !== false &&
-        Object.prototype.hasOwnProperty.call(stock,name) &&
-        Number(stock[name]) <= Number(mins[name])
-      )
-      .sort((a,b)=>a.localeCompare(b,'zh-Hant'));
-
-    const unitOf=(name)=>{
-      try { return typeof minStockUnit==='function' ? minStockUnit(name) : ''; }
-      catch(_) { return ''; }
-    };
-    const esc=(s)=>{
-      try { return typeof e==='function' ? e(s) : String(s); }
-      catch(_) { return String(s); }
-    };
-
-    let html =
-      '<div class="banner" style="margin-bottom:8px">'+
-      '<b>📦 目前庫存來源：Analyzer 目前理論庫存</b><br>'+
-      '<span class="note">提醒規則：目前庫存 ≤ 最低庫存。｜已讀取 '+
-      Object.keys(stock).length+' 項庫存／'+Object.keys(mins).length+' 項門檻</span>'+
-      '</div>';
-
-    if(rows.length){
-      html += rows.map(name =>
-        '<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0">'+
-          '<div class="grow"><b>⚠️ '+esc(name)+'</b></div>'+
-          '<div class="right"><b>'+stock[name]+' '+esc(unitOf(name))+'</b><div class="note">目前</div></div>'+
-          '<div class="right"><b>'+mins[name]+' '+esc(unitOf(name))+'</b><div class="note">最低</div></div>'+
-        '</div>'
-      ).join('');
-    }else{
-      html += '<div class="note">目前沒有低於或等於最低庫存的商品。</div>';
-    }
-
-    el.innerHTML=html;
-  };
-
-  // 進貨、儲存最低庫存、切換頁籤後都重新畫。
-  document.addEventListener('click', function(ev){
-    const id=ev.target && ev.target.id;
-    if(['addStockIn','confirmStockOrder','saveMinStock'].includes(id)){
-      setTimeout(()=>window.renderRestock(),80);
-    }
-  });
-
-  // 初始化完成後再畫，避免被前面的 init/renderStock 蓋掉。
-  setTimeout(()=>window.renderRestock(),100);
-  setTimeout(()=>window.renderRestock(),700);
-})();
-</script>
 
 </body></html>
