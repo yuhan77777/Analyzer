@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.24</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.25</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.24</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.25</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -421,9 +421,11 @@ function invMapItem(name,qty){
   else if(name==='金牌(單罐)'){target='金牌';mult=1}
   else if(/^Bar\(3罐\)$/i.test(name)){target='Bar';mult=3}
   else if(/^Bar\(單罐\)$/i.test(name)){target='Bar';mult=1}
-  else if(name==='礦泉水(小)單罐'){target='礦泉水(小)';mult=1}
-  else if(name==='礦泉水(小)整箱'){target='礦泉水(小)';mult=24}
-  else if(name==='礦泉水(大)單罐'||name==='礦泉水(大)結冰'){target='礦泉水(大)';mult=1}
+  // V2.28.25：礦泉水不追蹤庫存；茶裏王只是品牌名，不可建立獨立庫存。
+  else if(['大水','小水','礦泉水(大)','礦泉水(小)','礦泉水(大)單罐','礦泉水(大)結冰','礦泉水(小)單罐','礦泉水(小)整箱'].includes(name)){target='';mult=0}
+  else if(name==='茶裏王白毫烏龍'||name==='查理王白毫烏龍') target='白毫烏龍';
+  else if(name==='茶裏王無糖綠'||name==='查理王無糖綠') target='日式無糖綠茶';
+  else if(name==='茶裏王'||name==='查理王'){target='';mult=0}
 
   return {target,qty:qty*mult};
 }
@@ -1076,7 +1078,7 @@ function commitFifoUsage(day){
 
 const STOCK_ALIASES={
   '伯朗':'伯朗咖啡','藍山':'藍山咖啡','peace 6號':'Peace 6號','peace6號':'Peace 6號',
-  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','小水':'礦泉水(小)','可樂':'可口可樂','bar':'Bar','peaces':'Peace 6號','fin':'Fin','金峰':'峰(金)','查理王白毫烏龍':'白毫烏龍','查理王無糖綠':'日式無糖綠茶'
+  '七星濃':'七星(濃)','七星中淡':'七星(中淡)','可樂':'可口可樂','bar':'Bar','peaces':'Peace 6號','fin':'Fin','金峰':'峰(金)','查理王白毫烏龍':'白毫烏龍','查理王無糖綠':'日式無糖綠茶','茶裏王白毫烏龍':'白毫烏龍','茶裏王無糖綠':'日式無糖綠茶'
 };
 let pendingStockOrder=[];
 
@@ -2075,7 +2077,17 @@ function repairV2246GoldInLog(){
 }
 
 
-const STOCK_CATALOG=["健酪","麥香紅茶","伯朗咖啡","藍山咖啡","Fin","麥香奶茶","日式無糖綠茶","白毫烏龍","冬瓜茶","青草茶","阿咧","咖啡廣場(白)","咖啡廣場(藍)","蠻牛","沙士","水蠻牛","維大力","可口可樂","康貝特200P","金牌","Bar","海尼根","大保","小保","檳榔","科學麵","七星(濃)","七星(中淡)","Peace 6號","藍M","峰(金)","礦泉水(小)","大水","茶裏王"];
+const STOCK_CATALOG=["健酪","麥香紅茶","伯朗咖啡","藍山咖啡","Fin","麥香奶茶","日式無糖綠茶","白毫烏龍","冬瓜茶","青草茶","阿咧","咖啡廣場(白)","咖啡廣場(藍)","蠻牛","沙士","水蠻牛","維大力","可口可樂","康貝特200P","金牌","Bar","海尼根","大保","小保","檳榔","科學麵","七星(濃)","七星(中淡)","Peace 6號","藍M","峰(金)"];
+
+// V2.28.25：清除舊版本誤建的非追蹤庫存品項。
+(function cleanupNonStockItemsV22825(){
+  const bad=new Set(['大水','小水','礦泉水(大)','礦泉水(小)','茶裏王','查理王']);
+  INV.items=INV.items||{};
+  bad.forEach(k=>delete INV.items[k]);
+  // 快照中的髒欄位也移除，避免理論庫存重建時再次復活。
+  (INV.logs||[]).forEach(log=>{ if(log.items) bad.forEach(k=>delete log.items[k]); });
+  try{ localStorage.setItem('analyzer_inventory_v1',JSON.stringify(INV)); }catch(e){}
+})();
 
 function inventoryUnit(p){
   return (p==='科學麵'||p==='檳榔'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p))?'包':'罐';
@@ -2609,7 +2621,7 @@ renderSyncTime();
  }
 })();
 
-/* V2.28.24：真正建立 8/14 權威盤點快照。
+/* V2.28.25：真正建立 8/14 權威盤點快照。
    先前 2.28.22 只改 INV.items，卻沒有把 8/14 snapshot.items 改成同一份資料；
    之後 rebuildInventoryFromLatestSnapshot() 又從舊快照重建，造成峰(金)從 0 扣成 -1。 */
 (function(){
@@ -2623,7 +2635,7 @@ renderSyncTime();
    id:'snapshot-2026-08-14-authoritative-v22824',
    date:'2026-08-14',
    type:'snapshot',
-   note:'8/14 下班實際盤點（V2.28.24 權威基準）',
+   note:'8/14 下班實際盤點（V2.28.25 權威基準）',
    items:{...BASE}
  });
 
