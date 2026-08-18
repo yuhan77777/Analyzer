@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.30</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.31</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.30</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.31</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -1504,28 +1504,13 @@ function initMinStock(){S.minStock=S.minStock||{};S.minStockEnabled=S.minStockEn
 function minStockUnit(p){return p==='科學麵'||['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'].includes(p)?'包':'罐'}
 function renderMinStockSettings(){if(!$('minStockSettings'))return;initMinStock();let k=q($('minStockSearch')?.value).toLowerCase();let ns=Object.keys(S.minStock).filter(p=>!k||p.toLowerCase().includes(k)).sort((a,b)=>a.localeCompare(b,'zh-Hant'));$('minStockSettings').innerHTML=ns.map(p=>`<div class="list"><div class="grow"><b>${e(p)}</b><div class="note">${minStockUnit(p)}</div></div><label><input class="minEnable" data-p="${encodeURIComponent(p)}" type="checkbox" ${S.minStockEnabled[p]!==false?'checked':''}> 提醒</label><input class="minVal" data-p="${encodeURIComponent(p)}" type="number" min="0" value="${n(S.minStock[p])}" style="width:80px"></div>`).join('')}
 function inventoryForRestock(){
-  // V2.24：尚未儲存日結時，補貨提醒先用「本次報表結算後」的預估庫存。
-  // 只做畫面預覽，不改 INV.items；真正扣庫存仍只在「儲存日結」發生。
+  // 補貨提醒永遠以「目前 Analyzer 庫存」為準。
+  // calc() 已經會把當日銷售即時套用到 INV.items；進貨也會直接更新 INV.items。
+  // 因此這裡不能因為 cur 還留著上一輪結算資料，就再拿舊 salesByProduct 重算，
+  // 否則只要進一筆檳榔，白毫烏龍／金牌／康貝特等無關提醒就可能一起消失。
   const items={...(INV.items||{})};
-  if(!cur?.date||!cur?.salesByProduct) return {items,preview:false};
-  if(INV.baseDate && cur.date<=INV.baseDate) return {items,preview:false};
-
-  // V2.27.2：calc() 會呼叫 applyCurrentSalesImmediately()，此時 INV.items 已經扣過本次銷售。
-  // 補貨頁直接使用目前 INV.items，不能再把 cur.salesByProduct 扣第二次。
-  if(cur.inventoryPreviewApplied) return {items,preview:true,alreadyApplied:true};
-
-  // 若同日期已有正式日結、但本輪尚未即時套用，預覽修正版時先把舊版加回，再扣新版。
-  const old=H.find(x=>x.date===cur.date);
-  if(old?.inventoryApplied && old.salesByProduct){
-    Object.entries(old.salesByProduct).forEach(([p,qty])=>{
-      if(Object.prototype.hasOwnProperty.call(items,p)) items[p]=n(items[p])+n(qty);
-    });
-  }
-  Object.entries(cur.salesByProduct).forEach(([p,qty])=>{
-    if(Object.prototype.hasOwnProperty.call(items,p)) items[p]=n(items[p])-n(qty);
-  });
-  // V2.28.13：補貨提醒顯示的是「實際可剩庫存」，最低就是 0，不顯示 -1、-3 這種不存在的負庫存。
-  return {items,preview:true};
+  const preview=!!(cur?.date&&cur?.salesByProduct);
+  return {items,preview,alreadyApplied:preview};
 }
 function renderRestock(){
   if(!$('restockList'))return;
