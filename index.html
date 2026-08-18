@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.39</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.41</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -43,6 +43,7 @@ body.readonly .write-only{display:none!important}
 <div class="card half"><h3>② 特殊調整</h3><div class="grid" style="margin-top:0"><div class="half"><label>停車費</label><input id="park" type="number" value="190"></div><div class="half"><label>以前未收款今天收回</label><input id="recover" type="number" value="0" class="hide"><div id="unpaidOpenList" class="note">目前沒有尚未收款紀錄。</div></div>
 <div class="half"><label>今天未收款</label><input id="unpaid" type="number" value="0" class="hide">
 <div class="row"><select id="unpaidReceipt"><option value="">請先讀取／結算今天資料</option></select><input id="unpaidAmount" type="number" min="0" step="1" value="0" placeholder="金額" readonly></div>
+<div id="unpaidReceiptItems" class="note" style="margin:8px 0 10px 0"></div>
 <input id="unpaidNote" type="text" placeholder="備註（可不填）"><div class="actions"><button class="sm" id="addUnpaidDetail">＋新增未收款</button></div><div id="todayUnpaidList" class="note">今天尚無手動未收款。</div></div><div class="half"><label>補登付款方式</label><select id="extraPay"></select><div id="recoverSelectBox" class="hide" style="margin-top:8px"><label>選擇尚未銷帳單號</label><select id="recoverReceipt"><option value="">請選擇未收款單號</option></select><div id="recoverReceiptInfo" class="note"></div></div></div><div class="half"><label>補登銷售額</label><input id="extraSale" type="number" value="0"></div><div class="half"><label>補登成本</label><input id="extraCost" type="number" value="0"></div></div></div>
 <div id="lunchBox" class="card hide"><div class="top"><div><h3 style="margin:0">🍱 便當店清單</h3><div class="note">「便當」類別全部列出；總數只計便當、燴飯、麵、水餃、滷肉飯。單點、湯不計數。</div></div><button class="alt" id="copyLunch">複製</button></div><pre id="lunchText"></pre></div>
 <div class="card half"><h3>③ 今日耗材調整</h3><div class="note">只在漏按／修正時用＋－；啤酒貼紙已由 Loyverse 綁定，不在這裡。</div><div class="list"><div class="grow"><b>免洗杯</b><div id="cupInfo" class="note">尚未結算</div></div><div class="step"><button class="alt" onclick="adj('cup',-1)">−</button><b id="cupAdj">0</b><button onclick="adj('cup',1)">＋</button></div></div><div class="list"><div class="grow"><b>黑色塑膠袋</b><div id="bagInfo" class="note">尚未結算</div><div id="betelCostInfo" class="note"></div></div><div class="step"><button class="alt" onclick="adj('bag',-1)">−</button><b id="bagAdj">0</b><button onclick="adj('bag',1)">＋</button></div></div></div>
@@ -698,16 +699,45 @@ function currentReceiptChoices(){
   });
   return [...byReceipt].map(([receipt,amount])=>({receipt,amount}));
 }
+function receiptSalesDetails(receipt){
+  const no=q(receipt);
+  if(!no)return [];
+  // 「今天未收款」選單使用的是收據流水號，但 Loyverse 商品明細是用「收據號碼」關聯。
+  // 先從收據資料找到同一張單的收據號碼，再去商品明細抓內容。
+  const rr=(API_R||[]).find(r=>q(r['收據流水號']||r['流水號']||r['Receipt sequence']||r.receipt_sequence||'')===no || q(r['收據號碼']||r['Receipt number']||r.receipt_number||r.receipt||'')===no);
+  const receiptNo=q(rr?.['收據號碼']||rr?.['Receipt number']||rr?.receipt_number||rr?.receipt||no);
+  const rows=(API_I||[]).filter(x=>q(x['收據號碼']||x['Receipt number']||x.receipt_number||x.receipt||x['收據流水號']||'')===receiptNo && q(x['收據類型']||'銷售')!=='退款');
+  const out=[];
+  rows.forEach(x=>{
+    const item=q(x['商品']||x['商品名稱']||x['Item']||x.item||'');
+    const qty=n(x['數量']??x['Quantity']??x.quantity??0);
+    if(!item||!qty)return;
+    const found=out.find(y=>y.item===item);
+    if(found)found.qty+=qty;else out.push({item,qty});
+  });
+  return out;
+}
+function receiptDetailText(details){
+  return (details||[]).map(x=>`${x.item} × ${x.qty}`).join('、');
+}
+function renderSelectedUnpaidReceiptItems(){
+  const box=$('unpaidReceiptItems');if(!box)return;
+  const receipt=q($('unpaidReceipt')?.value||'');
+  const details=receiptSalesDetails(receipt);
+  box.innerHTML=details.length?`<b>收據內容：</b>${e(receiptDetailText(details))}`:'';
+}
 function renderTodayReceiptChoices(){
   const sel=$('unpaidReceipt'); if(!sel)return;
   const already=new Set([...H.flatMap(d=>d.unpaidDetails||[]),...unpaidDetails].map(x=>q(x.receipt)));
   const list=currentReceiptChoices().filter(x=>!already.has(x.receipt));
   sel.innerHTML='<option value="">請選擇今天收據流水號</option>'+list.map(x=>`<option value="${e(x.receipt)}" data-amount="${n(x.amount)}">${e(x.receipt)}｜${f(x.amount)}</option>`).join('');
   $('unpaidAmount').value=0;
+  renderSelectedUnpaidReceiptItems();
 }
 function syncUnpaidReceiptAmount(){
   const sel=$('unpaidReceipt'), opt=sel?.selectedOptions?.[0];
   if($('unpaidAmount'))$('unpaidAmount').value=opt?n(opt.dataset.amount):0;
+  renderSelectedUnpaidReceiptItems();
 }
 function renderRecoverSelector(){
   const box=$('recoverSelectBox'),sel=$('recoverReceipt'); if(!box||!sel)return;
@@ -738,7 +768,7 @@ function openUnpaidRecords(){
 function renderUnpaidManager(){
   if(!$('todayUnpaidList'))return;
   renderTodayReceiptChoices();
-  $('todayUnpaidList').innerHTML=unpaidDetails.length?unpaidDetails.map((u,i)=>`<div class="list"><div class="grow"><b>收據 ${e(u.receipt)}</b><div class="note">${f(u.amount)}${u.note?'｜'+e(u.note):''}</div></div><button class="danger sm" onclick="removeTodayUnpaid(${i})">刪除</button></div>`).join(''):'<div class="note">今天尚無手動未收款。</div>';
+  $('todayUnpaidList').innerHTML=unpaidDetails.length?unpaidDetails.map((u,i)=>`<div class="list"><div class="grow"><b>收據 ${e(u.receipt)}</b><div class="note">${f(u.amount)}${u.note?'｜'+e(u.note):''}</div>${u.details?.length?`<div class="note"><b>銷售明細：</b>${e(receiptDetailText(u.details))}</div>`:''}</div><button class="danger sm" onclick="removeTodayUnpaid(${i})">刪除</button></div>`).join(''):'<div class="note">今天尚無手動未收款。</div>';
   const open=openUnpaidRecords();
   $('unpaidOpenList').innerHTML=open.length?open.map(u=>{const selected=recoverDetails.some(r=>r.id===u.id);return `<div class="list"><div class="grow"><b>收據 ${e(u.receipt)}</b><div class="note">${e(u.sourceDate)}｜${f(u.amount)}${u.note?'｜'+e(u.note):''}</div></div><button class="${selected?'danger':'alt'} sm" onclick="toggleRecoverUnpaid('${encodeURIComponent(u.id)}')">${selected?'取消':'今天收款'}</button></div>`}).join(''):'<div class="note">目前沒有尚未收款紀錄。</div>';
 }
@@ -750,8 +780,9 @@ $('addUnpaidDetail').onclick=()=>{
   if(amount<=0)return alert('請輸入未收款金額');
   const exists=[...H.flatMap(d=>d.unpaidDetails||[]),...unpaidDetails].some(x=>q(x.receipt)===receipt);
   if(exists)return alert('這個收據流水號已經有未收款紀錄：'+receipt);
-  unpaidDetails.push({id:uid(),receipt,amount,note,paidDate:''});
-  $('unpaidReceipt').value='';$('unpaidAmount').value=0;$('unpaidNote').value='';renderUnpaidManager();
+  const details=receiptSalesDetails(receipt);
+  unpaidDetails.push({id:uid(),receipt,amount,note,details,paidDate:''});
+  $('unpaidReceipt').value='';$('unpaidAmount').value=0;$('unpaidNote').value='';renderSelectedUnpaidReceiptItems();renderUnpaidManager();
 };
 
 
@@ -791,8 +822,9 @@ async function fetchLoyverseApi(){
     const data=await resp.json().catch(()=>({ok:false,error:'Firebase 回傳格式不是 JSON'}));
     if(!resp.ok||!data.ok)throw new Error(data.error||data.loyverse?.message||`HTTP ${resp.status}`);
     if(!Array.isArray(data.receiptRows)||!Array.isArray(data.itemRows))throw new Error('API 回傳缺少 Analyzer 資料列');
-    API_R=data.receiptRows.map(r=>({...r,'付款方式':normalizeApiPaymentName(r['付款方式'])})); renderTodayReceiptChoices();
+    API_R=data.receiptRows.map(r=>({...r,'付款方式':normalizeApiPaymentName(r['付款方式'])}));
     API_I=data.itemRows;
+    renderTodayReceiptChoices();
     API_META=data.meta||{};
     const unknownPays=unknown(API_R);
     const payWarn=unknownPays.length?`｜⚠️ 未設定付款：${unknownPays.join('、')}`:'';
