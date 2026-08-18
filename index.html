@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.29</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.30</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.29</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.30</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -240,6 +240,12 @@ let S=load(K.s,DEF),H=load(K.h,[]),INV=load(K.i,{items:{},logs:[],baseDate:'',la
   localStorage.setItem(flag,'1');
 })();
 
+
+function localDateYMD(){
+  const d=new Date();
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
 function load(k,d){try{return JSON.parse(localStorage.getItem(k))||JSON.parse(JSON.stringify(d))}catch(e){return JSON.parse(JSON.stringify(d))}}
 function save(){
   localStorage.setItem(K.s,JSON.stringify(S));
@@ -458,42 +464,27 @@ function betelBatchCostForSale(qty,commit=false){
 function betelCashOutForDate(date){
   initBetelBatches();
 
-  // 檳榔現金支出以「進貨紀錄」為主，避免舊版批次資料沒同步到金額。
-  // 同一筆若同時存在 batch + log，只算一次。
+  // 進貨異動紀錄是「當天真的有入庫/付款」的來源。
+  // 先直接加總同營業日的檳榔 purchaseAmount。
   const logs=(INV.logs||[]).filter(x=>
-    x.type==='in' && x.date===date && q(x.product)==='檳榔'
+    x.type==='in' && q(x.product)==='檳榔' && q(x.date)===q(date)
   );
 
-  let total=0;
-  const usedBatchIds=new Set();
-
-  logs.forEach(x=>{
-    let amount=n(x.purchaseAmount ?? x.betelAmount ?? 0);
-
-    // 舊資料若 purchaseAmount 沒寫入，從備註「實付 $600」補抓。
-    if(amount<=0){
+  let total=logs.reduce((sum,x)=>{
+    let amt=n(x.purchaseAmount);
+    if(amt<=0){
       const m=String(x.note||'').match(/實付\s*\$?\s*([\d,]+(?:\.\d+)?)/);
-      if(m) amount=n(m[1].replace(/,/g,''));
+      if(m) amt=n(String(m[1]).replace(/,/g,''));
     }
+    return sum+amt;
+  },0);
 
-    // 再找同日期/同數量或 stockLogId 對應的檳榔批次。
-    let b=(INV.betelBatches||[]).find(b=>b.stockLogId===x.id);
-    if(!b) b=(INV.betelBatches||[]).find(b=>
-      b.date===date && n(b.qty)===n(x.qty) && !usedBatchIds.has(b.id)
-    );
-    if(b){
-      usedBatchIds.add(b.id);
-      if(amount<=0) amount=n(b.amount);
-    }
-
-    total+=amount;
-  });
-
-  // 如果舊版只有 batch、完全沒有進貨 log，也不能漏掉。
-  (INV.betelBatches||[])
-    .filter(b=>b.date===date && !usedBatchIds.has(b.id))
-    .forEach(b=>{ total+=n(b.amount); });
-
+  // 舊資料可能只有批次、沒有進貨 log；只有在 log 完全抓不到金額時才 fallback。
+  if(total<=0){
+    total=(INV.betelBatches||[])
+      .filter(b=>q(b.date)===q(date))
+      .reduce((sum,b)=>sum+n(b.amount),0);
+  }
   return total;
 }
 function formatBetelParts(parts){
@@ -819,7 +810,7 @@ $('loyverseApiClear')?.addEventListener('click',()=>clearApiData(true));
 $('rf')?.addEventListener('change',()=>{if($('rf').files?.length)clearApiData(true)});
 $('if')?.addEventListener('change',()=>{if($('if').files?.length)clearApiData(true)});
 
-async function calc(){let R,I;if(API_R&&API_I){R=JSON.parse(JSON.stringify(API_R));I=JSON.parse(JSON.stringify(API_I))}else{R=await read('rf');I=await read('if')}if(!R||!I)return alert('請先按「從 Loyverse 讀取」，或改用 CSV 備用模式上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),betelBatch=betelBatchCostForSale(Math.max(0,betel),false),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betel>0?betelBatch.total:0,cost=base-betelCsv+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=recoverDetails.reduce((a,x)=>a+n(x.amount),0)+n($('recover').value),manualUnpaid=unpaidDetails.reduce((a,x)=>a+n(x.amount),0)+n($('unpaid').value),unp=Knd.unpaid+manualUnpaid,topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-(Knd.unpaid+manualUnpaid)+rec+topupTotal,pre={},reportDate=(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10);S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0),opening=prepaidOpening(x,reportDate);pre[x.name]={id:x.id,open:opening,use,add,close:opening-use+add}});updateStockSaleDefaults(I);let betelCashOut=betelCashOutForDate(reportDate);cur={date:reportDate,pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,betelCashOut,net:g-park-betelCashOut,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),unpaidDetails:JSON.parse(JSON.stringify(unpaidDetails)),recoverDetails:JSON.parse(JSON.stringify(recoverDetails)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc,betelQty:Math.max(0,betel),betelParts:betelBatch.parts},salesByProduct:inventorySalesFromItems(I),inventoryPreviewApplied:false,extra:{es,ec,ep:ep?.id||'',manualUnpaid}};applyCurrentSalesImmediately();renderCalc();renderRestock()}
+async function calc(){let R,I;if(API_R&&API_I){R=JSON.parse(JSON.stringify(API_R));I=JSON.parse(JSON.stringify(API_I))}else{R=await read('rf');I=await read('if')}if(!R||!I)return alert('請先按「從 Loyverse 讀取」，或改用 CSV 備用模式上傳兩份 CSV');let u=unknown(R);showUn(u);if(u.length)return;let pm=pmap(),P={},Knd={cash:0,transfer:0,monthly:0,prepaid:0,unpaid:0};R.forEach(x=>{let p=pm[q(x['付款方式'])],v=n(x['淨銷售額']);if(p){P[p.name]=(P[p.name]||0)+v;Knd[p.kind]+=v}});let ep=S.pay.find(x=>x.id===$('extraPay').value),es=n($('extraSale').value),ec=n($('extraCost').value);if(es&&ep){P[ep.name]=(P[ep.name]||0)+es;Knd[ep.kind]+=es}let pos=R.reduce((a,x)=>a+n(x['淨銷售額']),0)+es,ld=lunch(R,I),lp=I.filter(x=>q(x['類別'])==='便當').reduce((a,x)=>a+n(x['銷售成本']),0),base=I.reduce((a,x)=>a+n(x['銷售成本']),0)+ec,ac=active(R),nos=new Set(ac.map(x=>q(x['收據號碼']))),Srows=I.filter(x=>q(x['收據類型'])==='銷售'&&nos.has(q(x['收據號碼']))),G={};Srows.forEach(x=>(G[q(x['收據號碼'])]??=[]).push(x));let cp=0,ca=0,bp=0,ba=0;Object.values(G).forEach(rs=>{let c=rs.filter(x=>/免洗杯/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0),big=rs.filter(x=>q(x['商品'])==='保利達(大)').reduce((a,x)=>a+n(x['數量']),0),small=rs.filter(x=>q(x['商品'])==='保利達(小)').reduce((a,x)=>a+n(x['數量']),0),b=rs.filter(x=>/黑色塑膠袋/.test(x['商品'])).reduce((a,x)=>a+n(x['數量']),0);cp+=c;if(!c)ca+=big*2+small;bp+=b;if(rs.some(x=>q(x['類別'])==='酒類')&&!b)ba++});let cup=Math.max(0,cp+ca+A.cup),bag=Math.max(0,ba+A.bag),betel=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['數量']),0),betelCsv=I.filter(x=>q(x['商品'])==='檳榔').reduce((a,x)=>a+n(x['銷售成本']),0),betelBatch=betelBatchCostForSale(Math.max(0,betel),false),cc=cup*S.cost.cup,bc=bag*S.cost.bag,btc=betel>0?betelBatch.total:0,cost=base-betelCsv+cc+bc+btc,g=pos-cost,m=pos?g/pos*100:0,park=n($('park').value),rec=recoverDetails.reduce((a,x)=>a+n(x.amount),0)+n($('recover').value),manualUnpaid=unpaidDetails.reduce((a,x)=>a+n(x.amount),0)+n($('unpaid').value),unp=Knd.unpaid+manualUnpaid,topupTotal=topups.reduce((a,x)=>a+n(x.amount),0),actual=pos-lp-Knd.monthly-Knd.prepaid-(Knd.unpaid+manualUnpaid)+rec+topupTotal,pre={},reportDate=(API_R&&API_I&&q($('loyverseApiDate')?.value)?q($('loyverseApiDate').value):(R[0]?.['日期']||I[0]?.['日期']||'').slice(0,10));S.pay.filter(x=>x.kind==='prepaid').forEach(x=>{let use=P[x.name]||0,add=topups.filter(t=>t.paymentId===x.id).reduce((a,t)=>a+n(t.amount),0),opening=prepaidOpening(x,reportDate);pre[x.name]={id:x.id,open:opening,use,add,close:opening-use+add}});updateStockSaleDefaults(I);let betelCashOut=betelCashOutForDate(reportDate);cur={date:reportDate,pos,lunchPay:lp,store:pos-lp,actual,gross:g,margin:m,park,betelCashOut,net:g-park-betelCashOut,pay:P,pre,adv:JSON.parse(JSON.stringify(adv)),topups:JSON.parse(JSON.stringify(topups)),unpaidDetails:JSON.parse(JSON.stringify(unpaidDetails)),recoverDetails:JSON.parse(JSON.stringify(recoverDetails)),topupTotal,rec,unp,base,cost,cons:{cp,ca,bp,ba,cup,bag,cc,bc,btc,betelQty:Math.max(0,betel),betelParts:betelBatch.parts},salesByProduct:inventorySalesFromItems(I),inventoryPreviewApplied:false,extra:{es,ec,ep:ep?.id||'',manualUnpaid}};applyCurrentSalesImmediately();renderCalc();renderRestock()}
 
 
 function restoreBetelUsage(day){
@@ -1067,7 +1058,7 @@ function addCostBatch(product,qty,totalAmount,date,stockLogId){
   const qv=Math.max(0,n(qty)), amt=Math.max(0,n(totalAmount));
   if(qv<=0)return;
   INV.costBatches[p].push({
-    id:uid(),date:date||new Date().toISOString().slice(0,10),
+    id:uid(),date:date||localDateYMD(),
     qty:qv,remaining:qv,unitCost:qv?amt/qv:0,amount:amt,
     stockLogId:stockLogId||'',source:'purchase'
   });
@@ -1205,7 +1196,7 @@ $('importLoyverseStock').onclick=async()=>{
   if(parsed.errors.length)return alert(parsed.errors.join('\n'));
 
   INV.loyverseStock=parsed.out;
-  INV.loyverseStockDate=new Date().toISOString().slice(0,10);
+  INV.loyverseStockDate=localDateYMD();
   save();
   $('loyverseStockImportResult').classList.remove('hide');
   $('loyverseStockImportResult').innerHTML=`已讀取 <b>${Object.keys(parsed.out).length}</b> 個追蹤庫存商品。欄位：${e(parsed.stockCol||'')}`;
@@ -1628,7 +1619,7 @@ function renderStock(){
 $('saveStockSnapshot').onclick=()=>{
   const x=parseStockText($('stockPaste').value);
   if(!Object.keys(x).length) return alert('沒有辨識到盤點資料');
-  const d=$('stockDate').value||new Date().toISOString().slice(0,10);
+  const d=$('stockDate').value||localDateYMD();
   INV.items=x;INV.baseDate=d;INV.logs.push({id:uid(),date:d,type:'snapshot',note:'手動實際盤點',items:{...x}});save();renderStock();alert('已儲存盤點基準');
 };
 
@@ -1821,7 +1812,7 @@ $('addStockOrderRow').onclick=()=>{
 };
 $('confirmStockOrder').onclick=()=>{
   if(!pendingStockOrder.length)return alert('請先解析進貨');
-  const date=$('stockDate').value||new Date().toISOString().slice(0,10);
+  const date=$('stockDate').value||localDateYMD();
   const orderId=uid(),orderTotal=pendingStockOrder.reduce((a,x)=>a+n(x.amount),0);
   pendingStockOrder.forEach(x=>{
     const before=n(INV.items[x.product]),after=before+x.qty;
@@ -1846,7 +1837,7 @@ if($('betelBatchQty')){
   $('betelBatchAmount').addEventListener('input',updateBetelCost);
 }
 $('addStockIn').onclick=()=>{
-  const product=q($('stockProduct').value),rawQty=q($('stockProduct').value)==='檳榔'?n($('betelBatchQty')?.value):n($('stockQty').value),date=$('stockDate').value||new Date().toISOString().slice(0,10),note=q($('stockNote').value),unit=$('stockUnit').value;
+  const product=q($('stockProduct').value),rawQty=q($('stockProduct').value)==='檳榔'?n($('betelBatchQty')?.value):n($('stockQty').value),date=$('stockDate').value||localDateYMD(),note=q($('stockNote').value),unit=$('stockUnit').value;
   if(!product||rawQty<=0)return alert('請輸入商品與數量');
 
   const r=stockRule(product);
@@ -1867,8 +1858,7 @@ $('addStockIn').onclick=()=>{
   INV.items[product]=after;
   if(product==='檳榔'){
     initBetelBatches();
-    const betelBatchId=uid();
-    INV.betelBatches.push({id:betelBatchId,date,qty,remaining:qty,amount:betelAmount,unitCost:betelAmount/qty});
+    INV.betelBatches.push({id:uid(),date,qty,remaining:qty,amount:betelAmount,unitCost:betelAmount/qty});
     displayNote=(displayNote?displayNote+'｜':'')+`實付 $${betelAmount}｜${qty}包｜單包 $${(betelAmount/qty).toFixed(2)}`;
   }
   addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
@@ -1894,7 +1884,7 @@ $('exportStock').onclick=()=>{
 $('compareStockBtn').onclick=()=>{
   const actual=parseStockText($('comparePaste').value);
   if(!Object.keys(actual).length) return alert('沒有辨識到盤點資料');
-  currentCompare={date:$('stockDate').value||new Date().toISOString().slice(0,10),actual,rows:compareInventory(actual)};
+  currentCompare={date:$('stockDate').value||localDateYMD(),actual,rows:compareInventory(actual)};
   renderCompare(currentCompare.rows);
 
   currentCompare.rows
@@ -2177,7 +2167,7 @@ function recoverMissingInventoryV2247(){
   localStorage.setItem(key,'1');
 }
 
-function init(){initMinStock();initBetelBatches();INV.varianceResolutions=INV.varianceResolutions||{};S.stockSaleDefaults=S.stockSaleDefaults||{};renderUnpaidManager();repairV2244GoldStock();repairV2246GoldInLog();recoverMissingInventoryV2247();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();rebuildInventoryFromLatestSnapshot();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=new Date().toISOString().slice(0,10);refreshBetelBatchBox()}init();
+function init(){initMinStock();initBetelBatches();INV.varianceResolutions=INV.varianceResolutions||{};S.stockSaleDefaults=S.stockSaleDefaults||{};renderUnpaidManager();repairV2244GoldStock();repairV2246GoldInLog();recoverMissingInventoryV2247();INV.lastSalesDate=INV.lastSalesDate||'';INV.pending=INV.pending||{};INV.loyverseStock=INV.loyverseStock||{};INV.loyverseStockDate=INV.loyverseStockDate||'';migrateV219Fixed813Baseline();migrateV220PendingCleanup();repairHistoricalDays();repairSpecialRecordsV29();dedupeInventorySalesLogsV215();rebuildInventoryFromLatestSnapshot();refreshCurrentPrepaidBalances();save();renderSet();renderAdv();renderTopups();renderHist();renderStock();refreshStockProductSelect();period(0);fl();if($('stockDate'))$('stockDate').value=localDateYMD();refreshBetelBatchBox()}init();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
