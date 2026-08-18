@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.15</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.19</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.15</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.19</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -373,7 +373,10 @@ function lunch(R,I){
     // 清單：類別＝便當全部列。
     // 總數：只有「便當、麵、水餃、滷肉飯」計數。
     // 單點、湯、滷蛋等只列清單、不計總數。
-    const countable=/便當|燴飯|麵|水餃|滷肉飯/.test(y.item) && !/單點|湯/.test(y.item);
+    const countable=(
+      /便當|燴飯|麵|水餃|滷肉飯/.test(y.item) ||
+      ['牛肉乾麵','牛肉乾麵(大)','牛肉湯餃','酸辣湯餃'].includes(y.item)
+    ) && !/單點$|湯$/.test(y.item);
     if(countable) ct+=y.qty;
   }));
 
@@ -1457,7 +1460,6 @@ function inventoryForRestock(){
     if(Object.prototype.hasOwnProperty.call(items,p)) items[p]=n(items[p])-n(qty);
   });
   // V2.28.13：補貨提醒顯示的是「實際可剩庫存」，最低就是 0，不顯示 -1、-3 這種不存在的負庫存。
-  Object.keys(items).forEach(p=>items[p]=Math.max(0,n(items[p])));
   return {items,preview:true};
 }
 function renderRestock(){
@@ -2321,6 +2323,151 @@ renderSyncTime();
    stockPackSize=function(product,unit){if(canon(product)==='檳榔')return 1;return old(product,unit)}
  }
  setTimeout(()=>{try{renderRestock()}catch(e){console.error(e)}},0);
+})();
+
+/* V2.28.16：修正補貨提醒來源、進貨後數量、API 日結日期 */
+(function(){
+  function canon(x){
+    x=q(x).replace(/\s+/g,' ').trim();
+    const a={
+      '鋒(金)':'峰(金)','峰（金）':'峰(金)','鋒（金）':'峰(金)',
+      '七星（中淡）':'七星(中淡)','七星（濃）':'七星(濃)',
+      'Peace6號':'Peace 6號','Peace６號':'Peace 6號',
+      '藍Ｍ':'藍M'
+    };
+    return a[x]||x;
+  }
+
+  // 菸類提醒固定啟用；最低數量仍沿用使用者原本設定。
+  const tobacco=['七星(濃)','七星(中淡)','Peace 6號','藍M','峰(金)'];
+  S.minStockEnabled=S.minStockEnabled||{};
+  tobacco.forEach(p=>S.minStockEnabled[p]=true);
+
+  // 補貨提醒：
+  // 1. 先以最近匯入 Loyverse 現況為底
+  // 2. Analyzer 之後若有進貨待同步，直接用「進貨後總庫存」覆蓋該商品
+  //    避免金牌已進 6 箱，提醒卻仍停在舊 CSV 的 30 罐。
+  inventoryForRestock=function(){
+    const items={};
+    Object.entries(INV.loyverseStock||{}).forEach(([k,v])=>items[canon(k)]=n(v));
+
+    Object.entries(INV.pending||{}).forEach(([k,x])=>{
+      if(/^進貨/.test(q(x?.reason))){
+        items[canon(k)]=n(x.value);
+      }
+    });
+
+    if(!Object.keys(items).length){
+      Object.entries(INV.items||{}).forEach(([k,v])=>items[canon(k)]=n(v));
+      return {items,loyverse:false};
+    }
+    return {items,loyverse:true};
+  };
+
+  renderRestock=function(){
+    if(!$('restockList'))return;
+    initMinStock();
+    const st=inventoryForRestock(),it=st.items;
+    const rows=Object.keys(S.minStock)
+      .filter(p=>{
+        const k=canon(p);
+        return S.minStockEnabled[p]!==false &&
+          Object.prototype.hasOwnProperty.call(it,k) &&
+          n(it[k])<=n(S.minStock[p]);
+      })
+      .sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+
+    const head=st.loyverse
+      ? '<div class="banner" style="margin-bottom:8px"><b>📥 目前庫存來源：Loyverse＋尚未同步的進貨</b><br><span class="note">Loyverse 現況為底；進貨後以最新總庫存覆蓋，不重複扣 POS。</span></div>'
+      : '<div class="banner" style="margin-bottom:8px"><b>⚠️ 尚未匯入 Loyverse 目前庫存</b></div>';
+
+    $('restockList').innerHTML=head+(rows.length?rows.map(p=>{
+      const k=canon(p),v=n(it[k]),m=n(S.minStock[p]);
+      return `<div class="list" style="background:#fff0f0;border-radius:10px;padding:10px;margin:6px 0">
+        <div class="grow"><b>⚠️ ${e(p)}</b></div>
+        <div class="right"><b>${v} ${e(minStockUnit(p))}</b><div class="note">目前</div></div>
+        <div class="right"><b>${m} ${e(minStockUnit(p))}</b><div class="note">最低</div></div>
+      </div>`;
+    }).join(''):'<div class="note">目前沒有低於或等於最低庫存的商品。</div>');
+  };
+
+  // API 抓哪一天，就把那一天保留下來；不可再從第一筆資料的 UTC 日期猜。
+  const apiBtn=$('loyverseApiFetch');
+  if(apiBtn){
+    apiBtn.addEventListener('click',()=>{
+      const d=$('loyverseApiDate')?.value;
+      if(d) sessionStorage.setItem('analyzer_api_selected_date',d);
+    },true);
+  }
+
+  // 修正 calc 建立 cur 後的日期：API 模式一律採使用者選的日期。
+  const oldCalc=window.calc||calc;
+  window.calc=calc=async function(){
+    await oldCalc();
+    if(cur && API_R && API_I){
+      const d=$('loyverseApiDate')?.value || sessionStorage.getItem('analyzer_api_selected_date');
+      if(d && /^\d{4}-\d{2}-\d{2}$/.test(d)){
+        cur.date=d;
+        renderCalc();
+      }
+    }
+  };
+  if($('calcBtn')) $('calcBtn').onclick=calc;
+
+  save();
+  setTimeout(()=>{try{renderRestock()}catch(e){console.error(e)}},0);
+})();
+
+/* V2.28.17 clean inventory baseline: 8/15 closing = 8/17 opening; 8/16 closed */
+(function(){
+ const flag='a2_v22817_clean_stock_base_done';
+ if(localStorage.getItem(flag)!=='1'){
+   const clean={"健酪": 14, "麥香紅茶": 15, "伯朗咖啡": 30, "藍山咖啡": 36, "Fin": 42, "麥香奶茶": 22, "日式無糖綠茶": 21, "白毫烏龍": 3, "冬瓜茶": 23, "青草茶": 26, "阿咧": 22, "咖啡廣場(白)": 12, "咖啡廣場(藍)": 11, "蠻牛": 9, "沙士": 15, "水蠻牛": 13, "維大力": 9, "可口可樂": 11, "康貝特200P": 3, "金牌": 48, "Bar": 74, "海尼根": 16, "大保": 17, "小保": 10, "檳榔": 2, "科學麵": 25, "七星(濃)": 6, "七星(中淡)": 5, "Peace 6號": 16, "藍M": 6, "峰(金)": 7};
+   INV.items={...clean}; INV.baseDate='2026-08-16'; INV.lastSalesDate='2026-08-16';
+   INV.logs=(INV.logs||[]).filter(x=>x.type!=='sales' || (x.date||'')>'2026-08-16');
+   INV.logs.push({id:'clean-base-2026-08-16',date:'2026-08-16',type:'snapshot',note:'V2.28.17乾淨基準：8/15期末＝8/17開店庫存（8/16未營業）',items:{...clean}});
+   localStorage.setItem(K.i,JSON.stringify(INV)); localStorage.setItem(flag,'1');
+ }
+})();
+
+/* V2.28.18：新增便當店品項同樣計入便當數量與便當成本 */
+(function(){
+  const EXTRA_LUNCH_ITEMS=['牛肉乾麵','牛肉乾麵(大)','牛肉湯餃','酸辣湯餃'];
+  window.EXTRA_LUNCH_ITEMS=EXTRA_LUNCH_ITEMS;
+  // 擴充既有便當品項陣列（不同歷史版本名稱都兼容）
+  ['LUNCH_ITEMS','lunchItems','LUNCH_NAMES','lunchNames'].forEach(k=>{
+    if(Array.isArray(window[k])) EXTRA_LUNCH_ITEMS.forEach(x=>{if(!window[k].includes(x))window[k].push(x)});
+  });
+})();
+
+/* V2.28.19：商品主檔規則
+   1) 便當店商品優先依 Loyverse Category=便當；目前匯出的便當品名作 fallback。
+   2) 名稱 mapping 統一。
+   3) 負庫存不強制歸零；8/17 尚未補登進貨前允許暫時為負。
+*/
+(function(){
+ const CATALOG_LUNCH=["三鮮燴飯", "乾麵", "乾麵(大)", "合菜便當", "排骨便當", "控肉便當", "榨菜肉絲麵", "水餃(10)", "水餃(15)", "水餃(20)", "滷肉飯", "滷肉飯(大)", "滷蛋(單點)", "炸醬麵", "炸醬麵(大)", "牛肉乾麵", "牛肉乾麵(大)", "牛肉湯餃", "牛肉麵", "牛肉麵(大)", "牛腩燴飯", "肉絲拌麵", "肉絲拌麵(大)", "蝦仁燴飯", "豬腳便當", "貢丸湯", "酸辣湯餃", "雞排(單點)", "雞排飯便當", "雞腿(單點)", "雞腿便當", "餛飩湯", "餛飩麵", "魚排便當", "鹹豬肉便當"];
+ window.CATALOG_LUNCH_ITEMS=CATALOG_LUNCH;
+ window.canonicalProductName=function(name){
+   name=q(name).replace(/\s+/g,' ').trim();
+   const a={
+    '鋒(金)':'峰(金)','峰（金）':'峰(金)','鋒（金）':'峰(金)',
+    '黑松沙士':'沙士','保利達(大)':'大保','保利達（大）':'大保',
+    '保利達(小)':'小保','保利達（小）':'小保',
+    '七星（中淡）':'七星(中淡)','七星（濃）':'七星(濃)',
+    'Peace6號':'Peace 6號','Peace６號':'Peace 6號','藍Ｍ':'藍M'
+   };
+   return a[name]||name;
+ };
+ window.isLunchCatalogItem=function(rowOrName){
+   if(rowOrName && typeof rowOrName==='object'){
+     const cat=q(rowOrName.category||rowOrName.Category||rowOrName['分類']||rowOrName['類別']);
+     if(cat==='便當') return true;
+     const nm=q(rowOrName.item_name||rowOrName['Item name']||rowOrName.name||rowOrName['商品名稱']||rowOrName['商品']);
+     return CATALOG_LUNCH.includes(nm);
+   }
+   return CATALOG_LUNCH.includes(q(rowOrName));
+ };
 })();
 </script>
 
