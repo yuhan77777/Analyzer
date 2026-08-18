@@ -80,7 +80,7 @@ body.readonly .write-only{display:none!important}
   <div class="actions"><button class="danger" id="saveStockSnapshot">⚠️ 強制重設庫存基準</button></div>
 </details>
 </div>
-<div class="card half"><h3>➕ 新增進貨</h3><div class="note">進貨登錯可到下方「庫存異動紀錄」直接刪除，系統會自動把該筆數量扣回。</div>
+<div class="card half"><details><summary><b>➕ 新增進貨</b></summary><div style="margin-top:10px"><div class="note">進貨登錯可到下方「庫存異動紀錄」直接刪除，系統會自動把該筆數量扣回。</div>
 <label>日期</label><input id="stockDate" type="date">
 
 <label>快速貼上叫貨明細</label>
@@ -90,7 +90,8 @@ body.readonly .write-only{display:none!important}
 <div class="note">主畫面優先顯示商品名稱、叫貨數量、換算入庫與小計。「💰 修改進貨金額」可獨立選商品並修改預設進貨價，不需要先解析進貨。</div>
 <div id="stockOrderPreview"></div>
 
-<div style="height:1px;background:var(--b);margin:14px 0"></div>
+</div></details></div>
+<div class="card half"><details><summary><b>📦 單筆進貨</b></summary><div style="margin-top:10px">
 <h4 style="margin:0 0 8px">單筆補登入庫</h4>
 <label>商品</label><select id="stockProduct"></select>
 <label>進貨單位</label><select id="stockUnit"></select>
@@ -105,7 +106,7 @@ body.readonly .write-only{display:none!important}
 </div>
 <label>備註（可不填）</label><input id="stockNote" type="text" placeholder="例如：臨時補貨">
 <div class="actions"><button id="addStockIn">入庫</button></div>
-<div id="stockAfter" class="banner hide"></div></div>
+<div id="stockAfter" class="banner hide"></div></div></details></div>
 <div class="card"><h3>🛒 補貨提醒</h3><div class="note">只顯示低於最低庫存的商品。</div><div id="restockList"></div></div>
 <div class="card half">
 <h3>📥 匯入 Loyverse 目前庫存</h3>
@@ -126,14 +127,14 @@ body.readonly .write-only{display:none!important}
   <div id="stockTable" style="margin-top:8px"></div>
 </details>
 </div>
-<div class="card half"><h3>🔍 今天下班實際盤點</h3>
+<div class="card half"><details><summary><b>🔍 今天下班實際盤點</b></summary><div style="margin-top:10px">
 <div class="note">平常每天就用這裡。若實盤比理論少，妳可以直接判定「漏按銷售」或「其他損耗」；漏按銷售會補進當天營業額與成本。最後再採用本次盤點為新基準。</div>
 <textarea id="comparePaste" rows="10" placeholder="金牌 104&#10;Bar 74&#10;海尼根 48"></textarea>
 <div class="actions"><button id="compareStockBtn">① 比對庫存</button><button class="alt" id="adoptSnapshotBtn">② 採用本次盤點為新基準</button></div>
-<div id="compareResult"></div></div>
+<div id="compareResult"></div></div></details></div>
 <div class="card"><div class="top"><div><h3 style="margin:0">📲 Loyverse 待調整清單</h3><div class="note">會列出兩種需要同步 Loyverse 的情況：① 進貨後的最新總庫存；② 實際盤點與 Loyverse 不一致。盤差紅色＝短少、黃色＝實盤較多。</div></div><div class="actions"><button class="alt sm" id="copyLoyversePending">複製清單</button><button class="danger sm" id="clearLoyversePending">清空</button></div></div><div id="loyversePendingList"></div></div>
 
-<div class="card half"><h3>庫存異動紀錄</h3><div id="stockLog"></div></div>
+<div class="card half"><details><summary><b>📋 庫存異動紀錄</b></summary><div id="stockLog" style="margin-top:10px"></div></details></div>
 </div></section>
 
 <section id="set" class="tab"><div class="grid">
