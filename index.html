@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.27</title>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyzer V2.28.28</title>
 <style>
 :root{--g:#315f4c;--bg:#f6f6f2;--b:#e3e5df;--m:#70736f;--r:#a33}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color:#222}button,input,select,textarea{font:inherit}button{border:0;border-radius:10px;padding:9px 12px;font-weight:700;background:var(--g);color:#fff}button.alt{background:#eceee9;color:#333}button.danger{background:#f7e8e8;color:var(--r)}button.sm{padding:6px 9px;font-size:13px}.wrap{max-width:1150px;margin:auto;padding:14px 14px 70px}.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{margin:0;font-size:24px}.note{font-size:13px;color:var(--m);line-height:1.5}.tabs{display:flex;gap:7px;overflow:auto;padding:12px 0 2px;position:sticky;top:0;background:#f6f6f2eF;z-index:10}.tb{white-space:nowrap;background:#e8eae5;color:#333}.tb.on{background:var(--g);color:#fff}.tab{display:none}.tab.on{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}.card{grid-column:span 12;background:#fff;border:1px solid var(--b);border-radius:15px;padding:14px}.half{grid-column:span 12}.third{grid-column:span 12}@media(min-width:780px){.half{grid-column:span 6}.third{grid-column:span 4}}label{display:block;font-size:13px;color:var(--m);margin:8px 0 4px}input,select,textarea{width:100%;padding:9px;border:1px solid #d7d9d3;border-radius:9px;background:#fff}.row,.actions{display:flex;gap:8px;align-items:center}.actions{flex-wrap:wrap;margin-top:10px}.grow{flex:1}.hide{display:none!important}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:700px){.kpis{grid-template-columns:repeat(4,1fr)}}.kpi{border:1px solid var(--b);border-radius:12px;padding:10px}.kpi small{display:block;color:var(--m)}.kpi b{font-size:20px}.em b{color:var(--g)}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--b);text-align:left}.num{text-align:right}.list{display:flex;gap:8px;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b)}.pill{display:inline-block;padding:3px 7px;border-radius:999px;background:#eff1ed;font-size:12px}.step{display:flex;gap:7px;align-items:center}.step b{min-width:34px;text-align:center}pre{white-space:pre-wrap;background:#f5f6f3;padding:11px;border-radius:11px;line-height:1.6}.banner{background:#fff8e7;border:1px solid #ead8ae;border-radius:11px;padding:9px;margin-top:10px}.modal{position:fixed;inset:0;background:#0006;display:flex;align-items:flex-end;justify-content:center;z-index:99}.modal>div{width:min(700px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:16px 16px 0 0;padding:15px}@media(min-width:760px){.modal{align-items:center}.modal>div{border-radius:16px}}
@@ -10,7 +10,7 @@ body.readonly .write-only{display:none!important}
 #stockLog .stock-delete-btn{pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
 </style></head><body><div class="wrap">
 <div class="top">
-  <div><h1>Analyzer V2.28.27</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
+  <div><h1>Analyzer V2.28.28</h1><div class="note">Loyverse API｜日結｜便當｜實收｜月報｜請款｜代墊</div></div>
   <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
     <span class="pill">📱 本機</span>
     <span id="cloudStatus" class="pill cloud-warn">☁️ 尚未登入</span>
@@ -457,7 +457,29 @@ function betelBatchCostForSale(qty,commit=false){
 }
 function betelCashOutForDate(date){
   initBetelBatches();
-  return INV.betelBatches.filter(b=>b.date===date).reduce((a,b)=>a+n(b.amount),0);
+
+  // 優先讀檳榔批次付款；若舊版/快速進貨只有留下進貨 log，
+  // 也要把當日檳榔實付金額抓進今日現金流。
+  const batchTotal=INV.betelBatches
+    .filter(b=>b.date===date)
+    .reduce((a,b)=>a+n(b.amount),0);
+
+  const batchLogIds=new Set(
+    INV.betelBatches
+      .filter(b=>b.date===date)
+      .map(b=>q(b.stockLogId||b.logId||''))
+      .filter(Boolean)
+  );
+
+  const logTotal=(INV.logs||[])
+    .filter(x=>x.type==='in' && x.date===date && q(x.product)==='檳榔')
+    .filter(x=>!batchLogIds.has(q(x.id)))
+    .reduce((a,x)=>{
+      const amount=n(x.purchaseAmount ?? x.betelAmount ?? 0);
+      return a+amount;
+    },0);
+
+  return batchTotal+logTotal;
 }
 function formatBetelParts(parts){
   return (parts||[]).map(x=>`${n(x.qty)}包 × $${n(x.unitCost).toFixed(2)} = $${n(x.amount).toFixed(2)}`).join(' ＋ ');
@@ -1830,7 +1852,8 @@ $('addStockIn').onclick=()=>{
   INV.items[product]=after;
   if(product==='檳榔'){
     initBetelBatches();
-    INV.betelBatches.push({id:uid(),date,qty,remaining:qty,amount:betelAmount,unitCost:betelAmount/qty});
+    const betelBatchId=uid();
+    INV.betelBatches.push({id:betelBatchId,date,qty,remaining:qty,amount:betelAmount,unitCost:betelAmount/qty});
     displayNote=(displayNote?displayNote+'｜':'')+`實付 $${betelAmount}｜${qty}包｜單包 $${(betelAmount/qty).toFixed(2)}`;
   }
   addLoyversePending(product,after,`進貨 +${qty}${r?.base||''}`);
